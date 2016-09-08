@@ -28,6 +28,7 @@ end
 %% backwards compatibility
 if isnumeric(mode)
     switch mode
+        case 0; mode='TABS';
         case 1; mode='TABS';
         case 2; mode='TREL';
         case 3; mode='EVENT';

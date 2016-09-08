@@ -7,7 +7,7 @@ function [activeCh,activeEl] = nlx_control_gui_getSelectedChannel
 % activeEl ... names of electrodes/recording entities 'Sc1'
 
 %% get the list of channels 
-ChMenuHdl = findobj('parent',nlx_control_getMainWindowHandle,'type','uimenu','tag','ChannelMenu');
+ChMenuHdl = findobj('parent',nlx_control_getMainWindowHandle,'type','uimenu','tag','NSELabelMenu');
 ChItemHdl = get(ChMenuHdl,'children');
 ChannelList = get(flipud(ChItemHdl),'label');
 nTotal = length(ChannelList);

@@ -3,11 +3,6 @@ function [OK,message] = nlx_control_checkTrial(Ev,CTX,NLX_CONTROL_SETTINGS)
 message = '';
 OK = false;
 
-if CTX.Pointer==0
-    message = 'WARNING: *** OMIT trial due to cortex pointer (CTX.Pointer) is zero ***';
-    return;
-end
-
 % mandatory events
 FoundMandatory = Ev_ismemberTTL(Ev,NLX_CONTROL_SETTINGS.MandatoryEvents,[CTX.TrialStartTime(CTX.Pointer) Ev_currTimeStamp(Ev)],0);
 AcqWin1_EvIdx = Ev_findTTL(Ev,NLX_CONTROL_SETTINGS.AcqEvents(1),[CTX.TrialStartTime(CTX.Pointer) Ev_currTimeStamp(Ev)],0);

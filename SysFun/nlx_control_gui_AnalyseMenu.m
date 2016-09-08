@@ -18,8 +18,8 @@ end
 % user functions
 for i = find(isUserDir==1);
     UserMenu = uimenu('parent',FunMenu,'label',FunDir(i).name);
-    addpath([nlx_control_getAnalyseDir '\' FunDir(i).name]);
-    [UserFun,isUserFun] = CheckDir([nlx_control_getAnalyseDir '\' FunDir(i).name]);
+    addpath(fullfile(nlx_control_getAnalyseDir,FunDir(i).name));
+    [UserFun,isUserFun] = CheckDir(fullfile(nlx_control_getAnalyseDir,FunDir(i).name));
     for j = find(isUserFun==0);
         uimenu('parent',UserMenu, ...
             'label',nlx_control_RemovePrefix(UserFun(j).name), ...

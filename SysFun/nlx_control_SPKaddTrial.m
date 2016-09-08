@@ -67,7 +67,8 @@ for k = 1:nCh
     cEl = strtok(ClusterName{k},'.');
     ClusterNr = sscanf(ClusterName{k},[cEl '.%d']);
     ElNr = strmatch(cEl,SEObj,'exact');
-    SPK{SPKindex} = SE{ElNr}.TimeStamp(SE_findSpike(SE{ElNr},acqwin,ClusterNr))' - aligntime;
+    SPK{SPKindex} = SE{ElNr}.TimeStamp(SE_findSpike(SE{ElNr},acqwin,ClusterNr)) - aligntime;
+    SPK{SPKindex} = SPK{SPKindex}(:);
 end
 
 %% push to SPK

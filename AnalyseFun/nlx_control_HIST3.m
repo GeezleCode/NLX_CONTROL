@@ -13,7 +13,7 @@ global nlx_control_HIST2_ylim;
 p = NLX_CONTROL_SETTINGS;
 % check for existing channels in object
 [ChannelName,activeEl] = nlx_control_gui_getSelectedChannel;
-ChanIndex = spk_findchannel(SPK,ChannelName);
+ChanIndex = spk_findSpikeChan(SPK,ChannelName);
 ChanIndexNum = length(ChanIndex);
 ChanColor = NLX_CONTROL_SETTINGS.SpikeChanColor(1:ChanIndexNum,:);
 SPK = spk_set(SPK,'currenttrials',[]);
@@ -113,15 +113,15 @@ end
 for i=1:ChanIndexNum
     H(i) = get(HistFigHandle(i),'userdata');
 end
-total = spk_numtrials(SPK);
-NumChan = spk_numchan(SPK);
+total = spk_TrialNum(SPK);
+NumChan = spk_SpikeChanNum(SPK);
 if total==0;return;end % return if the object is empty
 if isempty(t);t=1:total;end % set t to all the trials if it's empty
 
 % trial identifiers
-TrialBLKs = spk_gettrialcodes(SPK,'CortexBlock');
-TrialCNDs = spk_gettrialcodes(SPK,'CortexCondition');
-TrialSTIMCODEs = spk_gettrialcodes(SPK,'StimulusCode');
+TrialBLKs = spk_getTrialcode(SPK,'CortexBlock');
+TrialCNDs = spk_getTrialcode(SPK,'CortexCondition');
+TrialSTIMCODEs = spk_getTrialcode(SPK,'StimulusCode');
 if all(isnan(TrialSTIMCODEs))
     TrialSTIMCODEs = (TrialBLKs-1).*p.Cndnum+TrialCNDs;
 end
@@ -132,7 +132,7 @@ end
 
 %% align timestamps to p.RasterAlignEvent
 SPK = spk_set(SPK,'currenttrials',[]);
-CortexPresentationNr = spk_gettrialcodes(SPK,'CortexPresentationNr');
+CortexPresentationNr = spk_getTrialcode(SPK,'CortexPresentationNr');
 AlignTime = spk_getevents(SPK,p.RasterAlignEventName);
 if any(cellfun('length',AlignTime)>1) % might happen for severeal STIM_ONS!!!
     for i = 1:length(AlignTime)
@@ -164,8 +164,8 @@ for i = 1:length(t)
 	
     % set data of rasterlines
     SPK = spk_set(SPK,'currenttrials',t(i));
-    Spikes = spk_gettrialdata(SPK,'spk');
-    Events = spk_gettrialdata(SPK,'events');
+    Spikes = spk_getTrialData(SPK,'spk');
+    Events = spk_getTrialData(SPK,'events');
     NumEvents = sum(cellfun('length',Events)==1);
     for j = 1:ChanIndexNum
         NumSpikes = length(Spikes{ChanIndex(j)});
@@ -210,7 +210,7 @@ for i = 1:length(t)
         SPK = spk_set(SPK, ...
             'currenttrials',cTrials, ...
             'currentchan',ChanIndex(j));
-        [values,binedges,h] = spk_histogram(SPK,p.RasterTimeLim,p.HistBinWidth,p.HistMode,'line', ...
+        [values,binedges,h] = spk_SpikeHistogram(SPK,p.RasterTimeLim,p.HistBinWidth,p.HistMode,'line', ...
             'tag',cHistLineString,'linewidth',0.25,'clipping','off','color',H(j).HistColor(cSC,:));
         
         % plot 0 ms
