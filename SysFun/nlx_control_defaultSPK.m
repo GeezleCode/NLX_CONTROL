@@ -1,4 +1,4 @@
-function s = nlx_control_defaultSPK(ChanName)
+function s = nlx_control_defaultSPK(ChanName,AnalogChanName)
 
 % Creates the default data structure to store event and spike data.
 % Input:
@@ -8,24 +8,27 @@ function s = nlx_control_defaultSPK(ChanName)
 
 global NLX_CONTROL_SETTINGS;
 
-numTrials = 0;
-numChan = size(ChanName,1);
+TrialCodeLabel = {'TrialID' 'CortexBlock' 'CortexCondition' 'CortexPresentationNr' 'StimulusCode'};
 
-s = al_spk;
-s = spk_addTrialcode(s,'TrialID');
-s = spk_addTrialcode(s,'CortexBlock');
-s = spk_addTrialcode(s,'CortexCondition');
-s = spk_addTrialcode(s,'CortexPresentationNr');
-s = spk_addTrialcode(s,'StimulusCode');
+N.Trials = 1000;
+N.Spikes = 1000;
+N.SpikeChans = size(ChanName,1);;
+N.SpikeWaveformSamples = 32;
+N.AnalogSamples = 8192;
+N.AnalogChans = length(AnalogChanName);
+N.EventLabel = size(NLX_CONTROL_SETTINGS.EventName,1);
+N.Events = 5;
+N.TrialCodeLabel = length(TrialCodeLabel);
+
+s = spk_Allocate(al_spk,N);
+
 
 s = spk_set(s, ...
     'channel',ChanName, ...
-    'chancolor',NLX_CONTROL_SETTINGS.SpikeChanColor(1:numChan,:), ...    
-    'spk',cell(numChan,numTrials), ...
+    'chancolor',NLX_CONTROL_SETTINGS.SpikeChanColor(1:N.SpikeChans,:), ...    
     'eventlabel',NLX_CONTROL_SETTINGS.EventName, ...
-    'events',cell(length(NLX_CONTROL_SETTINGS.EventName),numTrials), ...
-    'align',zeros(1,numTrials).*NaN, ...
     'date',datestr(now,30), ...
     'timeorder',-3, ...
-    'stimulus',cell(1,numTrials), ...
-    'analog',cell(1,numTrials));
+    'stimulus',cell(1,N.Trials), ...
+    'analogname',AnalogChanName);
+

@@ -1,4 +1,4 @@
-function [activeCh,activeEl] = nlx_control_gui_getSelectedChannel
+function [activeCh,activeEl] = nlx_control_gui_getSelectedSEChannel
 
 % returns the ticked spike channels
 % [activeCh,activeEl] = nlx_control_gui_getSelectedChannel
@@ -7,7 +7,8 @@ function [activeCh,activeEl] = nlx_control_gui_getSelectedChannel
 % activeEl ... names of electrodes/recording entities 'Sc1'
 
 %% get the list of channels 
-ChMenuHdl = findobj('parent',nlx_control_getMainWindowHandle,'type','uimenu','tag','NSELabelMenu');
+ChannelLabel = 'SE';
+ChMenuHdl = findobj('parent',nlx_control_getMainWindowHandle,'type','uimenu','tag',sprintf('%sChannelMenu',ChannelLabel));
 ChItemHdl = get(ChMenuHdl,'children');
 ChannelList = get(flipud(ChItemHdl),'label');
 nTotal = length(ChannelList);

@@ -12,7 +12,7 @@ global nlx_control_HIST2_ylim;
 
 p = NLX_CONTROL_SETTINGS;
 % check for existing channels in object
-[ChannelName,activeEl] = nlx_control_gui_getSelectedChannel;
+[ChannelName,activeEl] = nlx_control_gui_getSelectedSEChannel;
 ChanIndex = spk_findSpikeChan(SPK,ChannelName);
 ChanIndexNum = length(ChanIndex);
 ChanColor = NLX_CONTROL_SETTINGS.SpikeChanColor(1:ChanIndexNum,:);

@@ -10,8 +10,10 @@ s.ServerName = 'LOCALHOST';
 s.DoLOGfile = true;
 s.NetComEventBuffersize = 1000;
 s.NetComSEBuffersize = 8000;
+s.NetComCSCBuffersize = 100;
 s.EventBuffersize = 1000;
 s.SEBuffersize = 8000;
+s.CSCBuffersize = 100;
 s.CortexBuffersize = 5000;
 
 % ----------------------------- ERRORS --------------------------------------
@@ -163,7 +165,7 @@ s.HistYLimMode = 3;% 1 fixed YLim 2 MAX in cnd 3 MAX over all cond
 %**********************************************************************
 s.RFMapSize = [9 12];% rows cols of map
 s.RFDotSpacing = 0.5;
-s.RFMapRefPos = [2 -4];
+s.RFMapRefPos = [2 -3];
 s.RVCOTau = [0 100];
 s.RVCOTauBase = 0;
 s.RVCOWin = [-50 0];

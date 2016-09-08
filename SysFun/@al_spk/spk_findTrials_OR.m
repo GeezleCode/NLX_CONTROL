@@ -20,7 +20,7 @@ INDEX = [];
 codenumber=0;
 for i=1:2:length(varargin)-1
     codenumber=codenumber+1;
-    trcd_i = spk_findtrialcodelabel(s,varargin{i});
+    trcd_i = spk_findTrialcodelabel(s,varargin{i});
 
     if isempty(trcd_i);
         continue;

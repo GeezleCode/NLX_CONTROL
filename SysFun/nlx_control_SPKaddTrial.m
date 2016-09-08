@@ -1,9 +1,10 @@
-function [s,ci] = nlx_control_SPKaddTrial(s,ClusterName,SEObj,SE,Ev,CTX,acqwin,aligntime)
+function [s,ci] = nlx_control_SPKaddTrial(s,ClusterName,SEObj,SE,CSC,Ev,CTX,acqwin,aligntime)
 
 global NLX_CONTROL_SETTINGS
 
 nEl = length(SEObj);
 nCh = length(ClusterName);
+nCSC = length(CSC);
 
 %% change times to milliseconds
 Ev.TimeStamp = Ev.TimeStamp.*0.001;
@@ -69,6 +70,12 @@ for k = 1:nCh
     ElNr = strmatch(cEl,SEObj,'exact');
     SPK{SPKindex} = SE{ElNr}.TimeStamp(SE_findSpike(SE{ElNr},acqwin,ClusterNr)) - aligntime;
     SPK{SPKindex} = SPK{SPKindex}(:);
+end
+
+%CSC
+for k = 1:nCSC
+    i = CSC_findData(CSC(1),acqwin);
+    
 end
 
 %% push to SPK

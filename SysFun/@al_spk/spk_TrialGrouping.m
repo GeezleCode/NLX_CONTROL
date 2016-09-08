@@ -9,11 +9,14 @@ function [y,TrialCodes] = spk_TrialGrouping(s,GroupTerm)
 if ischar(GroupTerm)
     iGrp = strcmp(GroupTerm,s.trialcodelabel);
 elseif iscell(GroupTerm)
-    iGrp = ismember(s.trialcodelabel,GroupTerm);
+    [iGrp,iSort] = ismember(s.trialcodelabel,GroupTerm);
+    iSort = iSort(iGrp);
+    iGrp = find(iGrp);
+    iGrp(iSort) = iGrp;
 end
 
 %% check GroupTerm
-if ~any(iGrp)
+if isempty(iGrp) || ~any(iGrp)
     fprintf(1,['Did not find trialcodelabel called ' GroupTerm '!\n']);
     fprintf(1,['choose from:\n']);
     fprintf(1,['%s\n'],s.trialcodelabel{:});
@@ -21,7 +24,7 @@ if ~any(iGrp)
 end
 
 %% Get the trialcodes
-TrialcodeLabel = s.trialcodelabel(iGrp);
+TrialcodeLabel(iSort) = s.trialcodelabel(iGrp);
 [TrialCodes,Idx1,Idx2] = unique(s.trialcode(iGrp,:)','rows');
 nGrps = size(TrialCodes,1);
 y = cell(1,nGrps);

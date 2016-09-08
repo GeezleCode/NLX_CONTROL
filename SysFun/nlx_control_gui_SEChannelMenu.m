@@ -6,27 +6,23 @@ if nargin<1
     ChannelLabel  = 'SE';
     ClusterNrs = [0 1 2];
 end
-if ischar(ChannelLabel)
-    ChannelLabel = {ChannelLabel};
-end
 
 MainDir = nlx_control_getMainDir;
 MainWin = nlx_control_getMainWindowHandle;
 
-ChannelMenu = uimenu('parent',MainWin,'label','*.nse label','tag','NSELabelMenu');
+ChannelMenu = uimenu('parent',MainWin,'label',sprintf('%s-Channel',ChannelLabel),'tag',sprintf('%sChannelMenu',ChannelLabel));
 
-for iCh = ChannelLabel
+
+for iEl = ChannelNrs
+    
+    % default functions
     SepFlag = 'on';
-    for iEl = ChannelNrs
-        
-        % default functions
-        
-        for iCl = ClusterNrs
-            uimenu('parent',ChannelMenu,'separator',SepFlag, ...
-                'label',sprintf('%s%1.0f.%1.0f',char(iCh),iEl,iCl), ...
-                'tag',sprintf('%s%1.0f.%1.0f',char(iCh),iEl,iCl), ...
-                'callback','switch get(gcbo,''checked'');case ''on''; set(gcbo,''checked'',''off'');case ''off''; set(gcbo,''checked'',''on'');end');
-            SepFlag = 'off';
-        end
+    for iCl = ClusterNrs
+        uimenu('parent',ChannelMenu,'separator',SepFlag, ...
+            'label',sprintf('%s%1.0f.%1.0f',ChannelLabel,iEl,iCl), ...
+            'tag',sprintf('%s%1.0f.%1.0f',ChannelLabel,iEl,iCl), ...
+            'callback','switch get(gcbo,''checked'');case ''on''; set(gcbo,''checked'',''off'');case ''off''; set(gcbo,''checked'',''on'');end');
+        SepFlag = 'off';
     end
 end
+

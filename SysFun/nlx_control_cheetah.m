@@ -10,7 +10,7 @@ global NLX_CONTROL_SETTINGS; % these paradigm specific settings
 NLX_CONTROL_GET_CHEETAH = 1;
 
 %% get selected spike channels
-[ClusterName,SEObj] = nlx_control_gui_getSelectedChannel;
+[ClusterName,SEObj] = nlx_control_gui_getSelectedSEChannel;
 SEObjCells = cell(size(SEObj));
 for i=1:length(ClusterName)
     [El,CellNr] = strread(ClusterName{i},'%s%d','delimiter','.');
@@ -20,6 +20,9 @@ ChNum = length(ClusterName);
 ElNum = length(SEObj);
 NLX_CONTROL_SETTINGS.SpikeObjName = SEObj;
 
+%% get selected CSC channels
+[CSCObj] = nlx_control_gui_getSelectedCSCChannel;
+CSCObjCells = cell(size(CSCObj));
 
 %% CONNECT to Cheetah  NetCom Server
 if NlxAreWeConnected() == 1
@@ -51,15 +54,20 @@ uiwait;
 EVObj = CheeObj{strmatch('EventAcqEnt',CheeTyp,'exact')};
 
 % get SE objects
-isObj = ismember(SEObj,CheeObj);
-if ~any(isObj)
-    fprintf('FAILED; the acquisition entity ''%s'' does not exist.\n', SEObj{~isObj});
+if ~isempty(SEObj) && ~any(ismember(SEObj,CheeObj))
+    fprintf('Don''t know the acquisition entity!!');
+    NlxDisconnectFromServer();
+    return;
+end
+% get CSC objects
+if ~isempty(SEObj) &&  ~any(ismember(CSCObj,CheeObj))
+    fprintf('Don''t know the acquisition entity!!');
     NlxDisconnectFromServer();
     return;
 end
 
 %% create default data structure for data storage and online analysis
-SPK = nlx_control_defaultSPK(ClusterName); 
+SPK = nlx_control_defaultSPK(ClusterName,CSCObj); 
 
 %% get the current time
 currtime = now;
@@ -84,14 +92,13 @@ fprintf(logfid,['---------------------------------------------------------------
 
 
 %% OPEN streams +++++++++++++++++++++++++++++++++++++++++++++++++++++++
-SEObjNum = length(SEObj);
-
 succ = NlxOpenStream(EVObj);
 [succ,val] = NlxSendCommand(sprintf('-SetNetComDataBufferingEnabled %s true',EVObj));
 [succ,val] = NlxSendCommand(sprintf('-SetNetComDataBufferSize %s %1.0f',EVObj,NLX_CONTROL_SETTINGS.NetComEventBuffersize));
 [succ,val] = NlxSendCommand(sprintf('-GetNetComDataBufferSize %s',EVObj));
 fprintf(1,'%10s\tNetCom buffer enabled @%s\n',EVObj,val{1});
 
+SEObjNum = length(SEObj);
 for iSEObj = 1:SEObjNum
     succ = NlxOpenStream(SEObj{iSEObj});
     [succ,val] = NlxSendCommand(sprintf('-SetNetComDataBufferingEnabled %s true',SEObj{iSEObj}));
@@ -100,10 +107,26 @@ for iSEObj = 1:SEObjNum
     fprintf(1,'%10s\tNetCom buffer enabled @%s\n',SEObj{iSEObj},val{1});
 end
 
+CSCObjNum = length(CSCObj);
+for iCSCObj = 1:CSCObjNum
+    succ = NlxOpenStream(CSCObj{iCSCObj});
+    [succ,val] = NlxSendCommand(sprintf('-SetNetComDataBufferingEnabled %s true',CSCObj{iCSCObj}));
+    [succ,val] = NlxSendCommand(sprintf('-SetNetComDataBufferSize %s %1.0f',CSCObj{iCSCObj},NLX_CONTROL_SETTINGS.NetComCSCBuffersize));
+    [succ,val] = NlxSendCommand(sprintf('-GetNetComDataBufferSize %s',CSCObj{iCSCObj}));
+    fprintf(1,'%10s\tNetCom buffer enabled @%s\n',CSCObj{iCSCObj},val{1});
+end
+
 % objects to buffer trial data
+SE = cell(1,SEObjNum);
 for iSEObj = 1:SEObjNum
     SE{iSEObj} = nlx_control_SEBuffer(SEObj{iSEObj},NLX_CONTROL_SETTINGS.SEBuffersize,0.1);
 end
+
+CSC = cell(1,CSCObjNum);
+for iCSCObj = 1:CSCObjNum
+    CSC{iCSCObj} = nlx_control_CSCBuffer(CSCObj{iCSCObj},NLX_CONTROL_SETTINGS.CSCBuffersize,0.1);
+end
+
 Ev = nlx_control_EventBuffer('Events',NLX_CONTROL_SETTINGS.EventBuffersize);
 CTX = nlx_control_CortexBuffer(NLX_CONTROL_SETTINGS.CortexBuffersize,1,1);
 Ev.Flush = true;
@@ -112,6 +135,11 @@ Ev.FlushEcho = false;
 for iSEObj = 1:SEObjNum
     SE{iSEObj}.Flush = true;
     SE{iSEObj}.FlushEcho = false;
+end
+
+for iCSCObj = 1:CSCObjNum
+    CSC{iCSCObj}.Flush = true;
+    CSC{iCSCObj}.FlushEcho = false;
 end
 
 %% prepare ONLINE ANALYSES ++++++++++++++++++++++++++++++++++++
@@ -145,9 +173,9 @@ while NLX_CONTROL_GET_CHEETAH
                 nParam = NLX_CONTROL_SETTINGS.SendConditionN;
                 [Ev,ParamArray,succeeded] = Ev_getParam(Ev,nParam,TermSeq,logfid);
                 CTX.TrialID(CTX.Pointer,:) = CTX.Pointer;
-                CTX.Block(CTX.Pointer,:) = ParamArray(1);
-                CTX.Condition(CTX.Pointer,:) = ParamArray(2);
-                CTX.StimulusCodes(CTX.Pointer,:) = ParamArray(3:nParam)';
+                CTX.Block(CTX.Pointer,:) = ParamArray(strcmpi(NLX_CONTROL_SETTINGS.SendConditionTag,'block'));
+                CTX.Condition(CTX.Pointer,:) = ParamArray(strcmpi(NLX_CONTROL_SETTINGS.SendConditionTag,'condition'));
+                CTX.StimulusCodes(CTX.Pointer,:) = ParamArray(find(strcmpi(NLX_CONTROL_SETTINGS.SendConditionTag,'stimcode')):nParam)';
                 disp(['TRIALID     ' num2str(CTX.TrialID(CTX.Pointer,:))]);
                 disp(['BLOCK     ' num2str(CTX.Block(CTX.Pointer,:))]);
                 disp(['CONDITION ' num2str(CTX.Condition(CTX.Pointer,:))]);
@@ -162,10 +190,18 @@ while NLX_CONTROL_GET_CHEETAH
                 
             case NLX_CONTROL_SETTINGS.ReadDataEvent
                 
+                % flush SE BUFFERS +++++++++++++++++++++++++++++++
                 % Flush again if last was before event 
                 for iSEObj = 1:SEObjNum
                     if SE{iSEObj}.LastFlush<Ev_currTimeStamp(Ev)
                         SE{iSEObj} = SE_Flush(SE{iSEObj},SEObjCells{iSEObj});
+                    end
+                end
+                
+                % flush CSC BUFFERS +++++++++++++++++++++++++++++++
+                for iCSCObj = 1:CSCObjNum
+                    if CSC{iCSCObj}.LastFlush<Ev_currTimeStamp(Ev)
+                        CSC{iCSCObj} = CSC_Flush(CSC{iCSCObj},CSCObjCells{iCSCObj});
                     end
                 end
 
@@ -185,7 +221,7 @@ while NLX_CONTROL_GET_CHEETAH
                     [AcqWin,AlignTime]  = nlx_control_getTrialAcqWin(Ev,CTX);
                     
                     % load data into structure
-                    [SPK,TrialIndex] = nlx_control_SPKaddTrial(SPK,ClusterName,SEObj,SE,Ev,CTX,AcqWin,AlignTime);
+                    [SPK,TrialIndex] = nlx_control_SPKaddTrial(SPK,ClusterName,SEObj,SE,CSC,Ev,CTX,AcqWin,AlignTime);
                     CTX.TrialReadCount = CTX.TrialReadCount + 1;
                     CTX.ReadFlag(CTX.Pointer) = true;
                     
@@ -212,11 +248,23 @@ while NLX_CONTROL_GET_CHEETAH
             SE{iSEObj} = SE_Flush(SE{iSEObj},SEObjCells{iSEObj});
         end
         
+        %% flush CSC BUFFERS +++++++++++++++++++++++++++++++
+        for iCSCObj = 1:CSCObjNum
+            CSC{iCSCObj} = CSC_Flush(CSC{iCSCObj},CSCObjCells{iCSCObj});
+        end
+        
     end
     
     %% flush SPIKE BUFFERS +++++++++++++++++++++++++++++++
     for iSEObj = 1:SEObjNum
         SE{iSEObj} = SE_Flush(SE{iSEObj},SEObjCells{iSEObj});
+        fprintf(1,'SE:%u',SE{iSEObj}.RingBufferIndex);
+    end
+    
+    %% flush CSC BUFFERS +++++++++++++++++++++++++++++++
+    for iCSCObj = 1:CSCObjNum
+        CSC{iCSCObj} = CSC_Flush(CSC{iCSCObj},CSCObjCells{iCSCObj});
+        fprintf(1,'CSC:%u\n',CSC{iCSCObj}.RingBufferIndex);
     end
     
     %% flush Event BUFFERS +++++++++++++++++++++++++++++++
@@ -226,7 +274,7 @@ while NLX_CONTROL_GET_CHEETAH
         if NLX_CONTROL_GET_CHEETAH == 0;break;end
     end
 
-	
+
 end
 
 %% close NetCom streams
@@ -243,6 +291,15 @@ for iSEObj = 1:SEObjNum
         fprintf(logfid,'SUCCeeded to close ''%s'' NetCom stream\n',SEObj{iSEObj});
     else
         fprintf(logfid,'FAILed to close ''%s'' NetCom stream\n',SEObj{iSEObj});
+    end
+end
+
+for iCSCObj = 1:CSCObjNum
+    succ = NlxCloseStream(CSCObj{iCSCObj});
+    if succ
+        fprintf(logfid,'SUCCeeded to close ''%s'' NetCom stream\n',CSCObj{iCSCObj});
+    else
+        fprintf(logfid,'FAILed to close ''%s'' NetCom stream\n',CSCObj{iCSCObj});
     end
 end
 

@@ -6,7 +6,6 @@ function [s,EvFoundIndex] = spk_addEvent(s,EventLabel,EventValue,TrialNr)
 % EventValue ...
 % TrialNr ......
 
-
 numEventLabel = length(s.eventlabel);
 numTrials =  size(s.events,2);
 if nargin<4

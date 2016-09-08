@@ -1,0 +1,107 @@
+NetCom Log File Opened - File Name:  MatlabNetComLogfile.txt
+Time Opened: (m/d/y)  4/29/2013 at time 16:31:56.93
+NetCom Version 1.23
+
+-* NOTICE *-  16:31:56.093 - NetworkNodeClient::InitializeClient() - Attempting to initialize Message Client connection.  serverName: LOCALHOST, portNumber: 26200
+-* NOTICE *-  16:31:56.093 - NetworkNodeClient::InitializeClient() - Attempting to create Client Socket
+-* NOTICE *-  16:31:56.093 - NetworkNodeClient::InitializeClient() - Client Socket created successfully
+-* NOTICE *-  16:31:56.093 - NetworkNodeClient::InitializeClient() - Attempting to request information about our connection.
+-* NOTICE *-  16:31:56.093 - NetworkNodeClient::InitializeClient() - Request for information was successful.
+-* NOTICE *-  16:31:56.093 - NetworkNodeClient::InitializeClient() - Attempting to establish a connection to our server.
+-* ERROR *-  16:31:57.000 - NetworkNodeClient::ConnectToServer() - Error Connecting To Server, error code: WSAECONNREFUSED - The attempt to connect was forcefully rejected.
+-* ERROR *-  16:31:57.000 - NetworkNodeClient::InitializeClient() - Failure: Unable to initialize message client
+-* NOTICE *-  16:31:57.000 - NetworkNodeClient::InitializeClient() - Attempting to initialize Message Client connection.  serverName: LOCALHOST, portNumber: 26100
+-* NOTICE *-  16:31:57.000 - NetworkNodeClient::InitializeClient() - Attempting to create Client Socket
+-* NOTICE *-  16:31:57.000 - NetworkNodeClient::InitializeClient() - Client Socket created successfully
+-* NOTICE *-  16:31:57.000 - NetworkNodeClient::InitializeClient() - Attempting to request information about our connection.
+-* NOTICE *-  16:31:57.000 - NetworkNodeClient::InitializeClient() - Request for information was successful.
+-* NOTICE *-  16:31:57.000 - NetworkNodeClient::InitializeClient() - Attempting to establish a connection to our server.
+-* NOTICE *-  16:31:57.000 - NetworkNodeClient::InitializeClient() - Connection successfully established
+-* NOTICE *-  16:31:57.000 - NetworkNodeClient::InitializeClient() - Message Client successfully initialized
+-* NOTICE *-  16:31:59.031 - NodeConnectionClient::AddStreamObject() - Notice, Attempting to add object to our stream list, objectName: Events, mStreamType Event.
+-* NOTICE *-  16:31:59.031 - NodeConnectionClient::AddStreamObject() - Notice, Attempt to add stream object to our list was successful.  objectName: Events, mStreamType Event.
+-* NOTICE *-  16:31:59.046 - NodeConnectionClient::AddStreamObject() - Notice, Attempting to add object to our stream list, objectName: SE1, mStreamType SingleElectrode.
+-* NOTICE *-  16:31:59.046 - NodeConnectionClient::AddStreamObject() - Notice, Attempt to add stream object to our list was successful.  objectName: SE1, mStreamType SingleElectrode.
+-* ERROR *-  16:31:59.046 - NetworkNodeClient::OpenStream() - Error, invalid parameter, unrecognized object name and data type pairing.  objectName: CSC1, dataType: 
+-* NOTICE *-  16:35:18.078 - NodeConnectionClient::RecieveData() - Attempt to recieve data has failed, socket has been closed gracefully.  mStreamType: SingleElectrode
+-* NOTICE *-  16:35:18.078 - NodeConnectionClient::RecieveData() - Attempt to recieve data has failed, socket has been closed gracefully.  mStreamType: Stereotrode
+-* NOTICE *-  16:35:18.078 - NodeConnectionClient::RecieveData() - Attempt to recieve data has failed, socket has been closed gracefully.  mStreamType: Tetrode
+-* NOTICE *-  16:35:18.078 - NodeConnectionClient::RecieveData() - Attempt to recieve data has failed, socket has been closed gracefully.  mStreamType: CSC
+-* NOTICE *-  16:35:18.078 - NodeConnectionClient::RecieveData() - Attempt to recieve data has failed, socket has been closed gracefully.  mStreamType: Event
+-* NOTICE *-  16:35:18.078 - NodeConnectionClient::RecieveData() - Attempt to recieve data has failed, socket has been closed gracefully.  mStreamType: Video
+-* NOTICE *-  16:35:23.812 - NetworkNodeClient::ShutdownClient() - Attempting to Shutdown Message Client
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Notice, Attempting to remove object from our stream list, objectName: SE1, mStreamType SingleElectrode.
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Notice, Stream Object count has been decremented.  count: 0, mStreamType SingleElectrode.
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Notice, Stream Object count was zero, therefore object has been removed.  objectName: SE1, mStreamType SingleElectrode.
+-* NOTICE *-  16:35:23.812 - NetworkNodeClient::GetBuffer() - Attempting to recieve data has failed, socket has been closed gracefully
+-* NOTICE *-  16:35:23.812 - NetworkNodeClient::ShutdownClient() - Attempting to Shutdown Message Client
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Notice, Attempting to remove object from our stream list, objectName: SE1, mStreamType SingleElectrode.
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Error, Attempt to remove object from our list failed, the object was not found.  objectName: SE1, mStreamType SingleElectrode.
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Notice, Attempting to remove object from our stream list, objectName: CSS1, mStreamType CSC.
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Error, Attempt to remove object from our list failed, the object was not found.  objectName: CSS1, mStreamType CSC.
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Notice, Attempting to remove object from our stream list, objectName: LFP1, mStreamType CSC.
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Error, Attempt to remove object from our list failed, the object was not found.  objectName: LFP1, mStreamType CSC.
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Notice, Attempting to remove object from our stream list, objectName: Events, mStreamType Event.
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Notice, Stream Object count has been decremented.  count: 0, mStreamType Event.
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Notice, Stream Object count was zero, therefore object has been removed.  objectName: Events, mStreamType Event.
+-* ERROR *-  16:35:23.812 - NetworkNodeClient::ProcessSendError() - Error sending data, error code: WSAECONNABORTED - The virtual circuit was terminated due to a time-out or other failure. The application should close the socket as it is no longer usable.
+-* ERROR *-  16:35:23.812 - NetworkNodeClient::SendMessage() - Unable to send data, call to send() failed, we must have lost our socket.  message: 
+-* NOTICE *-  16:35:23.812 - NetworkNodeClient::ShutdownClient() - Attempting to Shutdown Message Client
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Notice, Attempting to remove object from our stream list, objectName: SE1, mStreamType SingleElectrode.
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Error, Attempt to remove object from our list failed, the object was not found.  objectName: SE1, mStreamType SingleElectrode.
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Notice, Attempting to remove object from our stream list, objectName: CSS1, mStreamType CSC.
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Error, Attempt to remove object from our list failed, the object was not found.  objectName: CSS1, mStreamType CSC.
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Notice, Attempting to remove object from our stream list, objectName: LFP1, mStreamType CSC.
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Error, Attempt to remove object from our list failed, the object was not found.  objectName: LFP1, mStreamType CSC.
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Notice, Attempting to remove object from our stream list, objectName: Events, mStreamType Event.
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Error, Attempt to remove object from our list failed, the object was not found.  objectName: Events, mStreamType Event.
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::CloseServerStream() - mDmaProcessor thread has been terminated successfully.
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::CloseServerStream() - WaitForSingleObject for mDmaProcessor thread completed successfully.
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::CloseServerStream() - mDmaProcessor thread has been terminated successfully.
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::CloseServerStream() - WaitForSingleObject for mDmaProcessor thread completed successfully.
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::CloseServerStream() - mDmaProcessor thread has been terminated successfully.
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::CloseServerStream() - WaitForSingleObject for mDmaProcessor thread completed successfully.
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::CloseServerStream() - mDmaProcessor thread has been terminated successfully.
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::CloseServerStream() - WaitForSingleObject for mDmaProcessor thread completed successfully.
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::CloseServerStream() - mDmaProcessor thread has been terminated successfully.
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::CloseServerStream() - WaitForSingleObject for mDmaProcessor thread completed successfully.
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::CloseServerStream() - mDmaProcessor thread has been terminated successfully.
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::CloseServerStream() - WaitForSingleObject for mDmaProcessor thread completed successfully.
+-* NOTICE *-  16:35:23.812 - NetworkNodeClient::ShutdownClient() - Attempting to Close Message Client Socket
+-* NOTICE *-  16:35:23.812 - NetworkNodeClient::ShutdownClient() - Attempt to Close Message Client Socket was successful
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::ProcessCloseError() - Error closing socket, error code: UNKNOWN.  mStreamType: SingleElectrode
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::ProcessCloseError() - Error closing socket, error code: UNKNOWN.  mStreamType: SingleElectrode
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::ProcessCloseError() - Error closing socket, error code: UNKNOWN.  mStreamType: Stereotrode
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::ProcessCloseError() - Error closing socket, error code: UNKNOWN.  mStreamType: Stereotrode
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::ProcessCloseError() - Error closing socket, error code: UNKNOWN.  mStreamType: Tetrode
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::ProcessCloseError() - Error closing socket, error code: UNKNOWN.  mStreamType: Tetrode
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::ProcessCloseError() - Error closing socket, error code: UNKNOWN.  mStreamType: CSC
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::ProcessCloseError() - Error closing socket, error code: UNKNOWN.  mStreamType: CSC
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::ProcessCloseError() - Error closing socket, error code: UNKNOWN.  mStreamType: Video
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::ProcessCloseError() - Error closing socket, error code: UNKNOWN.  mStreamType: Video
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::ProcessCloseError() - Error closing socket, error code: UNKNOWN.  mStreamType: Event
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::ProcessCloseError() - Error closing socket, error code: UNKNOWN.  mStreamType: Event
+-* NOTICE *-  16:35:23.812 - NetworkNodeClient::ShutdownClient() - Attempting to Close Message Client Socket
+-* ERROR *-  16:35:23.812 - NetworkNodeClient::ShutdownClient() - Unable to Close Message Client Socket
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Notice, Attempting to remove object from our stream list, objectName: CSS1, mStreamType CSC.
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Error, Attempt to remove object from our list failed, the object was not found.  objectName: CSS1, mStreamType CSC.
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Notice, Attempting to remove object from our stream list, objectName: LFP1, mStreamType CSC.
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Error, Attempt to remove object from our list failed, the object was not found.  objectName: LFP1, mStreamType CSC.
+-* NOTICE *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Notice, Attempting to remove object from our stream list, objectName: Events, mStreamType Event.
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::RemoveStreamObject() - Error, Attempt to remove object from our list failed, the object was not found.  objectName: Events, mStreamType Event.
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::ProcessCloseError() - Error closing socket, error code: UNKNOWN.  mStreamType: SingleElectrode
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::ProcessCloseError() - Error closing socket, error code: UNKNOWN.  mStreamType: SingleElectrode
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::ProcessCloseError() - Error closing socket, error code: UNKNOWN.  mStreamType: Stereotrode
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::ProcessCloseError() - Error closing socket, error code: UNKNOWN.  mStreamType: Stereotrode
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::ProcessCloseError() - Error closing socket, error code: UNKNOWN.  mStreamType: Tetrode
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::ProcessCloseError() - Error closing socket, error code: UNKNOWN.  mStreamType: Tetrode
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::ProcessCloseError() - Error closing socket, error code: UNKNOWN.  mStreamType: CSC
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::ProcessCloseError() - Error closing socket, error code: UNKNOWN.  mStreamType: CSC
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::ProcessCloseError() - Error closing socket, error code: UNKNOWN.  mStreamType: Video
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::ProcessCloseError() - Error closing socket, error code: UNKNOWN.  mStreamType: Video
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::ProcessCloseError() - Error closing socket, error code: UNKNOWN.  mStreamType: Event
+-* ERROR *-  16:35:23.812 - NodeConnectionClient::ProcessCloseError() - Error closing socket, error code: UNKNOWN.  mStreamType: Event
+-* NOTICE *-  16:35:23.812 - NetworkNodeClient::ShutdownClient() - Attempting to Close Message Client Socket
+-* ERROR *-  16:35:23.812 - NetworkNodeClient::ShutdownClient() - Unable to Close Message Client Socket
+Log File Closed - End of File
+
