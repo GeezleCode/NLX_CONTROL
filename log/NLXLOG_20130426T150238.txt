@@ -1,0 +1,128 @@
+
+-------------------------------------------------------------------------------
+log file opened: 26-Apr-2013 15:02:38 NLX time:   2147483647
+-------------------------------------------------------------------------------
+    1   2944884625    0    0   255 #    2944884.625 ms 	NLX_TRIAL_START
+    3   2944943177    0    0   253 #    2944943.177 ms 	NLX_TRIALPARAM_START
+   13   2945018717    0    0     2 # +       28.108 ms 	NLX_RECORD_START
+   15   2945181625    0    0     4 # +      162.908 ms 	NLX_SUBJECT_START
+   16   2945696032    0    0     8 # +      514.407 ms 	NLX_STIM_ON
+   18   2945849202    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+   19   2945860968    0    0    32 # +       11.766 ms 	NLX_SUBJECT_END
+   21   2945877894    0    0    64 # +       16.926 ms 	NLX_RECORD_END
+   23   2945890397    0    0   254 # +       12.503 ms 	NLX_TRIAL_END
+   25   2946462680    0    0   255 # +      572.283 ms 	NLX_TRIAL_START
+   27   2946522185    0    0   253 # +       59.505 ms 	NLX_TRIALPARAM_START
+   37   2946597541    0    0     2 # +       27.894 ms 	NLX_RECORD_START
+   39   2946751725    0    0     4 # +      154.184 ms 	NLX_SUBJECT_START
+   40   2947263243    0    0     8 # +      511.518 ms 	NLX_STIM_ON
+   42   2947416413    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+   44   2947569614    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+   46   2947722784    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+   48   2947875985    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+   50   2948029154    0    0     8 # +      153.169 ms 	NLX_STIM_ON
+   52   2948182355    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+   54   2948335525    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+   56   2948488726    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+   58   2948641896    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+   60   2948795096    0    0     8 # +      153.200 ms 	NLX_STIM_ON
+   62   2948948297    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+   64   2949101467    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+   66   2949254637    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+   68   2949407837    0    0     8 # +      153.200 ms 	NLX_STIM_ON
+   70   2949561007    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+   72   2949714208    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+   74   2949867409    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+   76   2950020578    0    0     8 # +      153.169 ms 	NLX_STIM_ON
+   78   2950173779    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+   80   2950326949    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+   82   2950480150    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+   84   2950633320    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+   86   2950786520    0    0     8 # +      153.200 ms 	NLX_STIM_ON
+   88   2950939690    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+   90   2951092891    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+   92   2951246061    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+   94   2951399261    0    0    16 # +      153.200 ms 	NLX_STIM_OFF
+   95   2951411027    0    0    32 # +       11.766 ms 	NLX_SUBJECT_END
+   97   2951428200    0    0    64 # +       17.173 ms 	NLX_RECORD_END
+   99   2951641734    0    0   251 # +      213.534 ms 	NLX_STIMPARAM_START
+  165   2952037654    0    0   128 # +       11.981 ms 	NLX_READ_DATA
+  167   2952070033    0    0   254 # +       32.379 ms 	NLX_TRIAL_END
+  169   2952560017    0    0   255 # +      489.984 ms 	NLX_TRIAL_START
+  171   2952590675    0    0   253 # +       30.658 ms 	NLX_TRIALPARAM_START
+  181   2952665908    0    0     2 # +       27.924 ms 	NLX_RECORD_START
+  183   2952683787    0    0     4 # +       17.879 ms 	NLX_SUBJECT_START
+  184   2953190360    0    0     8 # +      506.573 ms 	NLX_STIM_ON
+  186   2953343530    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+  188   2953496731    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+  190   2953649901    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+  192   2953803101    0    0     8 # +      153.200 ms 	NLX_STIM_ON
+  194   2953956271    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+  196   2954109472    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+  198   2954262642    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+  200   2954415842    0    0     8 # +      153.200 ms 	NLX_STIM_ON
+  202   2954569012    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+  204   2954722213    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+  206   2954875383    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+  208   2955028584    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+  210   2955181753    0    0     8 # +      153.169 ms 	NLX_STIM_ON
+  212   2955334954    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+  214   2955488124    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+  216   2955641325    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+  218   2955794525    0    0     8 # +      153.200 ms 	NLX_STIM_ON
+  220   2955947695    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+  222   2956100896    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+  224   2956254066    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+  226   2956407236    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+  228   2956560436    0    0     8 # +      153.200 ms 	NLX_STIM_ON
+  230   2956713637    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+  232   2956866807    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+  234   2957020008    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+  236   2957173208    0    0     8 # +      153.200 ms 	NLX_STIM_ON
+  238   2957326378    0    0    16 # +      153.170 ms 	NLX_STIM_OFF
+  239   2957338175    0    0    32 # +       11.797 ms 	NLX_SUBJECT_END
+  241   2957355593    0    0    64 # +       17.418 ms 	NLX_RECORD_END
+  243   2957670073    0    0   251 # +      314.480 ms 	NLX_STIMPARAM_START
+  309   2958066024    0    0   128 # +       12.012 ms 	NLX_READ_DATA
+  311   2958098157    0    0   254 # +       32.133 ms 	NLX_TRIAL_END
+  313   2958588356    0    0   255 # +      490.199 ms 	NLX_TRIAL_START
+  315   2958623868    0    0   253 # +       35.512 ms 	NLX_TRIALPARAM_START
+  325   2958699255    0    0     2 # +       27.925 ms 	NLX_RECORD_START
+  327   2958716950    0    0     4 # +       17.695 ms 	NLX_SUBJECT_START
+  328   2959223522    0    0     8 # +      506.572 ms 	NLX_STIM_ON
+  330   2959376723    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+  332   2959529893    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+  334   2959683094    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+  336   2959836294    0    0     8 # +      153.200 ms 	NLX_STIM_ON
+  338   2959989464    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+  340   2960142634    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+  342   2960295835    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+  344   2960449035    0    0     8 # +      153.200 ms 	NLX_STIM_ON
+  346   2960602205    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+  348   2960755375    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+  350   2960908576    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+  352   2961061746    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+  354   2961214946    0    0     8 # +      153.200 ms 	NLX_STIM_ON
+  356   2961368147    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+  358   2961521317    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+  360   2961674487    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+  362   2961827688    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+  364   2961980857    0    0     8 # +      153.169 ms 	NLX_STIM_ON
+  366   2962134058    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+  368   2962287228    0    0     8 # +      153.170 ms 	NLX_STIM_ON
+  370   2962440429    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+  372   2962593629    0    0     8 # +      153.200 ms 	NLX_STIM_ON
+  374   2962746830    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+  376   2962899969    0    0     8 # +      153.139 ms 	NLX_STIM_ON
+  378   2963053170    0    0     8 # +      153.201 ms 	NLX_STIM_ON
+  380   2963206370    0    0     8 # +      153.200 ms 	NLX_STIM_ON
+  382   2963359540    0    0    16 # +      153.170 ms 	NLX_STIM_OFF
+  383   2963371337    0    0    32 # +       11.797 ms 	NLX_SUBJECT_END
+  385   2963387926    0    0    64 # +       16.589 ms 	NLX_RECORD_END
+SUCCeeded to close 'Events' NetCom stream
+SUCCeeded to close 'SE1' NetCom stream
+SUCCeeded to close 'SE2' NetCom stream
+SUCCeeded to disconnect NetCom server
+-------------------------------------------------------------------------------
+log file closed: 26-Apr-2013 15:03:06 NLX time:  2963567566
+-------------------------------------------------------------------------------

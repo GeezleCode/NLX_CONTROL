@@ -1,0 +1,35 @@
+*********************************************
+*
+*	NetCom Release Notes
+*
+*********************************************
+
+****************
+* v1.2.3
+****************
+Fixed Bugs:
+-Fixed bug that caused corrupted records to be returned from all of the GetNew*Data functions after opening, closing, and then reopening a stream to the same acquisition entity.
+-Fixed bug that caused NlxGetNewEvent data to return a negative TTL value if bit 16 is high.
+
+****************
+* v1.2.2
+****************
+Added Features:
+
+General Changes:
+
+Fixed Bugs:
+-Fixed Bugs that caused data curruption when the Router was attempting to send multiple commands at once.
+-Fixed Bug that showed inaccurate connection status
+
+****************
+* v1.2.1
+****************
+Added Features:
+-Released a Matlab version of the NetCom Client
+-Released a .NET 2.0 version of the NetCom Client
+-Released a Visual C++ 2008 (MFC 9.0) version of the NetCom Client
+
+General Changes:
+
+Fixed Bugs:

@@ -1,0 +1,9 @@
+function event = nlx_control_BuffResetEvent(event)
+event.CountCurrTrial = 0;% 
+event.TimeStamp(:) = 0;
+event.ID(:) = 0;
+event.TTL(:) = 0;
+event.BINhi(:) = '0';
+event.BINlo(:) = '0';
+event.Type(:) = 0;
+event.Name(:) = {''};
