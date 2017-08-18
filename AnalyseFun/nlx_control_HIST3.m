@@ -94,7 +94,7 @@ for iCh = 1:ChanIndexNum
                 %             text(p.RasterTimeLim(1)+(p.RasterTimeLim(2)-p.RasterTimeLim(1)).*0.5,ylim(1)+(ylim(2)-ylim(1)).*0.75, ...
                 text(p.RasterTimeLim(1),ylim(2), ...
                     [num2str(p.Hist2Grid{i,j}(:)')], ...
-                    'tag',sprintf('histtitle %1.0f %1.0f',i,j),'fontsize',10,'color',[1 1 1],'horizontalalignment','left','verticalalignment','middle');
+                    'tag',sprintf('histtitle %1.0f %1.0f',i,j),'fontsize',8,'color',[1 1 1],'horizontalalignment','left','verticalalignment','middle');
                 
             end
         end
@@ -121,7 +121,9 @@ if isempty(t);t=1:total;end % set t to all the trials if it's empty
 % trial identifiers
 TrialBLKs = spk_getTrialcode(SPK,'CortexBlock');
 TrialCNDs = spk_getTrialcode(SPK,'CortexCondition');
+
 TrialSTIMCODEs = spk_getTrialcode(SPK,'StimulusCode');
+
 if all(isnan(TrialSTIMCODEs))
     TrialSTIMCODEs = (TrialBLKs-1).*p.Cndnum+TrialCNDs;
 end
@@ -133,7 +135,7 @@ end
 %% align timestamps to p.RasterAlignEvent
 SPK = spk_set(SPK,'currenttrials',[]);
 CortexPresentationNr = spk_getTrialcode(SPK,'CortexPresentationNr');
-AlignTime = spk_getevents(SPK,p.RasterAlignEventName);
+AlignTime = spk_getEvents(SPK,p.RasterAlignEventName);
 if any(cellfun('length',AlignTime)>1) % might happen for severeal STIM_ONS!!!
     for i = 1:length(AlignTime)
         if  isnan(CortexPresentationNr(i))
@@ -144,7 +146,7 @@ if any(cellfun('length',AlignTime)>1) % might happen for severeal STIM_ONS!!!
     end
 end
 AlignTime = cat(2,AlignTime{:}) + p.RasterAlignOffset;
-SPK = spk_align(SPK,AlignTime,0);
+SPK = spk_Align(SPK,AlignTime,2);
 
 %% loop trials
 for i = 1:length(t)
@@ -225,8 +227,7 @@ for i = 1:length(t)
         
         % set condition title
         set(findobj('tag',sprintf('histtitle %1.0f %1.0f',PlotRowNr(cSC),PlotColNr(cSC))),'string', ...
-            sprintf(['%1.0fHz ' num2str(p.Hist2Grid{PlotRowNr(cSC),PlotColNr(cSC)}(:)') ' B%1.0f C%1.0f #%1.0f'],cYlim,TrialBLKs(t(i)),TrialCNDs(t(i)),nTrials));
-			
+            sprintf(['%1.0fHz |' num2str(p.Hist2Grid{PlotRowNr(cSC),PlotColNr(cSC)}(:)') '| B%1.0f C%1.0f #%1.0f'],cYlim,TrialBLKs(t(i)),TrialCNDs(t(i)),nTrials));
     end
     
 end

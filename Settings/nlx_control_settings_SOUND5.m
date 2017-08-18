@@ -1,4 +1,4 @@
-function s = nlx_control_settings_RFRC
+function s = nlx_control_settings_SOUND5
 
 % returns a structure prividing settings for the online data acquisation
 % via a cheetah object. Supposed to be run from the CURRENT DIRECTORY in
@@ -84,7 +84,7 @@ s.ReadDataEvent = s.EventCode(strmatch('NLX_READ_DATA',s.EventName));
 
 % eventcodes that have to occured in a trial up to the read event
 % to accept a trial for reading
-s.MandatoryEvents = [255 2 4 32 64 128];
+s.MandatoryEvents = [255 4 32 64 128];
 
 % temporal gaps below a minimum are not accepted
 s.MinEventGap = 2;% in ms
@@ -110,10 +110,10 @@ s.AcqOffset = [0 0];% in ms
 
 % number of stimulus presentations in one trial
 % number of stimulus presentations in one trial
-s.Cndnum = 4;
-s.Blocknum = 1;
-s.PresentationNum = 1;
-s.CutCortexTrial = 0; % cuts the cortex trial to s.PresentationNum trials in SPK object
+s.Cndnum           = 84;
+s.Blocknum         = 1;
+s.PresentationNum  = 1;
+s.CutCortexTrial   = 0; % cuts the cortex trial to s.PresentationNum trials in SPK object
 
 % events defining the time window of a single stimulus presentation
 s.CndAcqEventsLo = s.EventCode(strmatch('NLX_SUBJECT_START',s.EventName));
@@ -121,86 +121,66 @@ s.CndAcqEventsHi = s.EventCode(strmatch('NLX_SUBJECT_END',s.EventName));
 s.CndAcqOffset = [-250 250];% in ms
 
 % events and spike data will be aligned to the following events
-s.CndAlignEvent = s.EventCode(strmatch('NLX_SUBJECT_START',s.EventName));
+s.CndAlignEvent = s.EventCode(strmatch('NLX_STIM_ON',s.EventName));
 s.CndAlignOffset = 0;% in ms
 
 %---------------------------------------------------------------------
 % events signalling sending of parameters
 s.SendConditionStart = s.EventCode(strmatch('NLX_TRIALPARAM_START',s.EventName));
 s.SendConditionEnd   = s.EventCode(strmatch('NLX_TRIALPARAM_END',s.EventName));
-
-s.SendConditionParNum          = 2;
-s.SendConditionParName         = {'Block','Condition'};
-s.SendConditionPresentParName  = {'StimulusCode'};
-s.SendConditionPresentParRange = [-inf inf];
-%s.SendConditionPresentParLevelNum = [72, 1, 2]; % this is not really used yet, all coding done by StimulusCode
-s.SendConditionPresentParNum   = length(s.SendConditionPresentParName);
-s.SendConditionTrialIDIndex    = 1;
-s.SendConditionBlockIndex      = 1;
-s.SendConditionConditionIndex  = 2;
-
-s.SendConditionN = s.SendConditionParNum + s.PresentationNum * s.SendConditionPresentParNum;
-% 
+s.SendConditionN     = 3;
+ 
 s.SendParamStart = s.EventCode(strmatch('NLX_STIMPARAM_START',s.EventName));
 s.SendParamEnd = [ ...
     s.EventCode(strmatch('NLX_STIMPARAM_END',s.EventName)), ...
     s.EventCode(strmatch('NLX_STIMPARAM_END',s.EventName))];
-S.SendParamN = []; %see below !!!!!
+s.SendParamN = []; %see below !!!!! this parameter is set after the s.RFStimSeq... fields
 
-%---------- parameters for plot and online analysis----------------------------------------
-s.CndPlotGrid = [1];
-s.StimCodeGrid = [1];
-s.CndParam = [];
-s.CndParamLabel = {}; % labels the rows of s.CndParam
-s.CndName = {};
+s.SendConditionParNum          = 3;
+s.SendConditionParName         = {'TrialID' 'Block', 'Condition'};
+s.SendConditionPresentParName  = {'StimulusCode'};
+s.SendConditionPresentParRange = [0 83];
+s.SendConditionPresentParNum   = length(s.SendConditionPresentParName);
+s.SendConditionTrialIDIndex    = 1;
+s.SendConditionBlockIndex      = 2;
+s.SendConditionConditionIndex  = 3;
 
+s.SendConditionN = s.SendConditionParNum + s.PresentationNum * s.SendConditionPresentParNum;
 
-s.CurrTrialTimeTicks = [0:500:5000];
-s.CurrTrialAlignEventName = 'NLX_SUBJECT_START';
+%---------- parameters for online the default online analysis (i.e. trial-raster, trial-stats, histogram, raster) ----------------------------------------
+s.CndPlotGrid   = [1];
+s.StimCodeGrid  = [1];
+s.CurrTrialTimeTicks = [0:500:10000];
+s.CurrTrialAlignEventName = 'NLX_TRIAL_START';
 s.RasterTrialNum = 10;
 s.RasterDotSize = 1;
 s.RasterEventSize = 3.0;
-s.RasterTimeLim = [0 5000];
-s.RasterTimeTicks = [0:1000:5000];
-s.RasterAlignEventName = 'NLX_SUBJECT_START';
-s.RasterAlignEventCode = s.EventCode(strmatch('NLX_SUBJECT_START',s.EventName));
+s.RasterTimeLim = [0 10000];
+s.RasterTimeTicks = [0:1000:10000];
+s.RasterAlignEventName = 'NLX_TRIAL_START';
+s.RasterAlignEventCode = s.EventCode(strmatch('NLX_TRIAL_START',s.EventName));
 s.RasterAlignOffset = 0;
 s.HistBinWidth = 50;
 s.HistMode = 3;% 1 counts 2 mean counts 3 mean frequency
 s.HistYLim = [0 25];
 s.HistYLimMode = 3;% 1 fixed YLim 2 MAX in cnd 3 MAX over all cond
 
-%---------- RF map parameter ----------------------------------------
-%**********************************************************************
-s.RFMapSize = [9 12];% rows cols of map
-s.RFDotSpacing = 0.25;
-s.RFMapRefPos = [-0.75 -3];
-s.RVCOTau = [150];
-s.RVCOTauBase = 0;
-s.RVCOWin = [-100 0];
-s.RFDotLum(1:prod(s.RFMapSize)) = 255;
-% s.RFDotLum(prod(s.RFMapSize)+1:prod(s.RFMapSize)*2) = 0;
-%**********************************************************************
+% ---- extra online parameter ----
+a.CndParamLabel = {'frequency' 'volume'}; % labels the rows of s.CndParam
+a.CndParam{1}   = [1000 1189 1414 1682 2000 2378 2828 3364 4000 4757 5657 6727 8000 9514 11314 13454 16000 19027 22627 26909 32000];
+a.CndParam{2}   = [1 2 3 4];
+a.CndParamNum   = cellfun('length',a.CndParam);
+a.CndName       = strtrim(cellstr(num2str([1:s.Cndnum]')))';
+% a.colormap   = jet;
+% a.colormap   = usercolormap(rgb('dark blue'),rgb('blue'),rgb('cyan'),rgb('black'),rgb('yellow'),rgb('red'),rgb('dark red'));
+% a.colormap   = usercolormap(rgb('blue'),rgb('cyan'),rgb('very dark green'),rgb('yellow'),rgb('red'));
+a.colormap   = usercolormap(rgb('blue'),rgb('cyan'),rgb('dark gray'),rgb('yellow'),rgb('red'));
+% a.colormap   = usercolormap(rgb('blue'),rgb('cyan'),rgb('yellow'),rgb('red'));
+a.trialInit  = 1000;
+a.respWin    = [200 400];
+a.spontWin   = [-200 0];
+s.analyse    = a;
 
-s.RFStimSeqDecodingMethod = 2;% 1 Index of current sequence; 2 Index of all stimuli
-s.RFStimSeqIndex_TotalNum = 1;
-s.RFStimSeqIndex_FirstValidNr = 2;
-s.RFStimSeqIndex_ValidSEQNum = 3;
-s.RFStimSeqIndex_SEQStart = 4;
-s.SendParamN = prod(s.RFMapSize)/s.Cndnum+s.RFStimSeqIndex_SEQStart-1;
 
-s.RFMapRowNr = repmat([1:s.RFMapSize(1)]',[1 s.RFMapSize(2)]);
-s.RFMapColNr = repmat([1:s.RFMapSize(2)],[s.RFMapSize(1) 1]);
-s.RFMapRowNr = [s.RFMapRowNr(:)'];
-s.RFMapColNr = [s.RFMapColNr(:)'];
-s.RFDotPosX = repmat([(s.RFMapSize(2)-1)*s.RFDotSpacing/-2:s.RFDotSpacing:(s.RFMapSize(2)-1)*s.RFDotSpacing/2],[s.RFMapSize(1) 1]);
-s.RFDotPosY = repmat([(s.RFMapSize(1)-1)*s.RFDotSpacing/2:-s.RFDotSpacing:(s.RFMapSize(1)-1)*s.RFDotSpacing/-2]',[1 s.RFMapSize(2)]);
-s.RFDotPosX = [s.RFDotPosX(:)'] + s.RFMapRefPos(1);
-s.RFDotPosY = [s.RFDotPosY(:)'] + s.RFMapRefPos(2);
-s.RFMapImageResizeFactor = 5;
-s.RFMapImageResizeInterpolation = 'bilinear'; % nearest bilinear bicubic
-s.RFMapImageResizeFilterOrder = 3;
-s.RFMapZScoreFlag = true;
-s.RFMapCLim = [];% if empty clim is min/max of spike count
-s.RFColormap = usercolormap(rgb('blue'),[1 1 1],rgb('yellow'),rgb('orange'));
-s.RFColormap = jet;
+
+

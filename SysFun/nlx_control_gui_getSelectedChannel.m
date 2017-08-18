@@ -25,8 +25,12 @@ nActCh = sum(isactiveCh);
 activeCh = ChannelList(isactiveCh);
 
 %% get list of active electrodes
-isactiveEl = false(length(ElList),1);
-for i=1:length(ElList)
-    isactiveEl(i) = ~isempty(strmatch(ElList{i},activeCh));
+activeEl = {};
+for i=1:length(activeCh)
+    for k=1:length(activeCh)
+        if ~any(strcmp(strtok(activeCh{k},'.'),activeEl))
+            activeEl = cat(1,activeEl,strtok(activeCh{k},'.'));
+        end
+    end
 end
-activeEl = ElList(isactiveEl);    
+

@@ -127,19 +127,8 @@ s.CndAlignOffset = 0;% in ms
 %---------------------------------------------------------------------
 % events signalling sending of parameters
 s.SendConditionStart = s.EventCode(strmatch('NLX_TRIALPARAM_START',s.EventName));
-s.SendConditionEnd   = s.EventCode(strmatch('NLX_TRIALPARAM_END',s.EventName));
-
-s.SendConditionParNum          = 2;
-s.SendConditionParName         = {'Block','Condition'};
-s.SendConditionPresentParName  = {'StimulusCode'};
-s.SendConditionPresentParRange = [-inf inf];
-%s.SendConditionPresentParLevelNum = [72, 1, 2]; % this is not really used yet, all coding done by StimulusCode
-s.SendConditionPresentParNum   = length(s.SendConditionPresentParName);
-s.SendConditionTrialIDIndex    = 1;
-s.SendConditionBlockIndex      = 1;
-s.SendConditionConditionIndex  = 2;
-
-s.SendConditionN = s.SendConditionParNum + s.PresentationNum * s.SendConditionPresentParNum;
+s.SendConditionEnd = s.EventCode(strmatch('NLX_TRIALPARAM_END',s.EventName));
+s.SendConditionN = 3;
 % 
 s.SendParamStart = s.EventCode(strmatch('NLX_STIMPARAM_START',s.EventName));
 s.SendParamEnd = [ ...
@@ -173,11 +162,11 @@ s.HistYLimMode = 3;% 1 fixed YLim 2 MAX in cnd 3 MAX over all cond
 %---------- RF map parameter ----------------------------------------
 %**********************************************************************
 s.RFMapSize = [9 12];% rows cols of map
-s.RFDotSpacing = 0.25;
-s.RFMapRefPos = [-0.75 -3];
-s.RVCOTau = [150];
+s.RFDotSpacing = 1;
+s.RFMapRefPos = [-2 -4];
+s.RVCOTau = [75 150];
 s.RVCOTauBase = 0;
-s.RVCOWin = [-100 0];
+s.RVCOWin = [-50 0];
 s.RFDotLum(1:prod(s.RFMapSize)) = 255;
 % s.RFDotLum(prod(s.RFMapSize)+1:prod(s.RFMapSize)*2) = 0;
 %**********************************************************************

@@ -25,58 +25,74 @@ spk_CTXtrialIDind = strmatch('TrialID',trialcodelabel,'exact');
 spk_CortexBlockInd = strmatch('CortexBlock',trialcodelabel,'exact');
 spk_CortexConditionInd = strmatch('CortexCondition',trialcodelabel,'exact');
 spk_CortexPresentationNrInd = strmatch('CortexPresentationNr',trialcodelabel,'exact');
-spk_StimulusCodeInd = strmatch('StimulusCode',trialcodelabel,'exact');
+spk_StimulusCodeInd = zeros(1,NLX_CONTROL_SETTINGS.SendConditionPresentParNum);
+for i=1:NLX_CONTROL_SETTINGS.SendConditionPresentParNum
+    spk_StimulusCodeInd(i) = strmatch(NLX_CONTROL_SETTINGS.SendConditionPresentParName{i},trialcodelabel,'exact');
+end
 
-%% add trials
-ci = SPKNumTrials+1;
     
 %% trialcodes
-TRIALCODE = zeros(trialcodelabel_n,1).*NaN;
-TRIALCODE(spk_CTXtrialIDind) = CTX.TrialID(CTX.Pointer);
-TRIALCODE(spk_CortexBlockInd) = CTX.Block(CTX.Pointer);
-TRIALCODE(spk_CortexConditionInd) = CTX.Condition(CTX.Pointer);
-% if NLX_CONTROL_SETTINGS.CutCortexTrial == 0
+if NLX_CONTROL_SETTINGS.CutCortexTrial == 0
+    TRIALCODE = zeros(trialcodelabel_n,1).*NaN;
+    TRIALCODE(spk_CTXtrialIDind) = CTX.TrialID(CTX.Pointer);
+    TRIALCODE(spk_CortexBlockInd) = CTX.Block(CTX.Pointer);
+    TRIALCODE(spk_CortexConditionInd) = CTX.Condition(CTX.Pointer);
     TRIALCODE(spk_StimulusCodeInd) = CTX.StimulusCodes(CTX.Pointer,1);
     TRIALCODE(spk_CortexPresentationNrInd) = NaN;
-% elseif NLX_CONTROL_SETTINGS.CutCortexTrial == 1
-%     TRIALCODE(spk_StimulusCodeInd) = CTX.StimulusCodes(i);
-%     TRIALCODE(spk_CortexPresentationNrInd) = i;
-% end
+elseif NLX_CONTROL_SETTINGS.CutCortexTrial == 1
+    TRIALCODE = zeros(trialcodelabel_n,NLX_CONTROL_SETTINGS.PresentationNum).*NaN;
+    TRIALCODE(spk_CTXtrialIDind,:) = CTX.TrialID(CTX.Pointer);
+    TRIALCODE(spk_CortexBlockInd,:) = CTX.Block(CTX.Pointer);
+    TRIALCODE(spk_CortexConditionInd,:) = CTX.Condition(CTX.Pointer);        
+    TRIALCODE(spk_CortexPresentationNrInd,:) = 1:NLX_CONTROL_SETTINGS.PresentationNum;
+    TRIALCODE(spk_StimulusCodeInd,:) = CTX.StimulusCodes(CTX.Pointer,:,:);
+end
     
 %% every trial in data structure has ALL the Evs of a
+nPresentNum = size(acqwin,1);
+
 % CTX trial
-EVENTS = cell(Evlabel_n,1);
+EVENTS = cell(Evlabel_n,nPresentNum);
+% loop through the events found in SPK object
 for j=1:Evlabel_n
+    % find the current event in NLX_CONTROL_SETTINGS 
     currEventInd = strmatch(Evlabel{j},NLX_CONTROL_SETTINGS.EventName,'exact');
     if isempty(currEventInd)
-        EVENTS{j} = [];
+        EVENTS(j,:) = {[]};
     else
-        iEv = Ev_findTTL(Ev,NLX_CONTROL_SETTINGS.EventCode(currEventInd),acqwin,0);
-        if ~isempty(iEv)
-            EVENTS{j} = Ev.TimeStamp(iEv)' - aligntime;
-        else
-            EVENTS{j} = [];
+        for i=1:nPresentNum
+            iEv = Ev_findTTL(Ev,NLX_CONTROL_SETTINGS.EventCode(currEventInd),acqwin(i,:),0);
+            if ~isempty(iEv)
+                EVENTS{j,i} = Ev.TimeStamp(iEv)' - aligntime(i);
+            else
+                EVENTS{j,i} = [];
+            end
         end
     end
 end
-    
+
 % SEs
-SPK = cell(nCh,1);
+SPK = cell(nCh,nPresentNum);
 for k = 1:nCh
     SPKindex = strmatch(ClusterName{k},channel);
     cEl = strtok(ClusterName{k},'.');
     ClusterNr = sscanf(ClusterName{k},[cEl '.%d']);
     ElNr = strmatch(cEl,SEObj,'exact');
-    SPK{SPKindex} = SE{ElNr}.TimeStamp(SE_findSpike(SE{ElNr},acqwin,ClusterNr)) - aligntime;
-    SPK{SPKindex} = SPK{SPKindex}(:);
+    for j=1:nPresentNum
+        SPK{SPKindex,j} = SE{ElNr}.TimeStamp(SE_findSpike(SE{ElNr},acqwin(j,:),ClusterNr)) - aligntime(j);
+        SPK{SPKindex,j} = SPK{SPKindex,j}(:);
+    end
 end
 
 %% push to SPK
-s = spk_addTrialData(s,ci, ...
-    'trialcode',TRIALCODE, ...
-    'events',EVENTS, ...
-    'spk',SPK, ...
-    'align',aligntime, ...
-    'stimulus',CTX.ParamArray(CTX.Pointer), ...
-    'analog',{[]});
-
+ci = repmat(SPKNumTrials,1,nPresentNum);
+for j=1:nPresentNum
+    ci(j) = ci(j)+j;
+    s = spk_addTrialData(s,ci(j), ...
+        'trialcode',TRIALCODE(:,j), ...
+        'events',EVENTS(:,j), ...
+        'spk',SPK(:,j), ...
+        'align',aligntime(j), ...
+        'stimulus',CTX.ParamArray(CTX.Pointer), ...
+        'analog',{[]});
+end

@@ -31,5 +31,15 @@ H = nlx_control_gui_AnalyseMenu;
 ChannelNrs = [1:16];
 ChannelLabel  = {'e1SE' 'e2SE'};
 ClusterNrs = [0];
+
+% ChannelNrs = [1:16];
+% ChannelLabel  = {'e1SE' 'e2SE' 'e3SE'};
+% ClusterNrs = [0];
+
+% ChannelNrs = [1:2];
+% ChannelLabel  = {'SE'};
+% ClusterNrs = [0];
+
+
 H = nlx_control_gui_SEChannelMenu(ChannelLabel,ChannelNrs,ClusterNrs);
 

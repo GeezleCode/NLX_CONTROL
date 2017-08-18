@@ -147,11 +147,11 @@ s.HistMode = 3;% 1 counts 2 mean counts 3 mean frequency
 s.HistYLim = [0 25];% 1 counts 2 mean counts 3 mean frequency
 
 s.RFmapsize = [5 5]; % degrees
-s.RFmappos = [-1.5,-1];
+s.RFmappos = [-1,-2];
 
-s.RVCOTau = [0 120];
+s.RVCOTau = [75 150];
 s.RVCOTauBase = 0;
-s.RVCOWin = [-70 0];
+s.RVCOWin = [-50 0];
 
 s.RFStimSeqDecodingMethod = 1;% 1 Index of current sequence; 2 Index of all stimuli
 s.RFStimSeqIndex_TotalNum = 1;

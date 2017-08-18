@@ -105,7 +105,11 @@ for iSEObj = 1:SEObjNum
     SE{iSEObj} = nlx_control_SEBuffer(SEObj{iSEObj},NLX_CONTROL_SETTINGS.SEBuffersize,0.1);
 end
 Ev = nlx_control_EventBuffer('Events',NLX_CONTROL_SETTINGS.EventBuffersize);
-CTX = nlx_control_CortexBuffer(NLX_CONTROL_SETTINGS.CortexBuffersize,1,1);
+if isfield(NLX_CONTROL_SETTINGS,'SendConditionPresentParNum')
+    CTX = nlx_control_CortexBuffer(NLX_CONTROL_SETTINGS.CortexBuffersize,NLX_CONTROL_SETTINGS.PresentationNum,NLX_CONTROL_SETTINGS.SendConditionPresentParNum,1);
+else
+    CTX = nlx_control_CortexBuffer(NLX_CONTROL_SETTINGS.CortexBuffersize,NLX_CONTROL_SETTINGS.PresentationNum,1,1);
+end
 Ev.Flush = true;
 Ev.FlushEcho = false;
 
@@ -144,14 +148,17 @@ while NLX_CONTROL_GET_CHEETAH
                 TermSeq = NLX_CONTROL_SETTINGS.SendConditionEnd;
                 nParam = NLX_CONTROL_SETTINGS.SendConditionN;
                 [Ev,ParamArray,succeeded] = Ev_getParam(Ev,nParam,TermSeq,logfid);
-                CTX.TrialID(CTX.Pointer,:) = CTX.Pointer;
-                CTX.Block(CTX.Pointer,:) = ParamArray(1);
-                CTX.Condition(CTX.Pointer,:) = ParamArray(2);
-                CTX.StimulusCodes(CTX.Pointer,:) = ParamArray(3:nParam)';
+                
+                CTX.TrialID(CTX.Pointer,:) = ParamArray(NLX_CONTROL_SETTINGS.SendConditionTrialIDIndex);
+                CTX.Block(CTX.Pointer,:) = ParamArray(NLX_CONTROL_SETTINGS.SendConditionBlockIndex);
+                CTX.Condition(CTX.Pointer,:) = ParamArray(NLX_CONTROL_SETTINGS.SendConditionConditionIndex);
+                CTX.StimulusCodes(CTX.Pointer,:) = ParamArray(NLX_CONTROL_SETTINGS.SendConditionParNum+1:nParam);
+                
                 disp(['TRIALID     ' num2str(CTX.TrialID(CTX.Pointer,:))]);
                 disp(['BLOCK     ' num2str(CTX.Block(CTX.Pointer,:))]);
                 disp(['CONDITION ' num2str(CTX.Condition(CTX.Pointer,:))]);
                 disp(['STIMCODE  ' num2str(CTX.StimulusCodes(CTX.Pointer,:))]);
+                
                 ParamArray = [];
                 
             case NLX_CONTROL_SETTINGS.SendParamStart
@@ -193,7 +200,10 @@ while NLX_CONTROL_GET_CHEETAH
                     tic;
                     nlx_control_callAnalyse(nlx_control_getSelectedAnalyses,1,TrialIndex);
                     tAnalyse = toc;
-                    fprintf(1,'t analyse: %1.6f s\n', tAnalyse);
+                    fprintf(1,'t analyse: %1.6f s ', tAnalyse);
+                    fprintf(1,'Trials: ');
+                    fprintf(1,'#%1.0f ', TrialIndex(:));
+                    fprintf(1,'\n');
                 end
                 
             case NLX_CONTROL_SETTINGS.TrialEndEvent

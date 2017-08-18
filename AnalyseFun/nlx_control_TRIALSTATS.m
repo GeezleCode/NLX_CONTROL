@@ -3,6 +3,7 @@ function nlx_control_trialstats(t,p,varargin)
 % displays trial numbers in each condition
 
 global SPK
+global NLX_CONTROL_SETTINGS
 
 SPK = spk_set(SPK,'currenttrials',[]);
 
@@ -26,7 +27,8 @@ if isempty(TrialstatsFigHandle)
 end
 
 %% extract trial properties
-TrialCodeLabel = {'CortexBlock';'CortexCondition';'StimulusCode'};
+TrialCodeLabel = {'CortexBlock';'CortexCondition'};
+TrialCodeLabel = cat(1,TrialCodeLabel,NLX_CONTROL_SETTINGS.SendConditionPresentParName(:));
 TrialCodes = [];
 for i = 1:length(TrialCodeLabel)
     TrialCodes = cat(1,TrialCodes,spk_getTrialcode(SPK,TrialCodeLabel{i}));

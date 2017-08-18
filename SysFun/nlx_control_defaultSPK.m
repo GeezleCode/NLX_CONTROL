@@ -16,7 +16,12 @@ s = spk_addTrialcode(s,'TrialID');
 s = spk_addTrialcode(s,'CortexBlock');
 s = spk_addTrialcode(s,'CortexCondition');
 s = spk_addTrialcode(s,'CortexPresentationNr');
-s = spk_addTrialcode(s,'StimulusCode');
+
+if isfield(NLX_CONTROL_SETTINGS,'SendConditionPresentParName') && ~isempty(NLX_CONTROL_SETTINGS.SendConditionPresentParName)
+    for i=1:NLX_CONTROL_SETTINGS.SendConditionPresentParNum
+        s = spk_addTrialcode(s,NLX_CONTROL_SETTINGS.SendConditionPresentParName{i});
+    end
+end
 
 s = spk_set(s, ...
     'channel',ChanName, ...
