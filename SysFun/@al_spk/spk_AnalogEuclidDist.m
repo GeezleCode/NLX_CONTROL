@@ -3,8 +3,6 @@ function s = spk_AnalogEuclidDist(s,SigChans,RefChans,ThChanName,RChanName)
 % calculates the euclidean distance from signal SigChans to signal RefChans
 % s = spk_AnalogEuclidDist(s,SigChans,RefChans,ThChanName,RChanName)
 % SigChans,RefChans .... cell array of strings with X and Y channel names
-% ThChanName ...........
-% RChanName ............
 
 %% get the channel index
 iSigX = spk_findAnalog(s,SigChans{1});

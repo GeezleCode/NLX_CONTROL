@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_AddSumChannel</title>
+  <meta name="keywords" content="spk_AddSumChannel">
+  <meta name="description" content="pool spikes of different channels">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_AddSumChannel.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_AddSumChannel
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>pool spikes of different channels</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function s = spk_AddSumChannel(s,SumChan,LeaveChanFlag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> pool spikes of different channels
+ s = spk_AddSumChannel(s,SumChan,LeaveChanFlag)
+
+ SumChan ......... can be channel names (cell array of strings) or index
+ LeaveChanFlag ... leave the pooled channels</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function s = spk_AddSumChannel(s,SumChan,LeaveChanFlag)</a>
+0002 
+0003 <span class="comment">% pool spikes of different channels</span>
+0004 <span class="comment">% s = spk_AddSumChannel(s,SumChan,LeaveChanFlag)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% SumChan ......... can be channel names (cell array of strings) or index</span>
+0007 <span class="comment">% LeaveChanFlag ... leave the pooled channels</span>
+0008 
+0009 [numChan,numTrials] = size(s.spk);
+0010 
+0011 <span class="comment">%--------------------------------------</span>
+0012 <span class="comment">% get the indices of channels</span>
+0013 <span class="comment">%--------------------------------------</span>
+0014 <span class="keyword">if</span> iscell(SumChan)
+0015     SumChanIndex = spk_findchannel(s,SumChan);
+0016 <span class="keyword">elseif</span> isnumeric(SumChan)
+0017     SumChanIndex = SumChan;
+0018 <span class="keyword">end</span>
+0019 SumChanIndex(isnan(SumChanIndex)) = [];
+0020 <span class="keyword">if</span> isempty(SumChanIndex);warning(<span class="string">'Can''t sum channels!'</span>);<span class="keyword">return</span>;<span class="keyword">end</span>
+0021 
+0022 nSumChan = length(SumChanIndex);
+0023 
+0024 <span class="comment">%--------------------------------------</span>
+0025 <span class="comment">% prepare the new spike cell array</span>
+0026 <span class="comment">%--------------------------------------</span>
+0027 <span class="keyword">if</span> LeaveChanFlag
+0028     AddChanIndex = nSumChan+1;
+0029     SPK = cell(nSumChan+1,numTrials);
+0030     SPK(1:nSumChan,:) = s.spk(SumChanIndex,:);
+0031     s.channel = s.channel(SumChanIndex);
+0032     s.channel(AddChanIndex) = {<span class="string">'SUM'</span>};
+0033 <span class="keyword">else</span>
+0034     AddChanIndex = 1;
+0035     SPK = cell(1,numTrials);
+0036     s.channel = {<span class="string">'SUM'</span>};
+0037 <span class="keyword">end</span>
+0038     
+0039 <span class="comment">%--------------------------------------</span>
+0040 <span class="comment">% sum channels</span>
+0041 <span class="comment">%--------------------------------------</span>
+0042 <span class="keyword">for</span> i=1:numTrials
+0043     SPK{AddChanIndex,i} = sort(cat(2,s.spk{SumChanIndex,i}));
+0044 <span class="keyword">end</span>
+0045 
+0046 <span class="comment">%--------------------------------------</span>
+0047 <span class="comment">% assign new spike cell array to object</span>
+0048 <span class="comment">%--------------------------------------</span>
+0049 s.spk = SPK;</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_AnalogRemoveLineWin</title>
+  <meta name="keywords" content="spk_AnalogRemoveLineWin">
+  <meta name="description" content="fits a sine wave of frequency f to each trial and substract the mean">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_AnalogRemoveLineWin.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_AnalogRemoveLineWin
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>fits a sine wave of frequency f to each trial and substract the mean</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function s = spk_AnalogRemoveLineWin(s,Fl,WinEv,doPlot) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> fits a sine wave of frequency f to each trial and substract the mean
+ s = spk_AnalogRemoveSine(s,f,Ev,EvOffset)
+
+ Fl ....... line frequency
+ WinEv ....... eventlabel defining windows
+ doPLot ...</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>	returns and check for number of trials in @al_spk object</li><li><a href="spk_findAnalogEventBin.html" class="code" title="function [v,t,i,terr] = spk_findAnalogEventBin(s,ChanName,EventLabel)">spk_findAnalogEventBin</a>	returns analog data for a given event</li><li><a href="spk_getAnalogChanName.html" class="code" title="function ChName = spk_getAnalogChanName(s,iCh)">spk_getAnalogChanName</a>	returns the name of an analog channel</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [LC,LCb] = GetLineComponent(data,Ts,Tp)</a></li><li><a href="#_sub2" class="code">function [Ahat,Theta,RMS]=sinefit2(s0,omega,t0,Ts)</a></li></ul>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function s = spk_AnalogRemoveLineWin(s,Fl,WinEv,doPlot)</a>
+0002 
+0003 <span class="comment">% fits a sine wave of frequency f to each trial and substract the mean</span>
+0004 <span class="comment">% s = spk_AnalogRemoveSine(s,f,Ev,EvOffset)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Fl ....... line frequency</span>
+0007 <span class="comment">% WinEv ....... eventlabel defining windows</span>
+0008 <span class="comment">% doPLot ...</span>
+0009 
+0010 <span class="keyword">if</span> nargin&lt;5
+0011     doPlot = false;
+0012 <span class="keyword">end</span>
+0013 
+0014 <span class="comment">%% get trial numbers</span>
+0015 nTrTotal = <a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>(s);
+0016 <span class="keyword">if</span> isempty(s.currenttrials)
+0017     s.currenttrials = 1:nTrTotal;
+0018 <span class="keyword">end</span>
+0019 nTr = length(s.currenttrials);
+0020 
+0021 <span class="comment">% s = spk_AnalogFiltFiltButter(s,6,[10 90],'bandpass');</span>
+0022 
+0023 <span class="comment">%% loop channels</span>
+0024 nCh = length(s.currentanalog);
+0025 hwait = waitbar(0,<span class="string">'removing line noise'</span>);
+0026 <span class="keyword">for</span> iCh = 1:nCh
+0027     ChNr = s.currentanalog(iCh);
+0028         
+0029     <span class="comment">%% get time parameter</span>
+0030     Tp = (1/Fl)/(10^s.timeorder);<span class="comment">% period of line frequency</span>
+0031     Ts = (1/s.analogfreq(ChNr))/(10^s.timeorder);<span class="comment">% period of sampling</span>
+0032     PrdBinT = 0:Ts:Tp;<span class="comment">% bin times of a period segment</span>
+0033     PrdBinN = length(PrdBinT);<span class="comment">% number of bins in one period</span>
+0034     DoublePrdBinT = 0:Ts:2*Tp;<span class="comment">% bin times of a two period segment</span>
+0035     DoublePrdBinN = length(DoublePrdBinT);
+0036     
+0037     <span class="comment">%% get time windows</span>
+0038     [nTrTotaldummy,nBn] = size(s.analog{ChNr});
+0039     nWinEv = length(WinEv);
+0040     nw = nWinEv+1;
+0041     wb = zeros(nTr,2,nw);
+0042     wb(:,1,1) = 1;
+0043     wb(:,2,nw) = nBn;
+0044     <span class="keyword">for</span> iwev = 1:nWinEv
+0045         [v,t,i,terr] = <a href="spk_findAnalogEventBin.html" class="code" title="function [v,t,i,terr] = spk_findAnalogEventBin(s,ChanName,EventLabel)">spk_findAnalogEventBin</a>(s,<a href="spk_getAnalogChanName.html" class="code" title="function ChName = spk_getAnalogChanName(s,iCh)">spk_getAnalogChanName</a>(s,ChNr),WinEv{iwev});
+0046 <span class="comment">%         [b,t,tVec] = spk_AnalogEventWindow(s,Ev,[0 0]);</span>
+0047         wb(:,2,iwev) = i'-1;
+0048         wb(:,1,iwev+1) = i';
+0049     <span class="keyword">end</span>
+0050 
+0051     <span class="comment">%% loop thru trials</span>
+0052     LineComponent = zeros(nTr,DoublePrdBinN).*NaN;
+0053     SineComponent = zeros(nTr,DoublePrdBinN).*NaN;
+0054     <span class="keyword">for</span> iTr = 1:nTr
+0055         TrNr = s.currenttrials(iTr);
+0056         <span class="keyword">for</span> iw = 1:nw
+0057             widx = wb(iTr,1,iw):1:wb(iTr,2,iw);
+0058             wnb = length(widx);
+0059             cTrData = s.analog{ChNr}(TrNr,widx);
+0060             <span class="keyword">if</span> any(isnan(cTrData)) || isempty(cTrData);<span class="keyword">continue</span>;<span class="keyword">end</span>
+0061             LC = <a href="#_sub1" class="code" title="subfunction [LC,LCb] = GetLineComponent(data,Ts,Tp)">GetLineComponent</a>(cTrData,Ts,Tp);
+0062             omega = 2*pi*Fl;
+0063             [Ahat,Theta,RMS]=<a href="#_sub2" class="code" title="subfunction [Ahat,Theta,RMS]=sinefit2(s0,omega,t0,Ts)">sinefit2</a>(LC,omega,0,1/s.analogfreq(ChNr));
+0064             SineSignal = Ahat*sin(omega*(([0:Ts:Ts*(wnb-1)]).*0.001)+Theta);
+0065             cTrData = cTrData - SineSignal;
+0066             s.analog{ChNr}(TrNr,widx) = cTrData;
+0067         <span class="keyword">end</span>
+0068         waitbar(((iCh-1)*nTr+iTr)/(nCh*nTr),hwait);
+0069     <span class="keyword">end</span>
+0070 
+0071 <span class="comment">%     %% plotting</span>
+0072 <span class="comment">%     if doPlot</span>
+0073 <span class="comment">%         figure</span>
+0074 <span class="comment">%         set(gcf,'name',s.analogname{ChNr});</span>
+0075 <span class="comment">%         rowN = ceil(sqrt(nTr));</span>
+0076 <span class="comment">%         colN = rowN;</span>
+0077 <span class="comment">%         axWidth = 1/colN;</span>
+0078 <span class="comment">%         axHeight = 1/rowN;</span>
+0079 <span class="comment">%         for iTr = 1:nTr</span>
+0080 <span class="comment">%             [rowNr,colNr] = ind2sub([rowN,colN],iTr);</span>
+0081 <span class="comment">%             axH(iTr) = subplot('position',[0+(colNr-1)*axWidth 1-(rowNr)*axHeight axWidth axHeight]);</span>
+0082 <span class="comment">%             line(DoublePrdBinT([1 end]),[0 0],'color','k','linewidth',0.75);</span>
+0083 <span class="comment">%             line(DoublePrdBinT,LineComponent(iTr,:),'color','k','linewidth',1.2);</span>
+0084 <span class="comment">%             line(DoublePrdBinT,SineComponent(iTr,:),'color','r','linewidth',1.5);</span>
+0085 <span class="comment">%         end</span>
+0086 <span class="comment">%         set(axH(:),'box','on', ...</span>
+0087 <span class="comment">%             'xlim',DoublePrdBinT([1 end]),'xtick',[],'ylim',[-10 10],'ytick',[]);</span>
+0088 <span class="comment">%     end</span>
+0089     
+0090 <span class="keyword">end</span>
+0091 close(hwait);
+0092 
+0093 <span class="comment">% % chronux moving window</span>
+0094 <span class="comment">% smooth=1./(1+exp(-tau.*(x-Noverlap/2)/Noverlap)); % sigmoidal function</span>
+0095 <span class="comment">% smooth=repmat(smooth,[1 C]);</span>
+0096 <span class="comment">% for n=1:nw;</span>
+0097 <span class="comment">%     indx=winstart(n):winstart(n)+Nwin-1;</span>
+0098 <span class="comment">%     datawin=data(indx,:);</span>
+0099 <span class="comment">%     [datafitwin,as,fs]=fitlinesc(datawin,params,p,'n',f0);</span>
+0100 <span class="comment">%     Amps{n}=as;</span>
+0101 <span class="comment">%     freqs{n}=fs;</span>
+0102 <span class="comment">%     datafitwin0=datafitwin;</span>
+0103 <span class="comment">%     if n&gt;1;</span>
+0104 <span class="comment">%         datafitwin(1:Noverlap,:)= smooth.*datafitwin(1:Noverlap,:) + (1-smooth).*datafitwin0(Nwin-Noverlap+1:Nwin,:);</span>
+0105 <span class="comment">%     end;</span>
+0106 <span class="comment">%     datafit(indx,:)=datafitwin;</span>
+0107 <span class="comment">% end;</span>
+0108 
+0109 
+0110 <a name="_sub1" href="#_subfunctions" class="code">function [LC,LCb] = GetLineComponent(data,Ts,Tp)</a>
+0111 data = data(:);<span class="comment">% make sure data is column</span>
+0112 [nTot,nTr] = size(data);
+0113 n = floor(Tp/Ts)+1;<span class="comment">% bins in one period</span>
+0114 LCb = zeros(n,n*2-1)*NaN;
+0115 <span class="keyword">for</span> i=1:n<span class="comment">%sum line for each bin in the period</span>
+0116     <span class="comment">% sum consecutive periods</span>
+0117     SegStartBin = round(i:Tp/Ts:nTot);<span class="comment">% get first bin for each period segment</span>
+0118     SegStartBin(SegStartBin+n-1&gt;nTot)=[];
+0119     [x,y] = meshgrid([0:n-1],SegStartBin);<span class="comment">% get index for summation matrix</span>
+0120     cLC = data(x+y);
+0121     cLC = cLC-repmat(nanmean(cLC,2),[1,n]);<span class="comment">% substract DC offset</span>
+0122     LCb(i,[i:n+i-1]) = nanmean(cLC,1);
+0123 <span class="keyword">end</span>
+0124 LC = nanmean(LCb,1);
+0125 
+0126 <a name="_sub2" href="#_subfunctions" class="code">function [Ahat,Theta,RMS]=sinefit2(s0,omega,t0,Ts) </a>
+0127 <span class="comment">% sine wave fitting from noisy sine signal</span>
+0128 <span class="comment">% phase fitting has to be considered</span>
+0129 <span class="comment">% with a fixed omega!</span>
+0130 <span class="comment">% Written by Dr Chen YangQuan &lt;yqchen@ieee.org&gt;</span>
+0131 <span class="comment">% Last modified in 05-11-2000</span>
+0132 <span class="comment">% DESCRIPTIONS:</span>
+0133 <span class="comment">% s0: sampled series. 1xNp (note here)</span>
+0134 <span class="comment">% omega: known freq. (2*pi*f) (rad/sec.)</span>
+0135 <span class="comment">% Ts: sampling period (in Sec.)</span>
+0136 <span class="comment">% t0: initial time (in Sec.)</span>
+0137 <span class="comment">% Ahat: estimated amplitude</span>
+0138 <span class="comment">% Theta: fitted theta_0 (in rad.)</span>
+0139 <span class="comment">% RMS: root mean squares.</span>
+0140 <span class="comment">%</span>
+0141 <span class="comment">% See also &quot;jomega&quot;</span>
+0142 Np=size(s0); 
+0143 t=t0+[0:Np(2)-1]*Ts; 
+0144 A11= (sin(omega*t)*(sin(omega*t))'); 
+0145 A12= (sin(omega*t)*(cos(omega*t))'); 
+0146 A22= (cos(omega*t)*(cos(omega*t))'); 
+0147 b1=s0*(sin(omega*t))'; 
+0148 b2=s0*(cos(omega*t))'; 
+0149 A=[A11,A12;A12,A22]; 
+0150 Alpha=inv(A)*[b1,b2]'; 
+0151 <span class="comment">% be careful here...</span>
+0152 Asintheta=Alpha(2);Acostheta=Alpha(1); 
+0153 Ahat=sqrt(Asintheta*Asintheta+Acostheta*Acostheta); 
+0154 Theta=atan2(Asintheta,Acostheta); 
+0155 RMS=sqrt((s0-Ahat*sin(omega*t+Theta))*<span class="keyword">...</span><span class="comment"> </span>
+0156 (s0-Ahat*sin(omega*t+Theta))'/(Np(2)-1.));</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

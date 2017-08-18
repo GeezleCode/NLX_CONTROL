@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_instant</title>
+  <meta name="keywords" content="spk_instant">
+  <meta name="description" content="calculates instantaneaous spike rate for the current trials">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_instant.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_instant
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>calculates instantaneaous spike rate for the current trials</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [mSecF,mSec,h] = spk_instant(s,timeWin,plottype,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> calculates instantaneaous spike rate for the current trials
+ function [mSecF,mSec,h] = spk_instant(s,rateflag,plottype,varargin)
+
+ ratescale</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_CheckCurrentChannels.html" class="code" title="function out = spk_CheckCurrentChannels(s,SetAllIfEmpty)">spk_CheckCurrentChannels</a>	</li><li><a href="spk_CheckCurrentTrials.html" class="code" title="function [out,s] = spk_CheckCurrentTrials(s,SetAllIfEmpty)">spk_CheckCurrentTrials</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [mSecF,mSec,h] = spk_instant(s,timeWin,plottype,varargin)</a>
+0002 
+0003 <span class="comment">% calculates instantaneaous spike rate for the current trials</span>
+0004 <span class="comment">% function [mSecF,mSec,h] = spk_instant(s,rateflag,plottype,varargin)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% ratescale</span>
+0007 
+0008 NumCurrChan = length(<a href="spk_CheckCurrentChannels.html" class="code" title="function out = spk_CheckCurrentChannels(s,SetAllIfEmpty)">spk_CheckCurrentChannels</a>(s,0));
+0009 numCurrTr = length(<a href="spk_CheckCurrentTrials.html" class="code" title="function [out,s] = spk_CheckCurrentTrials(s,SetAllIfEmpty)">spk_CheckCurrentTrials</a>(s,0));
+0010 
+0011 mSec = timeWin(1):timeWin(2);
+0012 mSecF = zeros(numCurrTr,length(mSec),NumCurrChan);
+0013 
+0014 <span class="keyword">for</span> cc = 1:NumCurrChan
+0015     NumSpk = cellfun(<span class="string">'length'</span>,s.spk{j,:});
+0016     TotalNumSpk = sum(NumSpk);
+0017     sTimes = zeros(1,TotalNumSpk);
+0018     IFR = zeros(1,TotalNumSpk);
+0019     <span class="keyword">for</span> ct = 1:numCurrTr
+0020         i = s.currenttrials(ct);
+0021         j = s.currentchannels(cc);
+0022         
+0023         dt = abs(diff(s.spk{j,i}));
+0024         s.spk{j,i}
+0025         
+0026         
+0027     
+0028     <span class="keyword">for</span> ct = 1:numCurrTr
+0029         i = s.currenttrials(ct);
+0030         j = s.currentchannels(cc);
+0031         
+0032         <span class="comment">% info</span>
+0033         numSpk = length(s.spk{j,i});
+0034         SpkInWin = find(s.spk{j,i}&gt;=timeWin(1) &amp; s.spk{j,i}&lt;=timeWin(2));
+0035        
+0036         <span class="comment">% get inst firing rate</span>
+0037         dt = abs(diff(s.spk{j,i}));
+0038         freq = 1./(dt*10^s.timeorder);
+0039         
+0040         <span class="comment">%make vec head</span>
+0041         <span class="keyword">if</span> ~isempty(SpkInWin) &amp; numSpk&gt;1
+0042             <span class="keyword">if</span> SpkInWin(1)==1
+0043                 mSecF(i,1:ceil(s.spk{j,i}(SpkInWin(1)).*(10^s.timeorder)./(10^(-3)))-timeWin(1)+1-1) = 0;<span class="comment">%freq(SpkInWin(1));</span>
+0044             <span class="keyword">elseif</span> SpkInWin(1)&gt;1
+0045                 mSecF(i,1:ceil(s.spk{j,i}(SpkInWin(1)).*(10^s.timeorder)./(10^(-3)))-timeWin(1)+1-1) = freq(SpkInWin(1)-1);
+0046             <span class="keyword">end</span>
+0047             
+0048             <span class="keyword">if</span> length(SpkInWin)&gt;=3
+0049                 <span class="keyword">for</span> ttl = SpkInWin(2:end-1)'
+0050                     mSecF(i, <span class="keyword">...</span>
+0051                         ceil(s.spk{j,i}(ttl).*(10^s.timeorder)./(10^(-3)))-timeWin(1)+1 : <span class="keyword">...</span>
+0052                         ceil(s.spk{j,i}(ttl+1).*(10^s.timeorder)./(10^(-3)))-timeWin(1)+1-1) = freq(ttl);
+0053                 <span class="keyword">end</span>
+0054             <span class="keyword">end</span>
+0055             
+0056             <span class="comment">% make vec tail</span>
+0057             <span class="keyword">if</span> SpkInWin(end)==numSpk
+0058                 mSecF(i,ceil(s.spk{j,i}(SpkInWin(end)).*(10^s.timeorder)./(10^(-3)))-timeWin(1)+1:end) = 0;
+0059             <span class="keyword">elseif</span> SpkInWin(end)&lt;numSpk
+0060                 mSecF(i,ceil(s.spk{j,i}(SpkInWin(end)).*(10^s.timeorder)./(10^(-3)))-timeWin(1)+1:end) = freq(SpkInWin(end));
+0061             <span class="keyword">end</span>  
+0062         <span class="keyword">end</span>
+0063     <span class="keyword">end</span>
+0064 <span class="keyword">end</span>
+0065 
+0066 <span class="comment">% plot histogram</span>
+0067 h = [];
+0068 <span class="keyword">if</span> nargin&lt;3;<span class="keyword">return</span>;<span class="keyword">end</span>
+0069 mInst = sum(mSecF,1)./numCurrTr;
+0070 <span class="keyword">switch</span> upper(plottype)
+0071      <span class="keyword">case</span> <span class="string">'LINE'</span>
+0072           h = line(mSec,mInst,varargin{:});
+0073      <span class="keyword">case</span> <span class="string">'PATCH'</span>
+0074           X = [mSec(end) mSec(1)];Y = [0 0];
+0075           <span class="keyword">for</span> i = 2:numbins
+0076                X = cat(2,X,[mSec(i-1) mSec(i)]);
+0077                Y = cat(2,Y,[mInst(i-1) mInst(i-1)]);
+0078           <span class="keyword">end</span>
+0079           h = patch(<span class="string">'Xdata'</span>,X,<span class="string">'ydata'</span>,Y,varargin{:});
+0080 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

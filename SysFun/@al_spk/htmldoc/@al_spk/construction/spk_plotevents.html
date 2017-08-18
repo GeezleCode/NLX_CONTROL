@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_plotevents</title>
+  <meta name="keywords" content="spk_plotevents">
+  <meta name="description" content="plot events in an axes with time on x-scale">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">@al_spk</a> &gt; <a href="index.html">construction</a> &gt; spk_plotevents.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk\construction&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>spk_plotevents
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>plot events in an axes with time on x-scale</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [s,H] = plotevents(s,events,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> plot events in an axes with time on x-scale</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../@al_spk/error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [s,H] = plotevents(s,events,varargin)</a>
+0002 
+0003 <span class="comment">% plot events in an axes with time on x-scale</span>
+0004 
+0005 H = {};
+0006 
+0007 <span class="keyword">if</span> isempty(s.trialselection)
+0008      <a href="../../@al_spk/error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'Do not know the trial to plot the events!'</span>);
+0009 <span class="keyword">end</span>
+0010 
+0011 numEvents = size(s.eventnames,1);
+0012 <span class="keyword">if</span> isempty(events) &amp; isempty(s.eventnames)
+0013      <span class="keyword">return</span>;
+0014 <span class="keyword">elseif</span> isempty(events) &amp; ~isempty(s.eventnames)
+0015      events = 1:numEvents;
+0016 <span class="keyword">end</span>
+0017 
+0018 <span class="comment">% default color is red</span>
+0019 <span class="keyword">if</span> isempty(s.eventcolors)
+0020      s.eventcolors = [ones(numEvents,1) zeros(numEvents,2)];
+0021 <span class="keyword">end</span>
+0022 
+0023 <span class="keyword">for</span> t = s.trialselection
+0024      <span class="keyword">for</span> e = events
+0025           ep = s.events{t,e};
+0026           ep = ep(~isnan(ep) &amp; ep&gt;=1 &amp; ep&lt;=length(s.time));
+0027           ep = s.time(ep);
+0028           ep = ndgrid(ep,[1 2])';
+0029           <span class="keyword">if</span> ~isempty(ep)
+0030                ylim = get(gca,<span class="string">'ylim'</span>);
+0031                yval = ndgrid(ylim,[1:size(ep,2)]);
+0032                H{t,e} = line(ep,yval, <span class="keyword">...</span>
+0033                     <span class="string">'color'</span>,s.eventcolors(e,:), <span class="keyword">...</span>
+0034                     <span class="string">'tag'</span>,s.eventnames(e,:), <span class="keyword">...</span>
+0035                     varargin{:});
+0036           <span class="keyword">end</span>
+0037      <span class="keyword">end</span>
+0038 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 25-Apr-2006 16:24:52 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

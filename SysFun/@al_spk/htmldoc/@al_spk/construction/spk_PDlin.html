@@ -1,0 +1,237 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_PDlin</title>
+  <meta name="keywords" content="spk_PDlin">
+  <meta name="description" content="[phi,R,P,mR,trR,angles] = PDlin(s,calcmode,plotmode)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">@al_spk</a> &gt; <a href="index.html">construction</a> &gt; spk_PDlin.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk\construction&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>spk_PDlin
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>[phi,R,P,mR,trR,angles] = PDlin(s,calcmode,plotmode)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [phi,R,P,mR,trR,DIR] = PDlin(s,calcmode,plotmode) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> [phi,R,P,mR,trR,angles] = PDlin(s,calcmode,plotmode)
+
+ calculates the preferred direction of a linearly moving stimulus in a
+ window set by @neurons property s.analysewin
+
+ calcmode ... 'centroid' , 'vonmises'
+ plotmode ... 'full' , 'polar'</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../@al_spk/error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function makefigure(dirnum)</a></li><li><a href="#_sub2" class="code">function polarplot(DIR,mR,baseline,phi,maxR)</a></li></ul>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [phi,R,P,mR,trR,DIR] = PDlin(s,calcmode,plotmode)</a>
+0002 
+0003 <span class="comment">% [phi,R,P,mR,trR,angles] = PDlin(s,calcmode,plotmode)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% calculates the preferred direction of a linearly moving stimulus in a</span>
+0006 <span class="comment">% window set by @neurons property s.analysewin</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% calcmode ... 'centroid' , 'vonmises'</span>
+0009 <span class="comment">% plotmode ... 'full' , 'polar'</span>
+0010 
+0011 <span class="comment">%__________________________________________________________________________</span>
+0012 <span class="comment">% check input</span>
+0013 <span class="keyword">if</span> nargin&lt;3
+0014      plotmode = <span class="string">''</span>;
+0015      <span class="keyword">if</span> nargin&lt;2
+0016           calcmode = <span class="string">'centroid'</span>;
+0017      <span class="keyword">end</span>
+0018 <span class="keyword">end</span>
+0019 <span class="comment">%__________________________________________________________________________</span>
+0020 <span class="comment">% check object</span>
+0021 <span class="keyword">if</span> isempty(s.analysewin);<a href="../../@al_spk/error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'Please set the analysewin property !'</span>);<span class="keyword">end</span>
+0022 <span class="comment">%__________________________________________________________________________</span>
+0023 <span class="comment">% initialize</span>
+0024 phi = [];R = [];P = [];
+0025 <span class="comment">%__________________________________________________________________________</span>
+0026 <span class="comment">% get the directions of movement and rates</span>
+0027 [DirI,DIR] = findtrialgroup(s,<span class="string">'direction'</span>);
+0028 [CndI,CND] = findtrialgroup(s,<span class="string">'condition'</span>);
+0029 <span class="keyword">if</span> isempty(DirI);disp(<span class="string">'Trial properties:'</span>);disp(s.trialgroupname);<a href="../../@al_spk/error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'Can not find trial property ''direction''!'</span>);<span class="keyword">end</span>
+0030 DIR = unique([DIR CND],<span class="string">'rows'</span>)';
+0031 CND = DIR(2,:);
+0032 DIR = DIR(1,:);
+0033 DIRnum = length(DIR);
+0034 <span class="comment">%__________________________________________________________________________</span>
+0035 <span class="comment">% RATES</span>
+0036 <span class="keyword">for</span> cdir = DIR
+0037      i = find(DIR==cdir);
+0038      s.trialselection = find(s.trialgroup(:,DirI)==cdir)';
+0039      [mR(i),trR{i}] = rates(s,1);
+0040      n(i) = length(trR{i});
+0041 <span class="keyword">end</span>
+0042 
+0043 <span class="comment">% baseline activity</span>
+0044 s.trialselection = [];
+0045 BLrate = baseline(s);
+0046 
+0047 <span class="comment">% max rate</span>
+0048 maxR = max(mR);
+0049 
+0050 <span class="comment">%__________________________________________________________________________</span>
+0051 <span class="comment">% calculate PD</span>
+0052 <span class="keyword">switch</span> upper(calcmode)
+0053      <span class="keyword">case</span> <span class="string">'CENTROID'</span>
+0054           <span class="comment">% use the same number of trials for all conditions</span>
+0055           minN = min(n);
+0056           <span class="keyword">for</span> i = 1:length(trR)
+0057                trialrates(i,:) = trR{i}(1:minN);
+0058           <span class="keyword">end</span>
+0059           <span class="comment">% do it barts way, first:PD for every trial(set)</span>
+0060           c = circular(repmat(DIR'.*(pi/180),[1 minN]),trialrates);
+0061           c.groups = size(trialrates,1);
+0062           [d1,d2,mC] = mstd(c); <span class="comment">%Determine centroid</span>
+0063           mC = normalise(mC); <span class="comment">% Unit vectors per trial</span>
+0064           <span class="comment">% mean vector over all trials</span>
+0065           [phi,R,phiC,phiConf,phiS,P] = mstd(mC);
+0066           
+0067      
+0068      <span class="keyword">case</span> <span class="string">'VONMISES'</span>
+0069           <a href="../../@al_spk/error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'not implemented yet!'</span>);
+0070           [k,phi] = vonmises(circular(DIR.*(pi/180),mR));
+0071                <span class="comment">%f(phi) = [1/(2pi Io(k)].*exp(k*(cos(phi-theta)));</span>
+0072           VM = (1/2*pi).*exp(k*(cos(DIR.*(pi/180)-phi)));
+0073           
+0074      <span class="keyword">otherwise</span>
+0075           <a href="../../@al_spk/error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'Need an calcmode to determine PD ! Enter ''CENTROID'' or ''VONMISES'''</span>);
+0076           <span class="keyword">return</span>;
+0077 <span class="keyword">end</span>
+0078 
+0079 <span class="comment">%________________________________________________________________________</span>
+0080 <span class="comment">% PLOT</span>
+0081 <span class="keyword">switch</span> upper(plotmode)
+0082      <span class="keyword">case</span> <span class="string">'FULL'</span>
+0083           ntrials = cellfun(<span class="string">'length'</span>,trR);
+0084           <a href="#_sub1" class="code" title="subfunction makefigure(dirnum)">makefigure</a>(DIRnum);
+0085           
+0086           axes(findobj(<span class="string">'tag'</span>,<span class="string">'polar'</span>));
+0087           <a href="#_sub2" class="code" title="subfunction polarplot(DIR,mR,baseline,phi,maxR)">polarplot</a>(DIR.*(pi/180),mR,BLrate,phi,maxR);
+0088           
+0089           <span class="keyword">for</span> i = 1:DIRnum
+0090                
+0091                s = set(s,<span class="string">'trialselection'</span>,findtrial(s,<span class="string">'direction'</span>,DIR(i)));
+0092                cAx = findobj(<span class="string">'tag'</span>,num2str(DIR(i)));
+0093                <span class="comment">%___________________________________________________________</span>
+0094                <span class="comment">% raster plot</span>
+0095                h1 = subaxes(cAx,[2,1],[2,1]);
+0096                     
+0097                <span class="comment">% analyse window</span>
+0098                <span class="keyword">if</span> size(s.analysewin,1)&gt;1;
+0099                     patch(<span class="string">'xdata'</span>,[s.analysewin(s.trialselection(1),[1 2 2 1])],<span class="string">'ydata'</span>,[0 0 11 11],<span class="string">'facecolor'</span>,[.8 .8 .8],<span class="string">'edgecolor'</span>,<span class="string">'none'</span>);
+0100                <span class="keyword">else</span>;
+0101                     patch(<span class="string">'xdata'</span>,[s.analysewin([1 2 2 1])],<span class="string">'ydata'</span>,[0 0 11 11],<span class="string">'facecolor'</span>,[.8 .8 .8],<span class="string">'edgecolor'</span>,<span class="string">'none'</span>);
+0102                <span class="keyword">end</span>
+0103                <span class="comment">% stim on</span>
+0104                line([0 0],[0 11],<span class="string">'color'</span>,<span class="string">'g'</span>,<span class="string">'linewidth'</span>,1.5);<span class="comment">% align time</span>
+0105                
+0106                rasterplot(s,<span class="string">'line'</span>);
+0107                set(h1, <span class="keyword">...</span>
+0108                     <span class="string">'xlim'</span>,s.plotwin,<span class="string">'xtick'</span>,[0:1000:3000],<span class="string">'xticklabel'</span>,[0:3],<span class="string">'xgrid'</span>,<span class="string">'off'</span>, <span class="keyword">...</span>
+0109                     <span class="string">'ylim'</span>,[0 11],<span class="string">'ytick'</span>,[], <span class="keyword">...</span>
+0110                     <span class="string">'gridlinestyle'</span>,<span class="string">':'</span>, <span class="keyword">...</span>
+0111                     <span class="string">'box'</span>,<span class="string">'on'</span>,<span class="string">'fontsize'</span>,10,<span class="string">'layer'</span>,<span class="string">'top'</span>);
+0112                <span class="comment">%___________________________________________________________</span>
+0113                <span class="comment">% histogram/density</span>
+0114                h2 = subaxes(cAx,[2,1],[1,1]);
+0115                <span class="comment">% analyse window</span>
+0116                <span class="keyword">if</span> size(s.analysewin,1)&gt;1;
+0117                     patch(<span class="string">'xdata'</span>,[s.analysewin(s.trialselection(1),[1 2 2 1])],<span class="string">'ydata'</span>,[0 0 100 100],<span class="string">'facecolor'</span>,[.8 .8 .8],<span class="string">'edgecolor'</span>,<span class="string">'none'</span>);
+0118                <span class="keyword">else</span>;
+0119                     patch(<span class="string">'xdata'</span>,[s.analysewin([1 2 2 1])],<span class="string">'ydata'</span>,[0 0 100 100],<span class="string">'facecolor'</span>,[.8 .8 .8],<span class="string">'edgecolor'</span>,<span class="string">'none'</span>);
+0120                <span class="keyword">end</span>
+0121                <span class="comment">% stim on</span>
+0122                line([0 0],[0 100],<span class="string">'color'</span>,<span class="string">'g'</span>,<span class="string">'linewidth'</span>,1.5);<span class="comment">% align time</span>
+0123                line(s.plotwin,[BLrate BLrate],<span class="string">'color'</span>,<span class="string">'k'</span>,<span class="string">'linestyle'</span>,<span class="string">':'</span>);
+0124                
+0125                <span class="comment">% histogram</span>
+0126 <span class="comment">%                density(s,[],[],'color','b','linewidth',1.5);</span>
+0127                histogram(s,1,<span class="string">'BAR'</span>,<span class="string">'edgecolor'</span>,<span class="string">'none'</span>,<span class="string">'facecolor'</span>,[.5 .5 .5]);
+0128                
+0129                set(h2, <span class="keyword">...</span>
+0130                     <span class="string">'xlim'</span>,s.plotwin,<span class="string">'xtick'</span>,[0:1000:3000],<span class="string">'xticklabel'</span>,[],<span class="string">'xgrid'</span>,<span class="string">'on'</span>, <span class="keyword">...</span>
+0131                     <span class="string">'ylim'</span>,[0 100],<span class="string">'ytick'</span>,[0 100], <span class="keyword">...</span>
+0132                     <span class="string">'gridlinestyle'</span>,<span class="string">':'</span>, <span class="keyword">...</span>
+0133                     <span class="string">'box'</span>,<span class="string">'on'</span>,<span class="string">'fontsize'</span>,10,<span class="string">'layer'</span>,<span class="string">'top'</span>);
+0134                text(s.plotwin(1),100,[<span class="string">'cnd '</span> num2str(CND(i)) <span class="string">' N = '</span> num2str(ntrials(i))], <span class="keyword">...</span>
+0135                     <span class="string">'fontsize'</span>,10,<span class="string">'horizontalalignment'</span>,<span class="string">'left'</span>,<span class="string">'verticalalignment'</span>,<span class="string">'bottom'</span>);
+0136           <span class="keyword">end</span>
+0137           axes(findobj(<span class="string">'tag'</span>,<span class="string">'text'</span>));
+0138           set(gca,<span class="string">'xlim'</span>,[0 1],<span class="string">'ylim'</span>,[0 1],<span class="string">'visible'</span>,<span class="string">'off'</span>);
+0139           text(0,1,[s.file <span class="string">' - ch. '</span> s.channel ],<span class="string">'horizontalalignment'</span>,<span class="string">'left'</span>,<span class="string">'verticalalignment'</span>,<span class="string">'bottom'</span>,<span class="string">'fontsize'</span>,12);
+0140           text(0,1,s.date,<span class="string">'horizontalalignment'</span>,<span class="string">'left'</span>,<span class="string">'verticalalignment'</span>,<span class="string">'top'</span>,<span class="string">'fontsize'</span>,10);
+0141           text(0,0.95,[<span class="string">'align &quot;'</span> s.alignevent <span class="string">'&quot;'</span>],<span class="string">'horizontalalignment'</span>,<span class="string">'left'</span>,<span class="string">'verticalalignment'</span>,<span class="string">'top'</span>,<span class="string">'fontsize'</span>,10);
+0142           text(0,0.90,[<span class="string">'binwidth '</span> num2str(s.binwidth)],<span class="string">'horizontalalignment'</span>,<span class="string">'left'</span>,<span class="string">'verticalalignment'</span>,<span class="string">'top'</span>,<span class="string">'fontsize'</span>,10);
+0143           text(0,0.85,[<span class="string">'PD '</span> num2str(round(phi.*(180/pi)))],<span class="string">'horizontalalignment'</span>,<span class="string">'left'</span>,<span class="string">'verticalalignment'</span>,<span class="string">'top'</span>,<span class="string">'fontsize'</span>,10);
+0144           text(0,0.80,[<span class="string">'P '</span> num2str(P)],<span class="string">'horizontalalignment'</span>,<span class="string">'left'</span>,<span class="string">'verticalalignment'</span>,<span class="string">'top'</span>,<span class="string">'fontsize'</span>,10);
+0145           text(0,0.75,[<span class="string">'BL '</span> num2str(BLrate) <span class="string">' Hz'</span>],<span class="string">'horizontalalignment'</span>,<span class="string">'left'</span>,<span class="string">'verticalalignment'</span>,<span class="string">'top'</span>,<span class="string">'fontsize'</span>,10);
+0146           text(0,0.70,[<span class="string">'maxR '</span> num2str(maxR) <span class="string">' Hz'</span>],<span class="string">'horizontalalignment'</span>,<span class="string">'left'</span>,<span class="string">'verticalalignment'</span>,<span class="string">'top'</span>,<span class="string">'fontsize'</span>,10);
+0147           text(0,0.65,[<span class="string">'Stimulus &quot;'</span> s.stimulus <span class="string">'&quot;'</span>],<span class="string">'horizontalalignment'</span>,<span class="string">'left'</span>,<span class="string">'verticalalignment'</span>,<span class="string">'top'</span>,<span class="string">'fontsize'</span>,10);
+0148 
+0149      <span class="keyword">case</span> <span class="string">'POLAR'</span>
+0150           <a href="#_sub2" class="code" title="subfunction polarplot(DIR,mR,baseline,phi,maxR)">polarplot</a>(DIR.*(pi/180),mR,BLrate,phi,maxR);
+0151 <span class="keyword">end</span>
+0152 
+0153 <span class="comment">%--------------------------------------------------------------------------</span>
+0154 <a name="_sub1" href="#_subfunctions" class="code">function makefigure(dirnum)</a>
+0155 figure(<span class="string">'color'</span>,<span class="string">'w'</span>, <span class="keyword">...</span>
+0156      <span class="string">'paperorientation'</span>,<span class="string">'landscape'</span>, <span class="keyword">...</span>
+0157      <span class="string">'paperunits'</span>,<span class="string">'normalized'</span>, <span class="keyword">...</span>
+0158      <span class="string">'paperposition'</span>,[0.025 0.025 0.95 0.85]);
+0159 
+0160 <span class="keyword">switch</span> dirnum
+0161      <span class="keyword">case</span> 8
+0162           h = subplot(3,4,7);set(h,<span class="string">'tag'</span>,<span class="string">'0'</span>);
+0163           h = subplot(3,4,3);set(h,<span class="string">'tag'</span>,<span class="string">'45'</span>);
+0164           h = subplot(3,4,2);set(h,<span class="string">'tag'</span>,<span class="string">'90'</span>);
+0165           h = subplot(3,4,1);set(h,<span class="string">'tag'</span>,<span class="string">'135'</span>);
+0166           h = subplot(3,4,5);set(h,<span class="string">'tag'</span>,<span class="string">'180'</span>);
+0167           h = subplot(3,4,9);set(h,<span class="string">'tag'</span>,<span class="string">'225'</span>);
+0168           h = subplot(3,4,10);set(h,<span class="string">'tag'</span>,<span class="string">'270'</span>);
+0169           h = subplot(3,4,11);set(h,<span class="string">'tag'</span>,<span class="string">'315'</span>);
+0170           h = subplot(3,4,6);set(h,<span class="string">'tag'</span>,<span class="string">'polar'</span>);
+0171           h = subplot(3,4,[4 8 12]);set(h,<span class="string">'tag'</span>,<span class="string">'text'</span>);
+0172 <span class="keyword">end</span>
+0173 
+0174 <a name="_sub2" href="#_subfunctions" class="code">function polarplot(DIR,mR,baseline,phi,maxR)</a>
+0175 polarpatch(DIR,mR,<span class="string">'clipping'</span>,<span class="string">'off'</span>,<span class="string">'facecolor'</span>,[.7 .7 .7],<span class="string">'edgecolor'</span>,<span class="string">'k'</span>);
+0176 set(gca,<span class="string">'dataaspectratio'</span>,[1 1 1],<span class="string">'xlim'</span>,[-maxR maxR],<span class="string">'ylim'</span>,[-maxR maxR],<span class="string">'visible'</span>,<span class="string">'off'</span>);
+0177 polargrid(maxR,[0.5*pi:0.5*pi:2*pi],<span class="string">'color'</span>,<span class="string">'k'</span>);
+0178 polargrid(baseline,[],<span class="string">'color'</span>,<span class="string">'b'</span>);
+0179 polarscatter(phi,maxR,<span class="string">'color'</span>,<span class="string">'r'</span>,<span class="string">'linewidth'</span>,2);
+0180 text(maxR,-maxR,[num2str(round(maxR*10)/10) <span class="string">'hz'</span>],<span class="string">'horizontalalignment'</span>,<span class="string">'right'</span>,<span class="string">'verticalalignment'</span>,<span class="string">'top'</span>);
+0181 text(-maxR,-maxR,[num2str(round(baseline*10)/10) <span class="string">'hz'</span>],<span class="string">'horizontalalignment'</span>,<span class="string">'left'</span>,<span class="string">'verticalalignment'</span>,<span class="string">'top'</span>,<span class="string">'color'</span>,<span class="string">'b'</span>);
+0182 
+0183</pre></div>
+<hr><address>Generated on Tue 25-Apr-2006 16:24:52 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

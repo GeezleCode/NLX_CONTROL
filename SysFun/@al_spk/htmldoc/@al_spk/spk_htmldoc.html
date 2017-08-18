@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_htmldoc</title>
+  <meta name="keywords" content="spk_htmldoc">
+  <meta name="description" content="creates the html documentation by use of m2html.m">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_htmldoc.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_htmldoc
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>creates the html documentation by use of m2html.m</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function spk_htmldoc(s) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> creates the html documentation by use of m2html.m</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function spk_htmldoc(s)</a>
+0002 
+0003 <span class="comment">% creates the html documentation by use of m2html.m</span>
+0004 
+0005 old_CD = cd;
+0006 
+0007 TargetDir = fileparts(which(<span class="string">'al_spk'</span>));
+0008 
+0009 <span class="comment">% make the directory one up the current directory</span>
+0010 [TargetDir,CurrDir] = strtok(fliplr(TargetDir),<span class="string">'\'</span>);
+0011 TargetDir = fliplr(TargetDir);
+0012 CurrDir = fliplr(CurrDir);
+0013 cd(CurrDir);
+0014 
+0015 helpdir = fullfile(TargetDir,<span class="string">'htmldoc'</span>);
+0016 
+0017 <span class="keyword">if</span> exist(helpdir)
+0018     button = questdlg([<span class="string">'Do you really want to remove ...'</span> helpdir]);
+0019     <span class="keyword">if</span> strcmpi(button,<span class="string">'Yes'</span>) 
+0020         rmdir(helpdir,<span class="string">'s'</span>);
+0021     <span class="keyword">end</span>
+0022 <span class="keyword">end</span>
+0023 
+0024 m2html( <span class="keyword">...</span>
+0025     <span class="string">'mfiles'</span>,TargetDir, <span class="keyword">...</span>
+0026     <span class="string">'htmldir'</span>,helpdir, <span class="keyword">...</span>
+0027     <span class="string">'recursive'</span>,<span class="string">'off'</span>, <span class="keyword">...</span>
+0028     <span class="string">'source'</span>,<span class="string">'on'</span>, <span class="keyword">...</span>
+0029     <span class="string">'global'</span>,<span class="string">'on'</span>);
+0030 
+0031 cd(old_CD);
+0032 
+0033 <span class="comment">%    o mFiles - Cell array of strings or character array containing the</span>
+0034 <span class="comment">%       list of M-files and/or directories of M-files for which an HTML</span>
+0035 <span class="comment">%       documentation will be built [ '.' ]</span>
+0036 <span class="comment">%    o htmlDir - Top level directory for generated HTML files [ '.' ]</span>
+0037 <span class="comment">%    o recursive - Process subdirectories [ on | {off} ]</span>
+0038 <span class="comment">%    o source - Include Matlab source code in the HTML documentation</span>
+0039 <span class="comment">%                               [ {on} | off ]</span>
+0040 <span class="comment">%    o syntaxHighlighting - Syntax Highlighting [ {on} | off ]</span>
+0041 <span class="comment">%    o tabs - Replace '\t' (horizontal tab) in source code by n white space</span>
+0042 <span class="comment">%        characters [ 0 ... {4} ... n ]</span>
+0043 <span class="comment">%    o globalHypertextLinks - Hypertext links among separate Matlab</span>
+0044 <span class="comment">%        directories [ on | {off} ]</span>
+0045 <span class="comment">%    o todo - Create a TODO file in each directory summarizing all the</span>
+0046 <span class="comment">%        '% TODO %' lines found in Matlab code [ on | {off}]</span>
+0047 <span class="comment">%    o graph - Compute a dependency graph using GraphViz [ on | {off}]</span>
+0048 <span class="comment">%        'dot' required, see &lt;http://www.research.att.com/sw/tools/graphviz/&gt;</span>
+0049 <span class="comment">%    o indexFile - Basename of the HTML index file [ 'index' ]</span>
+0050 <span class="comment">%    o extension - Extension of generated HTML files [ '.html' ]</span>
+0051 <span class="comment">%    o template - HTML template name to use [ 'blue' ]</span>
+0052 <span class="comment">%    o save - Save current state after M-files parsing in 'm2html.mat'</span>
+0053 <span class="comment">%        in directory htmlDir [ on | {off}]</span>
+0054 <span class="comment">%    o load - Load a previously saved '.mat' M2HTML state to generate HTML</span>
+0055 <span class="comment">%        files once again with possibly other options [ &lt;none&gt; ]</span>
+0056 <span class="comment">%    o verbose - Verbose mode [ {on} | off ]</span></pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

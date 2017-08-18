@@ -1,36 +1,41 @@
-function nTrials = spk_TrialNum(s,CheckDataFlag)
+function total = spk_TrialNum(s)
 
 % returns and check for number of trials in @al_spk object
-% function nTrials = spk_TrialNum(s,CheckDataFlag)
+% function total = spk_numtrials(s)
+%
+% total ... total number of trials
 
-if nargin<2
-    CheckDataFlag = false;
+
+% check trial numbers
+nTrials = zeros(1,6);
+
+nTrials(1) = size(s.spk,2);
+nTrials(2) = size(s.events,2);
+nTrials(3) = size(s.align,2);
+nTrials(4) = size(s.trialcode,2);
+nTrials(5) = size(s.stimulus,2);
+
+% nAnalogTrials = cellfun('size',s.analog,1);
+
+
+if any(nTrials==0 | isnan(nTrials))
+    nTrials = nTrials(nTrials~=0 & ~isnan(nTrials));
+%     warning('spk_numtrials: empty fields in object !');
 end
-nTrials = size(s.trialcode,2);
-if ~CheckDataFlag;return;end
+if isempty(nTrials)
+    nTrials = 0;
+end
 
-%% check trial numbers
-nTrEv = size(s.events,2);
-[nChSpk,nTrSpk] = size(s.spk);
-[nChSpkWv,nTrSpkWv] = size(s.spkwave);
-nTrAlgn = size(s.align,2);
-nTrStim = size(s.stimulus,2);
-nTrAna = cellfun('size',s.analog,1);
-nChAna = length(s.analog);
-
-nTr = [nTrEv nTrSpk nTrAlgn nTrStim nTrAna(:)'];
-nTr = nTr(~isnan(nTr)&nTr>0);
-if length(unique(nTr))>1
-    fprintf(1,'number of trials\n');
-    fprintf(1,'trialcode: %1.0f\n',nTrials);
-    fprintf(1,'events:    %1.0f\n',nTrEv);
-    fprintf(1,'spikes:    %1.0f\n',nTrSpk);
-    fprintf(1,'spikewave: %1.0f\n',nTrSpkWv);
-    fprintf(1,'align:     %1.0f\n',nTrAlgn);
-    fprintf(1,'stimulus:  %1.0f\n',nTrStim);
-    fprintf(1,'analog:    ');
-    fprintf(1,'%1.0f ',nTrAna(:));
-    fprintf(1,'\n');
+total = unique(nTrials);
+if length(total)>1
     error('inconsistency in number of trials !!!');
 end
 
+% function nTrials = check_array(x,dim)
+% if isempty(x)
+%     nTrials = NaN;
+% elseif iscell(x)
+%     nTrials = cellfun('size',x,dim);
+% elseif isnumeric(x)
+%     nTrials = size(x,dim);
+% end

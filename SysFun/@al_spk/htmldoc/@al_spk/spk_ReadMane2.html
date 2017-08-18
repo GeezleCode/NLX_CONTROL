@@ -1,0 +1,362 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_ReadMane2</title>
+  <meta name="keywords" content="spk_ReadMane2">
+  <meta name="description" content="reads a mane2 file into a @al_spk object">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_ReadMane2.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_ReadMane2
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>reads a mane2 file into a @al_spk object</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function s = spk_ReadMane2(s,FilePath,Chan) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> reads a mane2 file into a @al_spk object
+ function s = spk_read_mane2(s,FilePath,Chan)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_AddAnalogChan.html" class="code" title="function [s,ChanNr] = spk_AddAnalogChan(s,Name,Data,SF,Time,Units,AlignBin)">spk_AddAnalogChan</a>	adds a new channel to analog data</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function s = spk_ReadMane2(s,FilePath,Chan)</a>
+0002 
+0003 <span class="comment">% reads a mane2 file into a @al_spk object</span>
+0004 <span class="comment">% function s = spk_read_mane2(s,FilePath,Chan)</span>
+0005 
+0006 
+0007 <span class="comment">%% open file</span>
+0008 [fid,fid_mess] = fopen(FilePath,<span class="string">'r'</span>);
+0009 <span class="keyword">if</span> fid == -1;disp(fid_mess);disp(FilePath);<span class="keyword">end</span>
+0010 
+0011 s.file = FilePath;
+0012 [fDir,fName,fExt] = fileparts(FilePath);
+0013 
+0014 <span class="comment">%% size of file</span>
+0015 fseek(fid,0,<span class="string">'eof'</span>);
+0016 FileBytes = ftell(fid);
+0017 fseek(fid,0,<span class="string">'bof'</span>);
+0018 
+0019 <span class="comment">%% waitbar</span>
+0020 h_wait = waitbar(0,[<span class="string">'reading '</span> num2str(FileBytes) <span class="string">' bytes ('</span> sprintf(<span class="string">'%1.3f'</span>,FileBytes/1048576) <span class="string">'MB, '</span> sprintf(<span class="string">'%1.0f'</span>,FileBytes/1024) <span class="string">'KB)'</span>]);
+0021  
+0022 <span class="comment">%% do reading</span>
+0023 fseek(fid,0,<span class="string">'bof'</span>);
+0024 read_flag = true;
+0025 trial_count = 0;
+0026 <span class="keyword">while</span> read_flag
+0027 
+0028     <span class="comment">%% read block</span>
+0029     block_pos = ftell(fid);
+0030     waitbar(ftell(fid)/FileBytes);
+0031     [block_size,WORD_count] = fread(fid,1,<span class="string">'uint16'</span>);
+0032 
+0033     <span class="comment">%% check if block is terminated properly</span>
+0034     <span class="keyword">if</span> block_pos+(2*block_size)&gt;FileBytes;
+0035         disp(<span class="string">'No proper termination of file ! =&gt; last set is not complete.'</span>);
+0036         <span class="keyword">break</span>;
+0037     <span class="keyword">end</span>
+0038 
+0039     <span class="comment">%% read block data</span>
+0040     [DATA,WORD_count] = fread(fid,block_size,<span class="string">'uint16'</span>);
+0041     block_name = upper(rkradix(DATA(1)));
+0042 
+0043     <span class="keyword">switch</span> block_name
+0044         <span class="keyword">case</span> <span class="string">'ID '</span>
+0045             filename = deblank([rkradix(DATA(2)) rkradix(DATA(3)) rkradix(DATA(4)) rkradix(DATA(5))]);
+0046             <span class="keyword">if</span> ~strcmp(upper(deblank(filename)),upper([fName,fExt]));
+0047                 disp([<span class="string">'File name conflict !!! '</span> upper(s.ID.file) <span class="string">' was saved as '</span> upper(filename)]);
+0048                 s.name = upper(filename);
+0049             <span class="keyword">end</span>
+0050             s.tag = deblank([rkradix(DATA(4)) rkradix(DATA(5))]);
+0051 
+0052             <span class="keyword">if</span> DATA(8)&gt;=100 &amp; DATA(8)&lt;200
+0053                 current_year = DATA(8)-100+2000;
+0054             <span class="keyword">elseif</span> DATA(8)&lt;100 &amp; DATA(8)&lt;200
+0055                 current_year = 2000-(100-DATA(8));
+0056             <span class="keyword">end</span>
+0057 
+0058             s.date = datestr(datenum(current_year,DATA(7),DATA(6),DATA(9),DATA(10),DATA(11)),<span class="string">'dd-mmm-yyyy HH:MM:SS'</span>);
+0059             s.version     = strcat(num2str(DATA(13)),<span class="string">'.'</span>,num2str(DATA(14)));
+0060 
+0061         <span class="keyword">case</span> <span class="string">'GLB'</span>
+0062             s.settings.GLB = DATA;
+0063         <span class="keyword">case</span> <span class="string">'PRM'</span>
+0064             s.settings.PRM(trial_count + 1) = DATA;
+0065         <span class="keyword">case</span> <span class="string">'BEH'</span>
+0066             trial_count = trial_count + 1;
+0067             s.trialcode(1:10,trial_count) = DATA(1:10,1);
+0068             s.events{1,trial_count} = DATA(11:end);
+0069         <span class="keyword">case</span> <span class="string">'ANA'</span>
+0070             <span class="comment">% this counts the different ANAlog blocks</span>
+0071             <span class="comment">% reset for a new trial</span>
+0072             <span class="keyword">if</span> last_ANA_trial &lt; trial_count;ANACHAN_count=0;<span class="keyword">end</span>
+0073             ANACHAN_count  = ANACHAN_count+1;
+0074             last_ANA_trial = trial_count;
+0075             s.Analog.channel    = union(s.Analog.channel,DATA(6));
+0076             s.Analog.SampleFreq = union(s.Analog.SampleFreq,DATA(10));
+0077             s.Analog.data{ANACHAN_count,trial_count} = DATA(11:end);
+0078         <span class="keyword">case</span> <span class="string">'SP1'</span>
+0079             s.Spike.SampleFreq     = DATA(10);
+0080             s.Spike.times{1,trial_count}     = DATA(11:end);
+0081         <span class="keyword">case</span> <span class="string">'SP2'</span>
+0082             s.Spike.SampleFreq     = DATA(10);
+0083             s.Spike.times{2,trial_count}     = DATA(11:end);
+0084         <span class="keyword">case</span> <span class="string">'END'</span>
+0085             <span class="keyword">if</span> DATA(4)&gt;=100 &amp; DATA(4)&lt;200
+0086                 current_year = DATA(4)-100+2000;
+0087             <span class="keyword">elseif</span> DATA(4)&lt;100 &amp; DATA(4)&lt;200
+0088                 current_year = 2000-(100-DATA(4));
+0089             <span class="keyword">end</span>
+0090             <span class="comment">% date year can be corrupted -&gt; just take the end time</span>
+0091             s.End.time = datestr(datenum(current_year,DATA(3),DATA(2),DATA(5),DATA(6),DATA(7)),<span class="string">'HH:MM:SS'</span>);
+0092             read_flag = false;
+0093 
+0094         
+0095         <span class="keyword">case</span> <span class="string">'PST'</span>
+0096              s.Video.SampleFreq = DATA(10);
+0097              s.Video.time{trial_count}    = DATA(11:end);
+0098          <span class="keyword">case</span> {<span class="string">'PAX'</span> <span class="string">'RCX'</span>}
+0099              s.Pattern.SampleFreq     = DATA(10);
+0100              s.Pattern.pos{trial_count}(:,1)     = DATA(11:end);
+0101          <span class="keyword">case</span> {<span class="string">'PAY'</span> <span class="string">'RCY'</span>}
+0102              s.Pattern.SampleFreq     = DATA(10);
+0103              s.Pattern.pos{trial_count}(:,2)     = DATA(11:end);
+0104          <span class="keyword">case</span> <span class="string">'TAX'</span>
+0105              s.Target.SampleFreq     = DATA(10);
+0106              s.Target.pos{trial_count}(:,1)     = DATA(11:end);
+0107          <span class="keyword">case</span> <span class="string">'TAY'</span>
+0108              s.Target.SampleFreq     = DATA(10);
+0109              s.Target.pos{trial_count}(:,2)     = DATA(11:end);
+0110          <span class="keyword">case</span> <span class="string">'PSX'</span>
+0111              s.Hand.SampleFreq     = DATA(10);
+0112              s.Hand.pos{trial_count}(:,1)     = DATA(11:end);
+0113          <span class="keyword">case</span> <span class="string">'PSY'</span>
+0114              s.Hand.SampleFreq     = DATA(10);
+0115              s.Hand.pos{trial_count}(:,2)     = DATA(11:end);
+0116          <span class="keyword">case</span> <span class="string">'EYX'</span>
+0117              s.Eye.videopos{trial_count}(:,1)     = DATA(11:end);
+0118          <span class="keyword">case</span> <span class="string">'EYY'</span>
+0119              s.Eye.videopos{trial_count}(:,2)     = DATA(11:end);
+0120          <span class="keyword">case</span> <span class="string">'EDX'</span>
+0121              s.Eye.SampleFreq     = DATA(10);
+0122              s.Eye.pos{trial_count}(:,1)     = DATA(11:end);
+0123          <span class="keyword">case</span> <span class="string">'EDY'</span>
+0124              s.Eye.SampleFreq     = DATA(10);
+0125              s.Eye.pos{trial_count}(:,2)     = DATA(11:end);
+0126         <span class="keyword">otherwise</span>
+0127             iAna = spk_FindAnalog(s,block_name);
+0128             <span class="keyword">if</span> isnan(iAna)
+0129                 [s,iAna] = <a href="spk_AddAnalogChan.html" class="code" title="function [s,ChanNr] = spk_AddAnalogChan(s,Name,Data,SF,Time,Units,AlignBin)">spk_AddAnalogChan</a>(s,Name,Data,SF,Time,Units,AlignBin)
+0130             <span class="keyword">end</span>            
+0131             warning([<span class="string">'Unknown block name '''</span> upper(block_name) <span class="string">''' !'</span>]);
+0132      <span class="keyword">end</span>
+0133 
+0134 <span class="keyword">end</span>
+0135 close(h_wait);
+0136 fclose(fid);
+0137 
+0138 <span class="comment">%% trialcodelabel</span>
+0139 s.trialcodelabel{1,1} = <span class="string">'BEH1'</span>;
+0140 s.trialcodelabel{2,1} = <span class="string">'set'</span>;
+0141 s.trialcodelabel{3,1} = <span class="string">'trialnr'</span>;
+0142 s.trialcodelabel{4,1} = <span class="string">'condition'</span>;
+0143 s.trialcodelabel{5,1} = <span class="string">'BEH5'</span>;
+0144 s.trialcodelabel{6,1} = <span class="string">'BEH6'</span>;
+0145 s.trialcodelabel{7,1} = <span class="string">'BEH7'</span>;
+0146 s.trialcodelabel{8,1} = <span class="string">'BEH8'</span>;
+0147 s.trialcodelabel{9,1} = <span class="string">'BEH9'</span>;
+0148 s.trialcodelabel{10,1} = <span class="string">'BEH10'</span>;
+0149 
+0150 
+0151 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5</span>
+0152 
+0153 <span class="comment">%_____________________________________________________</span>
+0154 <span class="comment">% recorded trials and conditions</span>
+0155 <span class="comment">%_____________________________________________________</span>
+0156 s.Condition.name         = sort(unique(s.Trial.Condition));
+0157 s.ID.conditions         = sort(unique(s.Trial.Condition));
+0158 s.Trial.recordedNr         = length(s.Trial.TrialTotal);
+0159 s.Trial.currentNr         = length(s.Trial.TrialTotal);
+0160 s.Trial.totalNr         = max(s.Trial.TrialTotal);
+0161 s.Trial.selection         = 1:s.Trial.recordedNr;
+0162 s.ID.trials             = strcat(num2str(s.Trial.recordedNr),<span class="string">'/'</span>,num2str(s.Trial.totalNr));    
+0163 
+0164 <span class="comment">%_____________________________________________________</span>
+0165 <span class="comment">% Trials of PRM adjustments</span>
+0166 <span class="comment">%_____________________________________________________</span>
+0167 <span class="keyword">for</span> ii = 1:length(s.Setup.PRMTrial)
+0168      <span class="keyword">if</span> s.Setup.PRMTrial(ii)&gt;s.Trial.recordedNr
+0169           PRMTotal(ii) = NaN;
+0170      <span class="keyword">else</span>
+0171           PRMTotal(ii) = s.Trial.TrialTotal(s.Setup.PRMTrial(ii));
+0172      <span class="keyword">end</span>
+0173 <span class="keyword">end</span>
+0174 s.Setup.PRMTrial = PRMTotal;
+0175 
+0176 <span class="comment">%__________________</span>
+0177 <span class="comment">% check read fields</span>
+0178 <span class="comment">%__________________</span>
+0179 <span class="keyword">if</span> isempty(s.Hand.pos);s.read.Hand = 0;<span class="keyword">end</span>
+0180 <span class="keyword">if</span> isempty(s.Eye.pos)&amp;isempty(s.Eye.videopos);s.read.Eye = 0;<span class="keyword">end</span>
+0181 <span class="keyword">if</span> isempty(s.Spike.times);s.read.Spike = 0;<span class="keyword">end</span>
+0182 <span class="keyword">if</span> isempty(s.Target.pos);s.read.Target = 0;<span class="keyword">end</span>
+0183 <span class="keyword">if</span> isempty(s.Pattern.pos);s.read.Pattern = 0;<span class="keyword">end</span>
+0184 <span class="keyword">if</span> isempty(s.Analog.data);s.read.Analog = 0;<span class="keyword">end</span>
+0185 
+0186 <span class="comment">%___________________________________________</span>
+0187 <span class="comment">% SCREEN DISTANCE and PIXEL WIDTH</span>
+0188 <span class="comment">%___________________________________________</span>
+0189 <span class="keyword">if</span> datenum(s.ID.date) &lt; datenum(<span class="string">'23-Dec-1999'</span>)
+0190      s.Setup.ScreenDistance = 115; <span class="comment">% cm</span>
+0191      s.Setup.PixelRatio      = 114/800;<span class="comment">% cm/pixel</span>
+0192      
+0193 <span class="keyword">elseif</span> datenum(s.ID.date) &gt;= datenum(<span class="string">'23-Dec-1999'</span>) <span class="keyword">...</span>
+0194      &amp; datenum(s.ID.date) &lt; datenum(<span class="string">'01-Jul-2002'</span>)
+0195      s.Setup.ScreenDistance     = 62; <span class="comment">% cm</span>
+0196      s.Setup.PixelRatio         = 142/800;<span class="comment">% cm/pixel</span>
+0197      <span class="comment">% visible screen width 1-725 Pixel horizontal</span>
+0198      
+0199 <span class="keyword">elseif</span> datenum(s.ID.date) &gt;= datenum(<span class="string">'01-Jul-2002'</span>)
+0200      <span class="comment">% Umbau des Bildschirmes am 1.7.2002</span>
+0201      <span class="comment">% Kopfhaltermitte bei 115 cm (Augen bei 113 ?!)</span>
+0202      s.Setup.ScreenDistance     = 113; <span class="comment">% cm</span>
+0203      <span class="comment">% X: 700 pixel = 106 cm Y: 500 pixel = 76 cm</span>
+0204      s.Setup.PixelRatio         = 106/700;<span class="comment">% cm/pixel</span>
+0205 <span class="keyword">end</span>
+0206 s.Setup.ScreenRatio = s.Setup.ScreenDistance * (1/57.3);<span class="comment">% cm/deg</span>
+0207 s.Setup.VisualRatio = s.Setup.PixelRatio / s.Setup.ScreenRatio;<span class="comment">% deg/pixel</span>
+0208 
+0209 <span class="comment">%_____________________________________________________</span>
+0210 <span class="comment">% Time data</span>
+0211 <span class="comment">%_____________________________________________________</span>
+0212 h_wait = waitbar(0,[s.ID.file <span class="string">' - construct time data'</span>]);
+0213 <span class="keyword">for</span> i = 1:s.Trial.currentNr
+0214      <span class="comment">%_____________________________________________________</span>
+0215      <span class="comment">% delete events with values of 65535</span>
+0216      <span class="comment">%_____________________________________________________</span>
+0217      s.Time.Events(find(s.Time.Events(:,i)==65535),i) = NaN;
+0218      <span class="comment">%_____________________________________________________</span>
+0219      <span class="comment">% Hand time</span>
+0220      <span class="comment">%_____________________________________________________</span>
+0221      <span class="keyword">if</span> s.read.Hand &amp; (strcmp(s.Hand.format,<span class="string">'draco18'</span>) | strcmp(s.Hand.format,<span class="string">'manip2'</span>));
+0222           s.Hand.time{i} = s.Video.time{i};
+0223      <span class="keyword">end</span>
+0224      <span class="comment">%_____________________________________________________</span>
+0225      <span class="comment">% write TimeVector for EyeData 500Hz                             %</span>
+0226      <span class="comment">% fitted to 75Hz monitor refresh by addition of first Frame Time %</span>
+0227      <span class="comment">%_____________________________________________________</span>
+0228      <span class="keyword">if</span> s.read.Eye &amp; strcmp(s.Eye.format,<span class="string">'analog'</span>) &amp; ~isempty(s.Video.time{i});
+0229           BinNum = size(s.Eye.pos{i}(:,1),1);
+0230           s.Eye.time{i} = round(([0:1:BinNum-1]).*((1/s.Eye.SampleFreq)*1000)) + s.Video.time{i}(1);
+0231      <span class="keyword">else</span>
+0232           s.Eye.time{i} = [];
+0233      <span class="keyword">end</span>
+0234      <span class="comment">%_____________________________________________________</span>
+0235      <span class="comment">% data of analog channels</span>
+0236      <span class="comment">%_____________________________________________________</span>
+0237      <span class="keyword">if</span> s.read.Analog &amp; ~isempty(s.Analog.channel)
+0238           BinNum = size(s.Analog.data{s.Analog.channel(1),i},1);
+0239           s.Analog.time{i} = round(([1:1:BinNum]).*((1/s.Analog.SampleFreq)*1000)) + s.Video.time{i}(1);
+0240      <span class="keyword">end</span>
+0241 <span class="keyword">end</span>
+0242 close(h_wait);
+0243 
+0244 <span class="comment">%___________________________________________</span>
+0245 <span class="comment">% read definitions for the current extension</span>
+0246 <span class="comment">%___________________________________________</span>
+0247 def_fun = deblank([<span class="string">'definition_'</span> strrep(s.ID.ext,<span class="string">'.'</span>,<span class="string">''</span>)]);
+0248 <span class="comment">% if exist([def_fun '.m'],'file')</span>
+0249      s = feval(def_fun,s);
+0250      <span class="comment">% clear events called 'NaN'</span>
+0251      NaNevents = strmatch(<span class="string">'NAN'</span>,upper(s.Time.EVdef));
+0252      s.Time.EVdef(NaNevents,:) = <span class="string">''</span>;
+0253      s.Time.Events(NaNevents,:) = [];
+0254 <span class="comment">% else</span>
+0255 <span class="comment">%      warning(['No definitions available for *' s.ID.ext ' - files']);</span>
+0256 <span class="comment">%      return;</span>
+0257 <span class="comment">% end</span>
+0258      
+0259 <span class="comment">%_____________________________________________________</span>
+0260 <span class="comment">% conversion</span>
+0261 <span class="comment">%_____________________________________________________</span>
+0262 h_wait = waitbar(0,[s.ID.file <span class="string">' - data conversion'</span>]);
+0263 <span class="keyword">for</span> i = 1:s.Trial.currentNr
+0264      <span class="keyword">if</span> s.read.Target &amp; doConversion
+0265           <span class="keyword">if</span> ~iscell(s.Target.pos) | isempty(s.Target.pos{i})
+0266                s.Target.pos(i) ={[NaN NaN]};
+0267           <span class="keyword">end</span>
+0268      <span class="keyword">end</span>
+0269      <span class="keyword">if</span> s.read.Eye &amp; doConversion
+0270           <span class="keyword">if</span> isempty(s.Eye.pos{i});
+0271                s.Eye.pos{i} = [NaN NaN];
+0272           <span class="keyword">else</span>
+0273                <span class="keyword">switch</span> upper(s.Eye.format)
+0274                <span class="keyword">case</span> <span class="string">'ANALOG'</span>
+0275                     ScreenCenter(1)     = s.Setup.GLB(strmatch(<span class="string">'elmax_x'</span>,s.Setup.GLBdef))/2;
+0276                     ScreenCenter(2)     = s.Setup.GLB(strmatch(<span class="string">'elmax_y'</span>,s.Setup.GLBdef))/2;
+0277                     Offset(1)           = s.Setup.PRM(strmatch(<span class="string">'offset_x'</span>,s.Setup.PRMdef));
+0278                     Offset(2)           = s.Setup.PRM(strmatch(<span class="string">'offset_y'</span>,s.Setup.PRMdef));
+0279                     Gain(1)             = s.Setup.PRM(strmatch(<span class="string">'gain_x'</span>,s.Setup.PRMdef));
+0280                     Gain(2)             = s.Setup.PRM(strmatch(<span class="string">'gain_y'</span>,s.Setup.PRMdef));
+0281                     [s.Eye.pos{i}(:,1),s.Eye.pos{i}(:,2)] = conv_ana_eye( <span class="keyword">...</span>
+0282                          s.Eye.pos{i}(:,1), <span class="keyword">...</span>
+0283                      s.Eye.pos{i}(:,2), <span class="keyword">...</span>
+0284                      s.Setup.ScreenDistance, <span class="keyword">...</span>
+0285                      1/s.Setup.PixelRatio, <span class="keyword">...</span>
+0286                      ScreenCenter, <span class="keyword">...</span>
+0287                      Offset, <span class="keyword">...</span>
+0288                          Gain);
+0289                <span class="keyword">end</span>
+0290           <span class="keyword">end</span>
+0291     <span class="keyword">end</span>
+0292      <span class="keyword">if</span> s.read.Hand  &amp; doConversion
+0293           <span class="keyword">if</span> isempty(s.Hand.pos{i});s.Hand.pos{i} = [NaN NaN];<span class="keyword">else</span>
+0294                <span class="keyword">switch</span> upper(s.Hand.format)
+0295                <span class="keyword">case</span> <span class="string">'MANIP2'</span>
+0296                     [s.Hand.pos{i}(:,1),s.Hand.pos{i}(:,2)] = conv_manip2(s.Hand.pos{i}(:,1),s.Hand.pos{i}(:,2),s.Setup.MotorRatio);
+0297                <span class="keyword">case</span> <span class="string">'DRACO18'</span>
+0298                  s.Setup.MotorRatio = 6;
+0299               [s.Hand.pos{i}(:,1),s.Hand.pos{i}(:,2)] = conv_draco18(s.Hand.pos{i}(:,1),s.Hand.pos{i}(:,2),s.Setup.MotorRatio);
+0300                <span class="keyword">end</span>
+0301           <span class="keyword">end</span>
+0302      <span class="keyword">end</span>
+0303      waitbar(i/s.Trial.currentNr);
+0304 <span class="keyword">end</span>
+0305 close(h_wait);
+0306 <span class="keyword">if</span> s.read.Spike &amp; doConversion
+0307      [s] = convertspike(s,0,0);
+0308 <span class="keyword">end</span>
+0309 
+0310 <span class="comment">% % check bad eye data</span>
+0311 <span class="comment">% if s.read.Eye &amp; doConversion</span>
+0312 <span class="comment">%      OUT = getbadeye(s);</span>
+0313 <span class="comment">%      s.Trial.BEH(get_def(s,'BEH','errorcode'),logical(OUT)) = 0;</span>
+0314 <span class="comment">% end</span>
+0315</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

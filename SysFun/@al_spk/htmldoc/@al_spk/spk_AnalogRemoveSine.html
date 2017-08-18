@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_AnalogRemoveSine</title>
+  <meta name="keywords" content="spk_AnalogRemoveSine">
+  <meta name="description" content="fits a sine wave of frequency f to each trial and subtract the mean">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_AnalogRemoveSine.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_AnalogRemoveSine
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>fits a sine wave of frequency f to each trial and subtract the mean</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [s,Amp,Theta] = spk_AnalogRemoveSine(s,f,Ev,EvOffset) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> fits a sine wave of frequency f to each trial and subtract the mean
+ s = spk_AnalogRemoveSine(s,f,Ev,EvOffset)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>	returns and check for number of trials in @al_spk object</li><li><a href="spk_getEvents.html" class="code" title="function [evCells,i] = spk_getEvents(s,eventlabel)">spk_getEvents</a>	returns the events; omit input for info</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_LFP_preprocess.html" class="code" title="function S = spk_LFP_preprocess(S,AnalogChan,LFPFilter,RemoveLine,RemoveSaturated)">spk_LFP_preprocess</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [Ahat,Theta,RMS]=sinefit2(s0,omega,t0,Ts)</a></li></ul>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [s,Amp,Theta] = spk_AnalogRemoveSine(s,f,Ev,EvOffset)</a>
+0002 
+0003 <span class="comment">% fits a sine wave of frequency f to each trial and subtract the mean</span>
+0004 <span class="comment">% s = spk_AnalogRemoveSine(s,f,Ev,EvOffset)</span>
+0005 
+0006 nTr = <a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>(s);
+0007 <span class="keyword">if</span> isempty(s.currenttrials)
+0008     s.currenttrials = 1:nTr;
+0009 <span class="keyword">end</span>
+0010 
+0011 <span class="comment">%% get time window</span>
+0012 <span class="keyword">if</span> nargin&lt;3
+0013     [EvTimes,i] = <a href="spk_getEvents.html" class="code" title="function [evCells,i] = spk_getEvents(s,eventlabel)">spk_getEvents</a>(s,Ev);
+0014     EvTimes = cat(1,EvTimes{:});
+0015     <span class="keyword">if</span> ischar(EvOffset)
+0016         [EvOffsetTimes,i] = <a href="spk_getEvents.html" class="code" title="function [evCells,i] = spk_getEvents(s,eventlabel)">spk_getEvents</a>(s,EvOffset);
+0017     <span class="keyword">elseif</span> isnumeric(EvOffset)
+0018         EvTimes = repmat(EvTimes,[1 2]) + repmat(EvOffset,[length(EvTimes) 1])
+0019 
+0020 <span class="comment">%% loop channels</span>
+0021 nCh = length(s.currentanalog);
+0022 
+0023 <span class="keyword">for</span> iCh = 1:nCh
+0024     ChNr = s.currentanalog(iCh);
+0025     SF = (1/s.analogfreq(ChNr));
+0026     
+0027     Amp = ones(nTr,1).*NaN;
+0028     Theta = ones(nTr,1).*NaN;
+0029     
+0030     <span class="keyword">for</span> iTr = 1:nTr
+0031         ci(iTr,:) = ~isnan(s.analog{ChNr}(iTr,:));
+0032         Ns = sum(ci(iTr,:),2);
+0033         t = [0:Ns-1].*SF;
+0034         [Amp(iTr),Theta(iTr),RMS]=<a href="#_sub1" class="code" title="subfunction [Ahat,Theta,RMS]=sinefit2(s0,omega,t0,Ts)">sinefit2</a>(s.analog{ChNr}(iTr,ci(iTr,:)),2*pi*f,0,SF);
+0035     <span class="keyword">end</span>
+0036     
+0037     AmpM = mean(Amp); 
+0038     <span class="keyword">for</span> iTr = 1:nTr
+0039         Ns = sum(ci(iTr,:),2);
+0040         t = [0:Ns-1].*SF;
+0041         s.analog{ChNr}(iTr,ci(iTr,:)) = s.analog{ChNr}(iTr,ci(iTr,:)) - AmpM*sin(2*pi*f*t+Theta(iTr));
+0042     <span class="keyword">end</span>
+0043 
+0044 <span class="keyword">end</span>
+0045 
+0046 <a name="_sub1" href="#_subfunctions" class="code">function [Ahat,Theta,RMS]=sinefit2(s0,omega,t0,Ts) </a>
+0047 <span class="comment">% sine wave fitting from noisy sine signal</span>
+0048 <span class="comment">% phase fitting has to be considered</span>
+0049 <span class="comment">% with a fixed omega!</span>
+0050 <span class="comment">% Written by Dr Chen YangQuan &lt;yqchen@ieee.org&gt;</span>
+0051 <span class="comment">% Last modified in 05-11-2000</span>
+0052 <span class="comment">% DESCRIPTIONS:</span>
+0053 <span class="comment">% s0: sampled series. 1xNp (note here)</span>
+0054 <span class="comment">% omega: known freq. (2*pi*f) (rad/sec.)</span>
+0055 <span class="comment">% Ts: sampling period (in Sec.)</span>
+0056 <span class="comment">% t0: initial time (in Sec.)</span>
+0057 <span class="comment">% Ahat: estimated amplitude</span>
+0058 <span class="comment">% Theta: fitted theta_0 (in rad.)</span>
+0059 <span class="comment">% RMS: root mean squares.</span>
+0060 <span class="comment">%</span>
+0061 <span class="comment">% See also &quot;jomega&quot;</span>
+0062 Np=size(s0); 
+0063 t=t0+[0:Np(2)-1]*Ts; 
+0064 A11= (sin(omega*t)*(sin(omega*t))'); 
+0065 A12= (sin(omega*t)*(cos(omega*t))'); 
+0066 A22= (cos(omega*t)*(cos(omega*t))'); 
+0067 b1=s0*(sin(omega*t))'; 
+0068 b2=s0*(cos(omega*t))'; 
+0069 A=[A11,A12;A12,A22]; 
+0070 Alpha=inv(A)*[b1,b2]'; 
+0071 <span class="comment">% be careful here...</span>
+0072 Asintheta=Alpha(2);Acostheta=Alpha(1); 
+0073 Ahat=sqrt(Asintheta*Asintheta+Acostheta*Acostheta); 
+0074 Theta=atan2(Asintheta,Acostheta); 
+0075 RMS=sqrt((s0-Ahat*sin(omega*t+Theta))*<span class="keyword">...</span><span class="comment"> </span>
+0076 (s0-Ahat*sin(omega*t+Theta))'/(Np(2)-1.));</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

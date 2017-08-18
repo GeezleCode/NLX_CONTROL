@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_EventTimePlot</title>
+  <meta name="keywords" content="spk_EventTimePlot">
+  <meta name="description" content="plots events on an x time axis">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_EventTimePlot.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_EventTimePlot
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>plots events on an x time axis</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function s = spk_EventTimePlot(s,Eventlabel,yLim,mode,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> plots events on an x time axis</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li><li><a href="spk_CheckCurrentTrials.html" class="code" title="function [out,s] = spk_CheckCurrentTrials(s,SetAllIfEmpty)">spk_CheckCurrentTrials</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function s = spk_EventTimePlot(s,Eventlabel,yLim,mode,varargin)</a>
+0002 
+0003 <span class="comment">% plots events on an x time axis</span>
+0004 
+0005 <span class="comment">% select all trials if none selected</span>
+0006 
+0007 <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'UNDER CONSTRUCTION'</span>);
+0008 
+0009 [out,s] = <a href="spk_CheckCurrentTrials.html" class="code" title="function [out,s] = spk_CheckCurrentTrials(s,SetAllIfEmpty)">spk_CheckCurrentTrials</a>(s,1);
+0010 
+0011 [numEv,numTr] = size(s.events);
+0012 
+0013 <span class="keyword">if</span> isempty(Eventlabel)
+0014     EventIndex = 1:numEv;
+0015 <span class="keyword">else</span>
+0016     EventIndex = find(ismember(s.eventlabel,Eventlabel));
+0017 <span class="keyword">end</span>
+0018 
+0019 <span class="keyword">if</span> isempty(EventIndex)
+0020     warning(<span class="string">'No events to plot!'</span>);
+0021 <span class="keyword">end</span>
+0022 
+0023 e = s.events(EventIndex,s.trialselection);
+0024 [numEv,numTr] = size(e);
+0025 eNum = cellfun(<span class="string">'length'</span>,e); 
+0026 
+0027 <span class="keyword">switch</span> upper(mode)
+0028     <span class="keyword">case</span> <span class="string">'TRIALS'</span>
+0029         
+0030     <span class="keyword">case</span> <span class="string">'MEAN'</span>
+0031         <span class="keyword">for</span> i=1:numEv
+0032             ci = (eNum(i,:)==1);
+0033             cn = sum(ci);
+0034             cat(2,e{i,ci});
+0035         <span class="keyword">end</span>
+0036         
+0037 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

@@ -1,4 +1,4 @@
-function [TabH,HeadH,SideH,CornerH] = cell2table(H,Data,HeadPlotMode,GridPlotMode)
+function [TabH,HeadH,SideH,CornerH] = cell2table(H,Data,HeadPlotMode,GridPlotMode);
 
 % plots a cell as a table
 % [TabH,HeadH,SideH,CornerH] = cell2table(H,Data,HeadPlotMode)
@@ -7,7 +7,6 @@ function [TabH,HeadH,SideH,CornerH] = cell2table(H,Data,HeadPlotMode,GridPlotMod
 % Data ........... cell array
 % HeadPlotMode ... 'IN' all cell array fields will plot inside axes box
 %                  'OUT' plots the left column and the top row on axes edges
-% GridPlotMode ... 'ALL','BOX','VERTICAL','HORIZONTAL'
 
 
 [numDataR,numDataC] = size(Data);
@@ -78,13 +77,9 @@ switch upper(HeadPlotMode)
 		Boxy = [tabley(1) + (heady(1)-tabley(1))/2;tabley(end) - (heady(1)-tabley(1))/2];
 % 		Boxx = [tablex(1)-unique(diff(tablex))/2 tablex(end)+unique(diff(tablex))/2];
 % 		Boxy = [tabley(1)-unique(diff(tabley))/2;tabley(end)+unique(diff(tabley))/2];
-        HeadVerticalAlignment = 'middle';
-        SideHorizontalAlignment = 'center';
 	case 'OUT'
 		Boxx = [0 1];
 		Boxy = [0;1];
-        HeadVerticalAlignment = 'bottom';
-        SideHorizontalAlignment = 'right';
 end
 
 % prepare axes
@@ -108,7 +103,7 @@ switch upper(GridPlotMode)
 	case 'VERTICAL'
         [VerticalGridX,VerticalGridY] = meshgrid(Gridx,Boxy);
         line(VerticalGridX,VerticalGridY,'color','k','clipping','off');
-	case 'HORIZONTAL'
+	case 'HOROZONTAL'
         [HorizontalGridX,HorizontalGridY] = meshgrid(Boxx,Gridy);
         line(HorizontalGridX',HorizontalGridY','color','k','clipping','off');
 		
@@ -117,8 +112,8 @@ end
 
 % plot Head 
 CornerH = text(cornerx,cornery,Data(1,1),'clipping','off','horizontalalignment','center','verticalalignment','middle');     
-HeadH = text(headx,heady,Data(1,2:end),'clipping','off','horizontalalignment','center','verticalalignment',HeadVerticalAlignment);     
-SideH = text(sidex,sidey,Data(2:end,1),'clipping','off','horizontalalignment',SideHorizontalAlignment,'verticalalignment','middle');     
+HeadH = text(headx,heady,Data(1,2:end),'clipping','off','horizontalalignment','center','verticalalignment','middle');     
+SideH = text(sidex,sidey,Data(2:end,1),'clipping','off','horizontalalignment','center','verticalalignment','middle');     
 
 for colnr = 2:numC
      for rownr = 2:numR
@@ -130,15 +125,7 @@ for colnr = 2:numC
      end
 end
 
-if nargout==1
-    OutHandles = ones(size(Data)).*NaN;
-    if ~isempty(CornerH);OutHandles(1,1) = CornerH;end
-    if ~isempty(HeadH);OutHandles(1,2:end) = HeadH;end
-    if ~isempty(SideH);OutHandles(2:end,1) = SideH;end
-    if ~isempty(TabH);OutHandles(2:end,2:end) = TabH;end
-    TabH = OutHandles;
-end
-    
+          
 %=============================================
 function [x,y,horspace,verspace] = divideaxis(nC,nR)
 horspace = 1/(nC);

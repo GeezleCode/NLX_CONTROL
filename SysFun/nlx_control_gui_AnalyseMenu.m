@@ -36,8 +36,10 @@ for i = 1:dNum
         isDir(i) = 1;
     elseif (d(i).isdir==1) & ismember(d(i).name,{'.' '..'})
         isDir(i) = 2;
+    elseif ( (d(i).name) & (~isempty( strfind(d(i).name, '.m'))) )
+        isDir(i) = 0; % is a matlab file
     else
-        isDir(i) = 0;
+        isDir(i) = 3; % is a file but not a matlab file
     end
 end
 

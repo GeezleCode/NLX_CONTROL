@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_ifr</title>
+  <meta name="keywords" content="spk_ifr">
+  <meta name="description" content="calculates instantaneaous spike rate for the current trials">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_ifr.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_ifr
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>calculates instantaneaous spike rate for the current trials</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [IFRmean,IFRtrial,h] = spk_ifr(s,TimeWin,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> calculates instantaneaous spike rate for the current trials
+ function [mSecF,mSec,h] = spk_instant(s,rateflag,plottype,varargin)
+
+ ratescale</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_CheckCurrentChannels.html" class="code" title="function out = spk_CheckCurrentChannels(s,SetAllIfEmpty)">spk_CheckCurrentChannels</a>	</li><li><a href="spk_CheckCurrentTrials.html" class="code" title="function [out,s] = spk_CheckCurrentTrials(s,SetAllIfEmpty)">spk_CheckCurrentTrials</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [IFRmean,IFRtrial,h] = spk_ifr(s,TimeWin,varargin)</a>
+0002 
+0003 <span class="comment">% calculates instantaneaous spike rate for the current trials</span>
+0004 <span class="comment">% function [mSecF,mSec,h] = spk_instant(s,rateflag,plottype,varargin)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% ratescale</span>
+0007 
+0008 numCurrChan = length(<a href="spk_CheckCurrentChannels.html" class="code" title="function out = spk_CheckCurrentChannels(s,SetAllIfEmpty)">spk_CheckCurrentChannels</a>(s,0));
+0009 numCurrTr = length(<a href="spk_CheckCurrentTrials.html" class="code" title="function [out,s] = spk_CheckCurrentTrials(s,SetAllIfEmpty)">spk_CheckCurrentTrials</a>(s,0));
+0010 numSpikes = cellfun(<span class="string">'length'</span>,s.spk);
+0011 
+0012 IFRtrial = s.spk(s.currentchan,s.currenttrials);
+0013 
+0014 t = TimeWin(1):TimeWin(2);
+0015 
+0016 <span class="keyword">for</span> cc = 1:numCurrChan
+0017     j = s.currentchan(cc);
+0018 <span class="comment">%     TotalNumSpk = sum(numSpikes);</span>
+0019 <span class="comment">%     sTimes = zeros(1,TotalNumSpk);</span>
+0020 <span class="comment">%     IFR = zeros(1,TotalNumSpk);</span>
+0021     <span class="keyword">for</span> ct = 1:numCurrTr
+0022         i = s.currenttrials(ct);
+0023         dt = 1./(diff(s.spk{j,i})*10^s.timeorder);
+0024         <span class="keyword">if</span> ~isempty(dt)
+0025             IFRtrial{cc,ct} = [dt dt(end)];
+0026         <span class="keyword">else</span>
+0027             IFRtrial{cc,ct} = [];
+0028         <span class="keyword">end</span>
+0029     <span class="keyword">end</span>
+0030 
+0031 <span class="comment">%     IFRmean{cc} = [cat(2,s.spk{j,s.currenttrials})' cat(2,IFRtrial{cc,:})'];</span>
+0032 <span class="comment">%     [IFRmean{cc}(:,1),sorti] = sort(IFRmean{cc}(:,1));</span>
+0033 <span class="comment">%     IFRmean{cc}(:,2) = IFRmean{cc}(sorti,2);</span>
+0034 <span class="comment">%</span>
+0035 <span class="comment">%     for i=1:size(IFRmean{cc},1)</span>
+0036 <span class="comment">%         cTrialIFR = zeros(1,numCurrTr);</span>
+0037 <span class="comment">%         for ct = 1:numCurrTr</span>
+0038 <span class="comment">%             earlySpk = find(s.spk{j,s.currenttrials(ct)}&lt;=IFRmean{cc}(i,1));</span>
+0039 <span class="comment">%             if isempty(earlySpk)</span>
+0040 <span class="comment">%                 cTrialIFR(ct) = IFRmean{cc}(i,2);</span>
+0041 <span class="comment">%             else</span>
+0042 <span class="comment">%                 cTrialIFR(ct) = IFRtrial{cc,ct}(earlySpk(end));</span>
+0043 <span class="comment">%             end</span>
+0044 <span class="comment">%         end</span>
+0045 <span class="comment">%         IFRmean{cc}(i,2) = sum(cTrialIFR)/numCurrTr;</span>
+0046 <span class="comment">%     end</span>
+0047 
+0048     IFRmean{cc} = [t' zeros(length(t),1)];
+0049     <span class="keyword">for</span> i=1:length(t)
+0050         cTrialIFR = zeros(1,numCurrTr);
+0051         <span class="keyword">for</span> ct = 1:numCurrTr
+0052             earlySpk = find(s.spk{j,s.currenttrials(ct)}&lt;=IFRmean{cc}(i,1));
+0053             <span class="keyword">if</span> isempty(earlySpk)
+0054                 cTrialIFR(ct) = IFRmean{cc}(i,2);
+0055             <span class="keyword">else</span>
+0056                 cTrialIFR(ct) = IFRtrial{cc,ct}(earlySpk(end));
+0057             <span class="keyword">end</span>
+0058         <span class="keyword">end</span>
+0059         IFRmean{cc}(i,2) = sum(cTrialIFR)/numCurrTr;
+0060     <span class="keyword">end</span>
+0061 
+0062 <span class="keyword">end</span>
+0063 
+0064 <span class="comment">% plot histogram</span>
+0065 h = [];
+0066 <span class="keyword">if</span> nargin&lt;2;<span class="keyword">return</span>;<span class="keyword">end</span>          
+0067 <span class="keyword">for</span> cc = 1:numCurrChan
+0068     h = line(IFRmean{cc}(:,1),IFRmean{cc}(:,2),varargin{:});
+0069 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

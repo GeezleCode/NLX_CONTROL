@@ -1,7 +1,6 @@
-function [s,TrialNr] = spk_addTrialData(s,TrialNr,varargin)
+function [s,TrialNr] = spk_AddTrialData(s,TrialNr,varargin)
 
-% Add trial data for several datatypes
-% [s,TrialNr] = spk_AddTrialData(s,TrialNr,varargin)
+% Add trial data for svereal datatypes
 % TrialNr ... if [] pads trial data to end of arrays
 % varargin ... property value pairs 
 %              'spk','analog','events','align','trialcode','stimulus'

@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_NLX_readspikedata</title>
+  <meta name="keywords" content="spk_NLX_readspikedata">
+  <meta name="description" content="reads spike data from a neuralynx *.nse file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_NLX_readspikedata.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_NLX_readspikedata
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>reads spike data from a neuralynx *.nse file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function s = spk_nlxreadspikedata(s,nlxFile,SpikeAcqWin,SpikeAcqWinOffset,EventNr) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> reads spike data from a neuralynx *.nse file
+
+ s = spk_nlxreadspikedata(s,nlxFile,SpikeAcqWin,SpikeAcqWinOffset,EventNr)
+
+ nlxFile ................ complete path to file, empty to force gui to pull
+                          up
+ SpikeAcqWin ............ cell array of eventlabels in s.eventlabel {lo event, hi event]
+                          default: {'NLX_RECORD_START' 'NLX_RECORD_END'}
+ SpikeAcqWinOffset ...... offset to window in ms
+ EventNr ................ trialcodelabel indicating the number of an event if an event occured several times within a trial</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function s = spk_nlxreadspikedata(s,nlxFile,SpikeAcqWin,SpikeAcqWinOffset,EventNr)</a>
+0002 
+0003 <span class="comment">% reads spike data from a neuralynx *.nse file</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% s = spk_nlxreadspikedata(s,nlxFile,SpikeAcqWin,SpikeAcqWinOffset,EventNr)</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% nlxFile ................ complete path to file, empty to force gui to pull</span>
+0008 <span class="comment">%                          up</span>
+0009 <span class="comment">% SpikeAcqWin ............ cell array of eventlabels in s.eventlabel {lo event, hi event]</span>
+0010 <span class="comment">%                          default: {'NLX_RECORD_START' 'NLX_RECORD_END'}</span>
+0011 <span class="comment">% SpikeAcqWinOffset ...... offset to window in ms</span>
+0012 <span class="comment">% EventNr ................ trialcodelabel indicating the number of an event if an event occured several times within a trial</span>
+0013 
+0014 <span class="keyword">if</span> nargin&lt;5
+0015     EventNr = <span class="string">''</span>;
+0016     <span class="keyword">if</span> nargin&lt;4
+0017         SpikeAcqWinOffset = [0 0];
+0018         <span class="keyword">if</span> nargin&lt;3
+0019             SpikeAcqWin = {<span class="string">'NLX_RECORD_START'</span> <span class="string">'NLX_RECORD_END'</span>};
+0020         <span class="keyword">end</span>;<span class="keyword">end</span>;<span class="keyword">end</span>
+0021 <span class="keyword">if</span> nargin&lt;2 | isempty(nlxFile)
+0022     [nlxFile,nlxPath] = uigetfile(<span class="string">'*.NSE'</span>,<span class="string">'load NEURALYNX *.NSE - file'</span>);
+0023     <span class="keyword">if</span> nlxFile==0;<span class="keyword">return</span>;<span class="keyword">end</span>
+0024     nlxFile = fullfile(nlxPath,nlxFile);
+0025 <span class="keyword">end</span>
+0026 
+0027 <span class="comment">% clear object from spike data</span>
+0028 numTrials = size(s.spk,2);
+0029 s.spk = {};
+0030 s.channel = {};
+0031 currChannels = [];
+0032 
+0033 <span class="comment">% loop trials</span>
+0034 hwait = waitbar(0,<span class="string">'Extract spikes from neuralynx NSE file ...'</span>);
+0035 <span class="keyword">for</span> i = 1:numTrials
+0036     WinLo = spk_getevents(s,SpikeAcqWin{1},i);
+0037     WinHi = spk_getevents(s,SpikeAcqWin{2},i);
+0038     Event_index = 1;
+0039     <span class="keyword">if</span> length(WinLo{1}) ~= length(WinLo{1})
+0040     <span class="keyword">elseif</span> length(WinLo{1})&gt;1 &amp; length(WinLo{1})&gt;1
+0041         Event_index = spk_gettrialcodes(s,EventNr,i);
+0042     <span class="keyword">end</span>
+0043     
+0044     AcqWin = [WinLo{1}(Event_index)+SpikeAcqWinOffset(1)+s.align(i) <span class="keyword">...</span>
+0045             WinHi{1}(Event_index)+SpikeAcqWinOffset(2)+s.align(i)].*1000;
+0046     
+0047     <span class="comment">%----------------------------------------------------------</span>
+0048     <span class="comment">% read Neuralynx File</span>
+0049     <span class="comment">% Extraction Modes</span>
+0050     <span class="comment">%     1. Extract All - This will extract every record from the file into the matlab environment;</span>
+0051     <span class="comment">%     2. Extract Record Index Range = This will extract every Record whos index is within a range specified by Paramter 5.</span>
+0052     <span class="comment">%     3. Extract Record Index List = This will extract every Record whos index in the file is the same index that is specified by Paramter 5.</span>
+0053     <span class="comment">%     4. Extract Timestamp Range = This will extract every Record whos timestamp is within a range specified by Paramter 5.</span>
+0054     <span class="comment">%     5. Extract Timestamp List = This will extract every Record with the same timestamp that is specified by Paramter 5.</span>
+0055     <span class="comment">%     [TimeStamps, ScNumbers, CellNumbers, Params, DataPoints, NlxHeader] = Nlx2MatSpike_v3( ...</span>
+0056     [TimeStamps, ScNumbers, CellNumbers] = Nlx2MatSpike_v3( <span class="keyword">...</span>
+0057         nlxFile, <span class="keyword">...</span>
+0058         [1 1 1 0 0], <span class="keyword">...</span><span class="comment"> Timestamps,Sc Numbers,Cell Numbers,Params,Data Points</span>
+0059         0, <span class="keyword">...</span><span class="comment"> extract header</span>
+0060         4, <span class="keyword">...</span><span class="comment"> extraction mode</span>
+0061         AcqWin <span class="keyword">...</span><span class="comment"> mode array</span>
+0062     );
+0063     <span class="comment">%----------------------------------------------------------</span>
+0064 
+0065     <span class="comment">% load spike times into object</span>
+0066     <span class="keyword">for</span> j = unique(CellNumbers)
+0067         <span class="keyword">if</span> ~ismember(num2str(j),s.channel)
+0068             s.channel = [s.channel;{num2str(j)}];
+0069         <span class="keyword">end</span>
+0070         chanInd = find(ismember(s.channel,num2str(j)));
+0071         s.spk{chanInd,i} =  TimeStamps(CellNumbers==j) .* 0.001 - s.align(i);
+0072     <span class="keyword">end</span>
+0073         
+0074     
+0075     waitbar(i/numTrials,hwait);
+0076 <span class="keyword">end</span>
+0077 close(hwait);
+0078 
+0079     
+0080</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

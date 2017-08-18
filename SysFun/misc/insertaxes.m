@@ -4,9 +4,8 @@ function nH = insertaxes(h,position)
 %
 % creates a new axes as an insert in a parent axes
 % INPUT:
-% h .......... handle of parent axes
-% position ... position in parent axes as normalized units
-%              [ hor(from left) vert(from bottom) width height]
+% h - handle of parent axes
+% position - position in parent axes as normalized units
 % OUTPUT:
 % nH - new axes handle
 

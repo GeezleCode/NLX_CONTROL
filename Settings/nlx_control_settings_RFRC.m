@@ -67,8 +67,8 @@ s.EventName(11) =  {'NLX_TRIALPARAM_END'};      s.EventCode(11) = 252;
 s.EventName(12) =  {'NLX_STIMPARAM_START'};     s.EventCode(12) = 251;          
 s.EventName(13) =  {'NLX_STIMPARAM_END'};       s.EventCode(13) = 250;
 
-s.EventName(14) =  {'NLX_EVENT_1'};       s.EventCode(14) = 9;
-s.EventName(15) =  {'NLX_EVENT_2'};       s.EventCode(15) = 10;
+s.EventName(14) =  {'NLX_OPTO_ON'};       s.EventCode(14) = 9;
+s.EventName(15) =  {'NLX_OPTO_OFF'};      s.EventCode(15) = 10;
 s.EventName(16) =  {'NLX_EVENT_3'};       s.EventCode(16) = 11;
 s.EventName(17) =  {'NLX_EVENT_4'};       s.EventCode(17) = 12;
 s.EventName(18) =  {'NLX_EVENT_5'};       s.EventCode(18) = 13;
@@ -162,9 +162,10 @@ s.HistYLimMode = 3;% 1 fixed YLim 2 MAX in cnd 3 MAX over all cond
 %---------- RF map parameter ----------------------------------------
 %**********************************************************************
 s.RFMapSize = [9 12];% rows cols of map
-s.RFDotSpacing = 0.5;
-s.RFMapRefPos = [2 -4];
-s.RVCOTau = [0 100];
+s.RFDotSpacing =11.1;%e.g. RFRC150 --> 1.5
+%s.RFDotSpacing =8;
+s.RFMapRefPos = [0 0]; %% RF Position in Par-File
+s.RVCOTau = [0 50 100 150];
 s.RVCOTauBase = 0;
 s.RVCOWin = [-50 0];
 s.RFDotLum(1:prod(s.RFMapSize)) = 255;

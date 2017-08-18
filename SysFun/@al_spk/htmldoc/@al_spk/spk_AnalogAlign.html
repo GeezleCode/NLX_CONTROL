@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_AnalogAlign</title>
+  <meta name="keywords" content="spk_AnalogAlign">
+  <meta name="description" content="Aligns values of analog channel to value at a given point in time.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_AnalogAlign.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_AnalogAlign
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Aligns values of analog channel to value at a given point in time.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function s = spk_AnalogAlign(s,ChanName,AlignTime) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Aligns values of analog channel to value at a given point in time.
+ s = spk_AnalogAlign(s,ChanName,AlignTime)
+ Input:
+ ChanName ...... Name of an analog channel as in s.analog
+ AlignTime .......</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_AnalogTimeVec.html" class="code" title="function t = spk_AnalogTimeVec(s,Chan)">spk_AnalogTimeVec</a>	retrieves times of analog data bins</li><li><a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>	returns and check for number of trials in @al_spk object</li><li><a href="spk_findAnalog.html" class="code" title="function [i,sf] = spk_findAnalog(s,ChanName,PatternFlag)">spk_findAnalog</a>	finds an analog channel, or channels featuring a pattern</li><li><a href="spk_set.html" class="code" title="function s = spk_set(s,varargin)">spk_set</a>	set the fields of an @al_spk object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function s = spk_AnalogAlign(s,ChanName,AlignTime)</a>
+0002 
+0003 <span class="comment">% Aligns values of analog channel to value at a given point in time.</span>
+0004 <span class="comment">% s = spk_AnalogAlign(s,ChanName,AlignTime)</span>
+0005 <span class="comment">% Input:</span>
+0006 <span class="comment">% ChanName ...... Name of an analog channel as in s.analog</span>
+0007 <span class="comment">% AlignTime .......</span>
+0008 
+0009 <span class="comment">%% get the channel index</span>
+0010 <span class="keyword">if</span> nargin&lt;2 || isempty(ChanName)
+0011     <span class="keyword">if</span> isempty(s.currentanalog);
+0012         iChan = 1:size(s.analog,2);
+0013     <span class="keyword">else</span>
+0014         iChan = s.currentanalog;
+0015     <span class="keyword">end</span>
+0016 <span class="keyword">else</span>
+0017     iChan = <a href="spk_findAnalog.html" class="code" title="function [i,sf] = spk_findAnalog(s,ChanName,PatternFlag)">spk_findAnalog</a>(s,ChanName);
+0018 <span class="keyword">end</span>
+0019 nChan = length(iChan);
+0020 
+0021 <span class="comment">%% get trials</span>
+0022 numTrials = <a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>(s);
+0023 <span class="keyword">if</span> isempty(s.currenttrials)
+0024     s.currenttrials = 1:numTrials;
+0025 <span class="keyword">end</span>
+0026 numCurrenttrials = length(s.currenttrials);
+0027 
+0028     
+0029 <span class="comment">%% loop channels</span>
+0030 <span class="keyword">for</span> iCh = 1:nChan
+0031     [nTr,numSamples] = size(s.analog{iChan(iCh)});
+0032     
+0033     s = <a href="spk_set.html" class="code" title="function s = spk_set(s,varargin)">spk_set</a>(s,<span class="string">'currentanalog'</span>,iChan(iCh));
+0034     TimeData = <a href="spk_AnalogTimeVec.html" class="code" title="function t = spk_AnalogTimeVec(s,Chan)">spk_AnalogTimeVec</a>(s);
+0035     [dummy,iBin] = min(abs(TimeData-AlignTime));
+0036     
+0037     s.analog{iChan(iCh)}(s.currenttrials,:) = s.analog{iChan(iCh)}(s.currenttrials,:) - repmat(s.analog{iChan(iCh)}(s.currenttrials,iBin),[1,numSamples]);
+0038 
+0039 <span class="keyword">end</span>
+0040</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

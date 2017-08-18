@@ -29,7 +29,7 @@ end
 TrialCodeLabel = {'CortexBlock';'CortexCondition';'StimulusCode'};
 TrialCodes = [];
 for i = 1:length(TrialCodeLabel)
-    TrialCodes = cat(1,TrialCodes,spk_getTrialcode(SPK,TrialCodeLabel{i}));
+    TrialCodes = cat(1,TrialCodes,spk_gettrialcodes(SPK,TrialCodeLabel{i}));
 end
 NaNTrialCodes = all(isnan(TrialCodes),2);
 TrialCodeLabel(NaNTrialCodes) = [];

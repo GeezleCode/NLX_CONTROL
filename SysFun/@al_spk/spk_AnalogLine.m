@@ -1,7 +1,7 @@
-function [h,TrialSpread] = spk_AnalogLine(s,ChanName,TimeWin,TrialSpread,varargin)
+function [h,s] = spk_AnalogLine(s,ChanName,TimeWin,TrialSpread,varargin)
 
 % Plots line objects of current analog trials into current axes.
-% [h,yOffset] = spk_AnalogLine(s,ChanName,TimeWin,TrialSpread,varargin)
+% [h,s] = spk_AnalogLine(s,ChanName,TimeWin,TrialSpread,varargin)
 % Input:
 % TrialSpread ... adds cumulative values to every trial to spread trials
 % ChanName ...... Name of an analog channel as in s.analog
@@ -27,9 +27,6 @@ if isempty(s.currenttrials)
     s.currenttrials = 1:numTrials;
 end
 numCurrenttrials = length(s.currenttrials);
-
-%%
-TrialSpread = [0:TrialSpread:(numCurrenttrials-1)*TrialSpread];
     
 %% loop channels
 for iCh = 1:nChan
@@ -46,11 +43,10 @@ for iCh = 1:nChan
     TimeData = repmat(TimeData(iBins),[length(s.currenttrials) 1])';
     [nPltBins,nPltTr] = size(TimeData);
     
-    yOffset = repmat(TrialSpread,[nPltBins 1]);
+    if TrialSpread~=0
+        TrialSpread = repmat([0:TrialSpread:(numCurrenttrials-1)*TrialSpread],[nPltBins 1]);
+    end
     
-    h = line(TimeData,s.analog{iChan(iCh)}(s.currenttrials,iBins)' + yOffset,varargin{:});    
+    h = line(TimeData,s.analog{iChan(iCh)}(s.currenttrials,iBins)' + TrialSpread,varargin{:});    
 end
 
-if length(TrialSpread)>1
-    set(gca,'ylim',[TrialSpread(1)-TrialSpread(2) TrialSpread(end)+TrialSpread(2)]);
-end

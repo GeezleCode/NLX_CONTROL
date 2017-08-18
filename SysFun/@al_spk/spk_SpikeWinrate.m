@@ -3,7 +3,7 @@ function [r,n,dt] = spk_SpikeWinrate(s,win)
 % calculate rate of the current trials
 % take all trials if not trials selected
 %
-% function [r,n,dt] = spk_SpikeWinrate(s,win)
+% function [r,n,dt] = spk_winrate(s,win)
 %
 % INPUT
 % win[n,[low hi],ith win] ........... two column vector or matrix, rows must be 1 or

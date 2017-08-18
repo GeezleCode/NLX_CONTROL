@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_AnalogLine</title>
+  <meta name="keywords" content="spk_AnalogLine">
+  <meta name="description" content="Plots line objects of current analog trials into current axes.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_AnalogLine.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_AnalogLine
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Plots line objects of current analog trials into current axes.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [h,s] = spk_AnalogLine(s,ChanName,TimeWin,TrialSpread,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Plots line objects of current analog trials into current axes.
+ [h,s] = spk_AnalogLine(s,ChanName,TimeWin,TrialSpread,varargin)
+ Input:
+ TrialSpread ... adds cumulative values to every trial to spread trials
+ ChanName ...... Name of an analog channel as in s.analog
+ TimeWin ....... Time window
+ varargin ...... line object properties</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_AnalogTimeVec.html" class="code" title="function t = spk_AnalogTimeVec(s,Chan)">spk_AnalogTimeVec</a>	retrieves times of analog data bins</li><li><a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>	returns and check for number of trials in @al_spk object</li><li><a href="spk_set.html" class="code" title="function s = spk_set(s,varargin)">spk_set</a>	set the fields of an @al_spk object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [h,s] = spk_AnalogLine(s,ChanName,TimeWin,TrialSpread,varargin)</a>
+0002 
+0003 <span class="comment">% Plots line objects of current analog trials into current axes.</span>
+0004 <span class="comment">% [h,s] = spk_AnalogLine(s,ChanName,TimeWin,TrialSpread,varargin)</span>
+0005 <span class="comment">% Input:</span>
+0006 <span class="comment">% TrialSpread ... adds cumulative values to every trial to spread trials</span>
+0007 <span class="comment">% ChanName ...... Name of an analog channel as in s.analog</span>
+0008 <span class="comment">% TimeWin ....... Time window</span>
+0009 <span class="comment">% varargin ...... line object properties</span>
+0010 
+0011 <span class="comment">%% get the channel index</span>
+0012 <span class="keyword">if</span> nargin&lt;2 || isempty(ChanName)
+0013     <span class="keyword">if</span> isempty(s.currentanalog);
+0014         iChan = 1:size(s.analog,2);
+0015     <span class="keyword">else</span>
+0016         iChan = s.currentanalog;
+0017     <span class="keyword">end</span>
+0018 <span class="keyword">else</span>
+0019     iChan = spk_FindAnalog(s,ChanName);
+0020 <span class="keyword">end</span>
+0021 
+0022 nChan = length(iChan);
+0023 
+0024 <span class="comment">%% get trials</span>
+0025 numTrials = <a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>(s);
+0026 <span class="keyword">if</span> isempty(s.currenttrials)
+0027     s.currenttrials = 1:numTrials;
+0028 <span class="keyword">end</span>
+0029 numCurrenttrials = length(s.currenttrials);
+0030     
+0031 <span class="comment">%% loop channels</span>
+0032 <span class="keyword">for</span> iCh = 1:nChan
+0033     [nTr,numSamples] = size(s.analog{iChan(iCh)});
+0034     
+0035     s = <a href="spk_set.html" class="code" title="function s = spk_set(s,varargin)">spk_set</a>(s,<span class="string">'currentanalog'</span>,iChan(iCh));
+0036     TimeData = <a href="spk_AnalogTimeVec.html" class="code" title="function t = spk_AnalogTimeVec(s,Chan)">spk_AnalogTimeVec</a>(s);
+0037     <span class="keyword">if</span> nargin&gt;=3 &amp;&amp; ~isempty(TimeWin)
+0038         iBins = find(TimeData&gt;=TimeWin(1)&amp;TimeData&lt;=TimeWin(2));
+0039     <span class="keyword">else</span>
+0040         iBins = 1:length(TimeData);
+0041     <span class="keyword">end</span>
+0042 
+0043     TimeData = repmat(TimeData(iBins),[length(s.currenttrials) 1])';
+0044     [nPltBins,nPltTr] = size(TimeData);
+0045     
+0046     <span class="keyword">if</span> TrialSpread~=0
+0047         TrialSpread = repmat([0:TrialSpread:(numCurrenttrials-1)*TrialSpread],[nPltBins 1]);
+0048     <span class="keyword">end</span>
+0049     
+0050     h = line(TimeData,s.analog{iChan(iCh)}(s.currenttrials,iBins)' + TrialSpread,varargin{:});    
+0051 <span class="keyword">end</span>
+0052</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

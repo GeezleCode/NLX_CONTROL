@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_CheckCurrentChannels</title>
+  <meta name="keywords" content="spk_CheckCurrentChannels">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_CheckCurrentChannels.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_CheckCurrentChannels
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function out = spk_CheckCurrentChannels(s,SetAllIfEmpty) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_SpikeAutoCorrelation.html" class="code" title="function [ACH_mat,ACHTimeBins,SpikeNum] = spk_SpikeAutoCorrelation(s,win,halfwidth)">spk_SpikeAutoCorrelation</a>	calculates the auto correlation histogram</li><li><a href="spk_SpikeAutoCorrelation2.html" class="code" title="function [ACH_mat,ACHTimeBins,SpikeNum,SP_mat] = spk_SpikeAutoCorrelation2(s,win,halfwidth)">spk_SpikeAutoCorrelation2</a>	calculates the auto correlation histogram</li><li><a href="spk_SpikeDensity.html" class="code" title="function [M,bins,Err,trial_d,h] = spk_density(s,sigma,win,varargin)">spk_SpikeDensity</a>	Calculates the Spike Density Function over trials listed in s.currenttrials</li><li><a href="spk_SpikeLatency.html" class="code" title="function [Time,Value] = spk_SpikeLatency(s,Mode,varargin)">spk_SpikeLatency</a>	Calculates latencies of spiketrains</li><li><a href="spk_SpikeWinrate.html" class="code" title="function [r,n,dt] = spk_SpikeWinrate(s,win)">spk_SpikeWinrate</a>	calculate rate of the current trials</li><li><a href="spk_ifr.html" class="code" title="function [IFRmean,IFRtrial,h] = spk_ifr(s,TimeWin,varargin)">spk_ifr</a>	calculates instantaneaous spike rate for the current trials</li><li><a href="spk_instant.html" class="code" title="function [mSecF,mSec,h] = spk_instant(s,timeWin,plottype,varargin)">spk_instant</a>	calculates instantaneaous spike rate for the current trials</li></ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function out = spk_CheckCurrentChannels(s,SetAllIfEmpty)</a>
+0002 <span class="keyword">if</span> isempty(s.currentchan) &amp; SetAllIfEmpty~=0
+0003     warning(<span class="string">'''currentchan'' field is not set. Process all channels!'</span>);
+0004     s.currentchan = [1:size(s.spk,1)];
+0005 <span class="keyword">elseif</span> isempty(s.currentchan) &amp; SetAllIfEmpty==0
+0006     <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'''currentchan'' field is not set!'</span>);
+0007 <span class="keyword">end</span>
+0008 out =  s.currentchan;</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

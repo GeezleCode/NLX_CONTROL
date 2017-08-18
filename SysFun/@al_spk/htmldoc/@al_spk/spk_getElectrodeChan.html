@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_getElectrodeChan</title>
+  <meta name="keywords" content="spk_getElectrodeChan">
+  <meta name="description" content="retrieves index for channels of a given electrode">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_getElectrodeChan.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_getElectrodeChan
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>retrieves index for channels of a given electrode</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [i,e] = spk_getElectrodeChan(s,El); </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> retrieves index for channels of a given electrode
+ assumes that channelnames consist of [El].[ClusterNr] (e.g. Sc1.1)
+ [i,e] = spk_GetElectrodeChan(s,El)
+ i ... logical index of current electrode [ElChanNum X totalChanNum]
+ e ... cell array of electrode name</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_SpikeDecodeChanName.html" class="code" title="function [ElectrodeName,ClusterNr] = spk_SpikeDecodeChanName(s)">spk_SpikeDecodeChanName</a>	decodes channel labels of the form 'Sc1.1'</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [i,e] = spk_getElectrodeChan(s,El);</a>
+0002 
+0003 <span class="comment">% retrieves index for channels of a given electrode</span>
+0004 <span class="comment">% assumes that channelnames consist of [El].[ClusterNr] (e.g. Sc1.1)</span>
+0005 <span class="comment">% [i,e] = spk_GetElectrodeChan(s,El)</span>
+0006 <span class="comment">% i ... logical index of current electrode [ElChanNum X totalChanNum]</span>
+0007 <span class="comment">% e ... cell array of electrode name</span>
+0008 
+0009 [ElChans,ClChans] = <a href="spk_SpikeDecodeChanName.html" class="code" title="function [ElectrodeName,ClusterNr] = spk_SpikeDecodeChanName(s)">spk_SpikeDecodeChanName</a>(s);
+0010 e = unique(ElChans);
+0011 nCh = length(ElChans);
+0012 
+0013 <span class="keyword">if</span> nargin&lt;2 | isempty(El)
+0014     ne = length(e);
+0015     i = false(ne,nCh);
+0016     <span class="keyword">for</span> ie = 1:ne
+0017         i(ie,:) = ismember(ElChans,e(ie));
+0018     <span class="keyword">end</span>
+0019 <span class="keyword">else</span>
+0020     <span class="keyword">if</span> ischar(El);
+0021         e = {El};
+0022     <span class="keyword">else</span>
+0023         e = El;
+0024     <span class="keyword">end</span>
+0025     ne = length(e);
+0026     i = false(ne,nCh);
+0027     <span class="keyword">for</span> ie = 1:ne
+0028         i(ie,:) = ismember(ElChans,e(ie));
+0029     <span class="keyword">end</span>
+0030 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

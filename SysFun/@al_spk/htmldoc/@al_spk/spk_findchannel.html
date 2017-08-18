@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_findchannel</title>
+  <meta name="keywords" content="spk_findchannel">
+  <meta name="description" content="get the indices of channels as appearing in s.channel">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_findchannel.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_findchannel
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>get the indices of channels as appearing in s.channel</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function ChanIndex = spk_findchannel(s,ChanName) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> get the indices of channels as appearing in s.channel
+ ChanIndex = spk_findchannel(s,ChanName)
+
+ ChanName ... cell array of channel names</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="../@al_spk/construction/spk_nlxget_old6.html" class="code" title="function s = spk_nlxget(s,p,dofun)">spk_nlxget_old6</a>	connects to a cheetah data acquisition software and writes data into a</li><li><a href="../@al_spk/construction/spk_nlxget_old7.html" class="code" title="function s = spk_nlxget(s,p,dofun)">spk_nlxget_old7</a>	connects to a cheetah data acquisition software and writes data into a</li><li><a href="spk_nlxget.html" class="code" title="function s = spk_nlxget(s,p,dofun)">spk_nlxget</a>	connects to a cheetah data acquisition software and writes data into a</li></ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function ChanIndex = spk_findchannel(s,ChanName)</a>
+0002 
+0003 <span class="comment">% get the indices of channels as appearing in s.channel</span>
+0004 <span class="comment">% ChanIndex = spk_findchannel(s,ChanName)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% ChanName ... cell array of channel names</span>
+0007 
+0008 <span class="keyword">for</span> i = 1:length(ChanName)
+0009     CurrIndex = strmatch(ChanName{i},s.channel);
+0010     <span class="keyword">if</span> isempty(CurrIndex)
+0011         ChanIndex(i) = NaN;
+0012     <span class="keyword">else</span>
+0013         ChanIndex(i) = CurrIndex;
+0014     <span class="keyword">end</span>
+0015 <span class="keyword">end</span>
+0016</pre></div>
+<hr><address>Generated on Tue 25-Apr-2006 16:24:52 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

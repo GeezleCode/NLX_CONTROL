@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_AnaSpec</title>
+  <meta name="keywords" content="spk_AnaSpec">
+  <meta name="description" content="calculates a power spectrum of single trials">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_AnaSpec.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_AnaSpec
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>calculates a power spectrum of single trials</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [Y,F,TrialCode,Par] = spk_AnaSpec(s,Method,Par,Win,GroupTerm) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> calculates a power spectrum of single trials
+ s.currentanalog needs to be set
+ 
+
+ IN:
+ Method ...... 'Chronux','FFT',
+ Par ......... structure, depends on method
+ Win ......... boundaries [lo hi], requires alignment
+ GroupTerm ... char: a trialcode label.
+               omitted: s.currenttrials needs to be set.
+               [] or '': all trials are calculated
+ OUT:</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Y,F,TrialCode,Par] = spk_AnaSpec(s,Method,Par,Win,GroupTerm)</a>
+0002 
+0003 <span class="comment">% calculates a power spectrum of single trials</span>
+0004 <span class="comment">% s.currentanalog needs to be set</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% IN:</span>
+0008 <span class="comment">% Method ...... 'Chronux','FFT',</span>
+0009 <span class="comment">% Par ......... structure, depends on method</span>
+0010 <span class="comment">% Win ......... boundaries [lo hi], requires alignment</span>
+0011 <span class="comment">% GroupTerm ... char: a trialcode label.</span>
+0012 <span class="comment">%               omitted: s.currenttrials needs to be set.</span>
+0013 <span class="comment">%               [] or '': all trials are calculated</span>
+0014 <span class="comment">% OUT:</span>
+0015 
+0016 <span class="comment">%% prepare stuff</span>
+0017 nTrTot = spk_numtrials(s);
+0018 iAna = s.currentanalog;
+0019 Fs = s.analogfreq(iAna);
+0020 WinBin = round(Win/(1/Fs/(10^s.timeorder)));
+0021 
+0022 <span class="comment">%% default parameter</span>
+0023 <span class="keyword">switch</span> Method
+0024     <span class="keyword">case</span> <span class="string">'Chronux'</span>
+0025         DefPars.tapers = [4 7];
+0026         DefPars.pad = 0;
+0027         DefPars.Fs = Fs;
+0028         DefPars.fpass = [0 Fs/2];
+0029         DefPars.err = 0;
+0030         DefPars.trialave = 0;
+0031     <span class="keyword">case</span> <span class="string">'FFT'</span>
+0032         DefPars.Fres = [];
+0033         DefPars.Npoints = 512;
+0034         DefPars.fpass = [0 Fs/2];
+0035         DefPars.WinFun = <span class="string">''</span>;
+0036         DefPars.WinOpt = [];
+0037 <span class="keyword">end</span>
+0038 
+0039 <span class="comment">%% update parameter</span>
+0040 <span class="keyword">if</span> isempty(Par);
+0041     Par=DefPars;
+0042 <span class="keyword">else</span>
+0043     ParFields = fieldnames(Par);
+0044     DefParsFields = fieldnames(DefPars);
+0045     FieldsToSet = find(~ismember(DefParsFields,ParFields));
+0046     <span class="keyword">for</span> iFld = 1:length(FieldsToSet)
+0047         Par = setfield(Par,DefParsFields{FieldsToSet(iFld)},getfield(DefPars,DefParsFields{FieldsToSet(iFld)}));
+0048     <span class="keyword">end</span>
+0049 <span class="keyword">end</span>
+0050 
+0051 <span class="comment">%% get trial groups</span>
+0052 <span class="keyword">if</span> nargin&lt;5
+0053     TrialNr{1} = s.currenttrials;
+0054     TrialCode = NaN;
+0055 <span class="keyword">elseif</span> isempty(GroupTerm)
+0056     TrialNr{1} = 1:nTrTot;
+0057     TrialCode = -1;
+0058 <span class="keyword">else</span>
+0059     [TrialNr,TrialCode] = spk_GroupTrials(s,GroupTerm);
+0060 <span class="keyword">end</span>
+0061 nTrGrp = length(TrialNr);
+0062 nGrpTrials = cellfun(<span class="string">'length'</span>,TrialNr);
+0063 
+0064 <span class="comment">%% loop trialgroups</span>
+0065 <span class="keyword">for</span> iTrGrp=1:nTrGrp
+0066     
+0067     <span class="comment">%% extract the data</span>
+0068     DATA = s.analog{iAna}(TrialNr{iTrGrp},:);<span class="comment">% select trials</span>
+0069     DATA = DATA(:,s.analogalignbin(iAna)+WinBin(1):s.analogalignbin(iAna)+WinBin(2));<span class="comment">%select bins</span>
+0070     DATA = DATA';
+0071     <span class="keyword">if</span> any(isnan(DATA(:)))
+0072         warning(<span class="string">'Found NaN in data!'</span>);
+0073     <span class="keyword">end</span>
+0074     [nBins,nTrials] = size(DATA);
+0075 
+0076     <span class="comment">%% compute spectrum</span>
+0077     <span class="keyword">switch</span> Method
+0078         <span class="keyword">case</span> <span class="string">'Chronux'</span>
+0079             <span class="keyword">for</span> iTr=1:nTrials
+0080                 <span class="keyword">if</span> Par.err==0
+0081                     [Y(1,iTrGrp).Power(:,iTr),F]=mtspectrumc(DATA(:,iTr),Par);
+0082                 <span class="keyword">else</span>
+0083                     [Y(1,iTrGrp).Power(:,iTr),F,Y(1,iTrGrp).Err(:,:,iTr)]=mtspectrumc(DATA(:,iTr),Par);
+0084                 <span class="keyword">end</span>
+0085             <span class="keyword">end</span>
+0086         <span class="keyword">case</span> <span class="string">'FFT'</span>
+0087             <span class="keyword">if</span> ~isempty(DefPars.WinFun)
+0088                 WinVec = ones(nBins,nTrials);
+0089                 <span class="keyword">if</span> ~isempty(Par.WinOpt)
+0090                     eval([<span class="string">'WinVec = window(@'</span> Par.WinFun  sprintf(<span class="string">',%1.0f'</span>,nBins) <span class="string">',Par.WinOpt);'</span>]);
+0091                 <span class="keyword">else</span>
+0092                     eval([<span class="string">'WinVec = window(@'</span> Par.WinFun  sprintf(<span class="string">',%1.0f'</span>,nBins) <span class="string">');'</span>]);
+0093                 <span class="keyword">end</span>
+0094                 DATA = DATA.*repmat(WinVec,[1,nTrials]);
+0095             <span class="keyword">end</span>
+0096                 
+0097             <span class="comment">% calc points/fftr resolution</span>
+0098             <span class="keyword">if</span> isempty(Par.Npoints) &amp; ~isempty(Par.Fres)
+0099                 Par.Npoints = Fs/Par.Fres;
+0100             <span class="keyword">elseif</span> ~isempty(Par.Npoints)
+0101                 Par.Fres = Fs/Par.Npoints;
+0102             <span class="keyword">end</span>
+0103             <span class="comment">% do fft</span>
+0104             y = fft(DATA,round(Par.Npoints),1);
+0105             <span class="comment">% calc frequency and power</span>
+0106             Y(1,iTrGrp).Power = y.* conj(y) / round(Par.Npoints);
+0107             Y(1,iTrGrp).Power = Y(1,iTrGrp).Power(1:round(Par.Npoints/2)+1,:);
+0108             F = Fs*(0:round(Par.Npoints/2))/round(Par.Npoints);
+0109             F = F';
+0110             <span class="comment">% restrict to pass band</span>
+0111             Fi = (F&gt;=Par.fpass(1)&amp;F&lt;=Par.fpass(2));
+0112             Y(1,iTrGrp).Power(~Fi,:) = [];
+0113             F(~Fi) = [];
+0114     <span class="keyword">end</span>
+0115 <span class="keyword">end</span>
+0116 
+0117</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

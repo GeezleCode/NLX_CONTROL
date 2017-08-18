@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_AnalogTimeVec</title>
+  <meta name="keywords" content="spk_AnalogTimeVec">
+  <meta name="description" content="retrieves times of analog data bins">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_AnalogTimeVec.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_AnalogTimeVec
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>retrieves times of analog data bins</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function t = spk_AnalogTimeVec(s,Chan) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> retrieves times of analog data bins
+ t = spk_AnalogTimeVec(s,Chan)
+
+ Chan ... channel name or channel nr.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_findAnalog.html" class="code" title="function [i,sf] = spk_findAnalog(s,ChanName,PatternFlag)">spk_findAnalog</a>	finds an analog channel, or channels featuring a pattern</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_AnalogAlign.html" class="code" title="function s = spk_AnalogAlign(s,ChanName,AlignTime)">spk_AnalogAlign</a>	Aligns values of analog channel to value at a given point in time.</li><li><a href="spk_AnalogAngularDist.html" class="code" title="function s = spk_AnalogAngularDist(s,S1Chans,S2Chans,NewChanName)">spk_AnalogAngularDist</a>	calculates the angular distance between signal S1 to S2</li><li><a href="spk_AnalogChanSum.html" class="code" title="function s = spk_AnalogChanSum(s,Mode,S1Chan,S2Chan,NewChan,InverseFlag)">spk_AnalogChanSum</a>	Sum or multiply two analog channels. First one is reference SF</li><li><a href="spk_AnalogCircularDist.html" class="code" title="function s = spk_AnalogCircularDist(s,SigChans,RefChans,ThChanName,RChanName,AbsFlag)">spk_AnalogCircularDist</a>	calculates the circular distance between XY signal S1 and signal S2</li><li><a href="spk_AnalogCircularMean.html" class="code" title="function [Th,R,Xm,Ym] = spk_AnalogCircularMean(s,ChanName,TimeWin)">spk_AnalogCircularMean</a>	Calculate mean value of analog channel with circular data</li><li><a href="spk_AnalogEuclidDist.html" class="code" title="function s = spk_AnalogEuclidDist(s,SigChans,RefChans,ThChanName,RChanName)">spk_AnalogEuclidDist</a>	calculates the euclidean distance from signal SigChans to signal RefChans</li><li><a href="spk_AnalogEventWindow.html" class="code" title="function [b,t,tVec] = spk_AnalogEventWindow(s,Ev,EvOffset)">spk_AnalogEventWindow</a>	returns start and end bins of a window defined by an event(s)</li><li><a href="spk_AnalogFindNextBin.html" class="code" title="function [t,x,b,tStart,xStart,bStart] = spk_AnalogFindNextBin(s,tStart,SearchTerm,SearchPar,MoveDir)">spk_AnalogFindNextBin</a>	Go through analog bins until a bin is found.</li><li><a href="spk_AnalogFindPeaks.html" class="code" title="function [maxT,maxV,minT,minV,platT,platV,mxi,mni,pli] = spk_AnalogFindPeaks(s,TW,ChanName,endflag)">spk_AnalogFindPeaks</a>	finds extrem values as well as plateaus</li><li><a href="spk_AnalogFindZeros.html" class="code" title="function [zeroT,zeroV,zeroB] = spk_AnalogFindZeros(s,TW,ChanName)">spk_AnalogFindZeros</a>	finds zero bins</li><li><a href="spk_AnalogIsSaturated.html" class="code" title="function [SatTrials,isSat] = spk_AnalogIsSaturated(s,DataThresh,SatBinNum,Ev1,Ev2,DoPlot)">spk_AnalogIsSaturated</a>	detects trials exceeding a range of analog values</li><li><a href="spk_AnalogLine.html" class="code" title="function [h,s] = spk_AnalogLine(s,ChanName,TimeWin,TrialSpread,varargin)">spk_AnalogLine</a>	Plots line objects of current analog trials into current axes.</li><li><a href="spk_AnalogLine2.html" class="code" title="function [h,s] = spk_AnalogLine2(s,YSegment,Mapping,varargin)">spk_AnalogLine2</a>	plots the current trials of the current ananlog channel</li><li><a href="spk_AnalogLineXY.html" class="code" title="function [h,s] = spk_AnalogLineXY(s,XChanName,YChanName,TimeWin,varargin)">spk_AnalogLineXY</a>	Plots two analog channels (X vs Y) of current trials into current axes.</li><li><a href="spk_AnalogMean.html" class="code" title="function [M,STD,SE,tx,DATA] = spk_AnalogMean(s,ChanName,TimeWin)">spk_AnalogMean</a>	Calculate mean value of analog channel</li><li><a href="spk_AnalogPrctile.html" class="code" title="function [P,DATA] = spk_AnalogPrctile(s,Prc,ChanName,TimeWin)">spk_AnalogPrctile</a>	Calculate percentiles of analog channel</li><li><a href="spk_AnalogXCorr.html" class="code" title="function [c,lags] = spk_AnalogXCorr(s,SigChan,RefChan,TW)">spk_AnalogXCorr</a>	cross correlation between two channels</li><li><a href="spk_analogPowerSpectrum.html" class="code" title="function [PS,F] = spk_analogPowerSpectrum(s,timewin,nfft)">spk_analogPowerSpectrum</a>	</li><li><a href="spk_findAnalogBins.html" class="code" title="function [i,t] = spk_findAnalogBins(s,ChanName,Win)">spk_findAnalogBins</a>	returns analog time bins for given windows</li><li><a href="spk_findAnalogEventBin.html" class="code" title="function [v,t,i,terr] = spk_findAnalogEventBin(s,ChanName,EventLabel)">spk_findAnalogEventBin</a>	returns analog data for a given event</li><li><a href="spk_getAnalog.html" class="code" title="function [x,T,bwidth,bwin] = spk_getAnalog(s,TimeWin,ChanName,Event)">spk_getAnalog</a>	extracts analog data from the object.</li></ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function t = spk_AnalogTimeVec(s,Chan)</a>
+0002 
+0003 <span class="comment">% retrieves times of analog data bins</span>
+0004 <span class="comment">% t = spk_AnalogTimeVec(s,Chan)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Chan ... channel name or channel nr.</span>
+0007 
+0008 <span class="comment">%% get the channel index</span>
+0009 <span class="keyword">if</span> nargin&lt;2 || isempty(Chan)
+0010     <span class="keyword">if</span> isempty(s.currentanalog);
+0011         s.currentanalog = 1:size(s.analog,2);
+0012     <span class="keyword">end</span>
+0013 <span class="keyword">elseif</span> ischar(Chan)
+0014     s.currentanalog = <a href="spk_findAnalog.html" class="code" title="function [i,sf] = spk_findAnalog(s,ChanName,PatternFlag)">spk_findAnalog</a>(s,Chan);
+0015 <span class="keyword">elseif</span> isnumeric(Chan)
+0016     s.currentanalog = Chan;
+0017 <span class="keyword">end</span>
+0018 nCh = length(s.currentanalog);
+0019 
+0020 <span class="comment">%% loop channels</span>
+0021 <span class="keyword">for</span> iCh = 1:nCh
+0022     ChNr = s.currentanalog(iCh);
+0023     SF = s.analogfreq(ChNr);<span class="comment">% sample frequency</span>
+0024     aB = s.analogalignbin(ChNr);<span class="comment">% align bin</span>
+0025     nB = size(s.analog{ChNr},2);<span class="comment">% number of sample bins</span>
+0026     t{iCh} = zeros(1,nB);<span class="comment">% time vector</span>
+0027     t{iCh}(aB:-1:1) = [0 : ((-1)*(1000/SF)) : ((aB-1)*(-1)*(1000/SF))];
+0028     t{iCh}(aB:1:nB) = [0 : (1000/SF) : ((nB-aB)*(1000/SF))];
+0029 <span class="keyword">end</span>
+0030 
+0031 <span class="comment">%% modify output</span>
+0032 <span class="keyword">if</span> nCh==1
+0033     t = t{1};
+0034 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

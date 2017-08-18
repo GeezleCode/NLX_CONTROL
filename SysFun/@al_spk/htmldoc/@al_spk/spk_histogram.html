@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_histogram</title>
+  <meta name="keywords" content="spk_histogram">
+  <meta name="description" content="calculates histograms for spikedata defined by s.currenttrials and s.currentchan">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_histogram.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_histogram
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>calculates histograms for spikedata defined by s.currenttrials and s.currentchan</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [values,binedges,h] = spk_histogram(s,timewin,binwidth,HistMode,PlotType,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> calculates histograms for spikedata defined by s.currenttrials and s.currentchan
+
+ function [h,values,binedges] = spk_histogram(s,HistMode,PlotType,varargin)
+
+ HistMode 1 absolute counts
+           2 mean counts
+           3 mean frequency
+ PlotType LINE BAR PATCH</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [values,binedges,h] = spk_histogram(s,timewin,binwidth,HistMode,PlotType,varargin)</a>
+0002 
+0003 <span class="comment">% calculates histograms for spikedata defined by s.currenttrials and s.currentchan</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% function [h,values,binedges] = spk_histogram(s,HistMode,PlotType,varargin)</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% HistMode 1 absolute counts</span>
+0008 <span class="comment">%           2 mean counts</span>
+0009 <span class="comment">%           3 mean frequency</span>
+0010 <span class="comment">% PlotType LINE BAR PATCH</span>
+0011 
+0012 <span class="keyword">if</span> isempty(s.currenttrials)
+0013      <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'Please set current trials !'</span>);
+0014 <span class="keyword">end</span>
+0015 numtrials = length(s.currenttrials);
+0016 
+0017 <span class="keyword">if</span> isempty(s.currentchan)
+0018     numchan = size(s.spk,1);
+0019     s.currentchan = 1:numchan;
+0020 <span class="keyword">else</span>
+0021     numchan = length(s.currentchan);
+0022 <span class="keyword">end</span>
+0023 numspk = sum(cellfun(<span class="string">'length'</span>,s.spk(:,s.currenttrials)),2);
+0024 
+0025 
+0026 <span class="comment">% time bins</span>
+0027 <span class="keyword">if</span> isempty(timewin)
+0028     <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'Please set time window !'</span>);
+0029 <span class="keyword">end</span>
+0030 
+0031 binedges = [timewin(1):binwidth:timewin(2)];
+0032 numbins = length(binedges);
+0033 
+0034 <span class="comment">% scale values</span>
+0035 <span class="keyword">switch</span> HistMode
+0036     <span class="keyword">case</span> 1;normfactor=1;
+0037     <span class="keyword">case</span> 2;normfactor=1./numtrials;
+0038     <span class="keyword">case</span> 3;normfactor=1./(numtrials.*binwidth*10^s.timeorder);
+0039     <span class="keyword">otherwise</span>
+0040         normfactor=1;
+0041 <span class="keyword">end</span>
+0042 
+0043 <span class="comment">% calculate histogram</span>
+0044 <span class="keyword">for</span> i=s.currentchan
+0045     <span class="keyword">if</span> numspk(i)&gt;0
+0046         values(:,find(s.currentchan==i)) = histc(cat(2,s.spk{i,s.currenttrials}),binedges)'.*normfactor;
+0047     <span class="keyword">else</span>
+0048         values(1:numbins,find(s.currentchan==i)) = NaN;
+0049     <span class="keyword">end</span>
+0050 <span class="keyword">end</span>
+0051 
+0052 <span class="comment">% plot histogram</span>
+0053 h = [];
+0054 <span class="keyword">if</span> nargin&lt;3;<span class="keyword">return</span>;<span class="keyword">end</span>
+0055 
+0056 <span class="keyword">if</span> ~isempty(s.chancolor);set(gca,<span class="string">'ColorOrder'</span>,s.chancolor(s.currentchan,:));<span class="keyword">end</span>
+0057 
+0058 <span class="keyword">switch</span> upper(PlotType)
+0059      <span class="keyword">case</span> <span class="string">'LINE'</span>
+0060           X = [];Y = [];
+0061           <span class="keyword">for</span> i = 2:numbins
+0062                X = cat(1,X,[ones(1,numchan).*binedges(i-1);ones(1,numchan).*binedges(i)]);
+0063                Y = cat(1,Y,[values(i-1,:);values(i-1,:)]);
+0064           <span class="keyword">end</span>
+0065           h = line(X,Y,varargin{:});
+0066      <span class="keyword">case</span> <span class="string">'BAR'</span>
+0067          <span class="keyword">if</span> size(values,2)&gt;1;warning(<span class="string">'multiple bars are not supported yet !'</span>);<span class="keyword">end</span>;
+0068           h = bar(binedges+0.5*binwidth,values);
+0069           <span class="keyword">if</span> ~isempty(varargin)
+0070                set(h,varargin{:});
+0071           <span class="keyword">end</span>
+0072      <span class="keyword">case</span> <span class="string">'PATCH'</span>
+0073          <span class="keyword">if</span> size(values,2)&gt;1;warning(<span class="string">'multiple patches are not supported yet !'</span>);<span class="keyword">end</span>;
+0074           X = [binedges(end) binedges(1)];Y = [0 0];
+0075           <span class="keyword">for</span> i = 2:numbins
+0076                X = cat(2,X,[binedges(i-1) binedges(i)]);
+0077                Y = cat(2,Y,[values(i-1) values(i-1)]);
+0078           <span class="keyword">end</span>
+0079           h = patch(<span class="string">'Xdata'</span>,X,<span class="string">'ydata'</span>,Y,varargin{:});
+0080 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

@@ -1,70 +1,40 @@
-function [r,c,n] = spk_SpikeRevCorr(s,OnsetEvent,Win,Tau,SeqStimIdx,SeqStimArray)
+function [r,c,n] = spk_SpikeRevCorr(s,OnsetEvent,Win,Tau,SeqIndex,SeqLength)
 
 % count spikes related to reverse correlation stimulus
 % Stimulus sequence should be in the field s.stimulus as 
 % a nx2 vector [StimN x [t,StimIDNr]].
-%
-% [r,n] = spk_SPKRevCorr(s,OnsetEvent,Win,Tau,SeqStimIdx,SeqLength,StimID)
-% 
-% OnsetEvent .... defines the onset of reverse correlation stimuli
-% Win ........... time window around Tau
-% Tau ........... Tau sliding window delay, relativ to OnsetEvent
-%
-% SeqStimIdx .... stimulus index
-% SeqStimArray .. if given, SeqStimIdx is index for SeqStimArray
+% [r,n] = spk_SPKRevCorr(s,OnsetEvent,Win,Tau,SeqIndex)
+% OnsetEvent ...
+% Win ..........
+% Tau ..........
+% SeqIndex .....
 %
 % r ... [PresNr,StimNr,ChNr,Tau] rate
 % c ... [PresNr,StimNr,ChNr,Tau] spike count
 % n ... [1,StimNr] number of presentations
 
 nTau = length(Tau);
-if nargin<6
-    SeqStimArray = [];
-    if nargin<5
-        SeqStimIdx = [];
-    end;end
 
 %% check trial number
-[TrNr,s] = spk_CheckCurrentTrials(s,true);
-nTr = length(TrNr);
-
-%% time windows
-EvNr = strmatch(OnsetEvent,s.eventlabel);
-for iTr = 1:nTr
-    t0(:,iTr) = s.events{EvNr,TrNr(iTr)}';
-    tn(1,iTr) = length(s.events{EvNr,TrNr(iTr)});
-    if isnan(Win)% windows are from onset(i) to onset(i+1)
-        dt = median(diff(t0(:,iTr)));
-        t1(:,iTr) = t0(:,iTr);
-        t2(:,iTr) = t0(:,iTr);
-        t2(1:end-1,iTr) = t0(2:end,iTr);
-        t2(end,iTr) = t0(end,iTr)+dt;
-    else
-       t1(:,iTr) =  t0(:,iTr)+Win(1);
-       t2(:,iTr) =  t0(:,iTr)+Win(2);
-    end
+nTotTr = spk_TrialNum(s);
+[dummy,nRVTr] = size(s.stimulus);
+if isempty(s.currenttrials)
+    iTr = 1:nTotTr;
+else
+    iTr = s.currenttrials;
 end
-
-% check events
-tNum = unique(tn);
-if length(tNum)>1
-    error('Inconsistent number of onset events!');
-end
+nTr = length(iTr);
 
 %% get sequence
-if isempty(SeqStimIdx) & isempty(SeqStimArray)
-    ID = repmat([1:tNum]',1,nTr);
-elseif ~isempty(SeqStimIdx) & isempty(SeqStimArray)
-    ID = SeqStimIdx;
-elseif ~isempty(SeqStimIdx) & ~isempty(SeqStimArray)
-    ID = SeqStimArray(SeqStimIdx,:);
-else
-    ID = [];
+nSeq = cellfun('size',s.stimulus(iTr),1);
+if length(unique(nSeq))>1
+    warning('inconsistent length of revcorr sequence!');
+    iTr(nSeq~=SeqLength) = [];
+    nTr = length(iTr);
 end
-[nSeq,nSeqTr] = size(ID);
-if nSeq~=tNum || nSeqTr~=nTr
-    error('inconsistent sequence information');
-end
+
+%% get event
+EvNr = strmatch(OnsetEvent,s.eventlabel);
 
 %% spike channel
 if isempty(s.currentchan)
@@ -72,32 +42,26 @@ if isempty(s.currentchan)
 end
 nCh = length(s.currentchan);
 
-%% allocate
-nStim = 1000;
-nPres = 50;
-r = zeros(nPres,nStim,nCh,nTau).*NaN;
-c = zeros(nPres,nStim,nCh,nTau).*NaN;
-n = zeros(1,nStim);
 
 %% loop trials
-for iTr = 1:nTr
-    % check matching of stimulus onsets and stimulus ID's
-    if size(t0,1)~=size(ID,1)
+nStim = 1000;
+nPres = 50;
+r = zeros(nPres,1000,nCh,nTau).*NaN;
+c = zeros(nPres,1000,nCh,nTau).*NaN;
+n = zeros(1,1000);
+
+for i = 1:nTr
+    ID = s.stimulus{iTr(i)}(SeqIndex,2);
+    t = s.events{EvNr,iTr(i)};
+    if length(t)~=length(ID)
         error('Number of stimuli does not match number of onset events!');
     end
-    
-    for it = 1:size(t0,1)
-        if isnan(ID(it,iTr)) || ID(it,iTr)<1
-            continue;%negelect NaN, zero or negative indices
-        end
-        n(ID(it,iTr)) = n(ID(it,iTr))+1;
+    for it = 1:length(t)
+        n(ID(it)) = n(ID(it))+1;
         for iCh = 1:nCh
-            dt = t2(it,iTr)-t1(it,iTr);
             for iTau = 1:nTau
-                c(n(ID(it,iTr)),ID(it,iTr),iCh,iTau) = sum( ...
-                    s.spk{s.currentchan(iCh),TrNr(iTr)} >= t1(it,iTr)+Tau(iTau) ...
-                    & s.spk{s.currentchan(iCh),TrNr(iTr)} < t2(it,iTr)+Tau(iTau));
-                r(n(ID(it,iTr)),ID(it,iTr),iCh,iTau) = c(n(ID(it,iTr)),ID(it,iTr),iCh,iTau) / dt *(10^(s.timeorder*(-1)));
+                c(n(ID(it)),ID(it),iCh,iTau) = sum(s.spk{s.currentchan(iCh),iTr(i)} >= t(it)+Tau(iTau)+Win(1) & s.spk{s.currentchan(iCh),iTr(i)} < t(it)+Tau(iTau)+Win(2));
+                r(n(ID(it)),ID(it),iCh,iTau) = c(n(ID(it)),ID(it),iCh,iTau) / diff(Win) *(10^(s.timeorder*(-1)));
             end
         end
     end

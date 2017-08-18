@@ -56,7 +56,6 @@ for iCh = 1:nCh
         for iw = 1:nw
             widx = wb(iTr,1,iw):1:wb(iTr,2,iw);
             wnb = length(widx);
-            if wnb<=1;continue;end
             cTrData = s.analog{ChNr}(TrNr,widx);
             if any(isnan(cTrData)) || isempty(cTrData);continue;end
             LC = GetLineComponent(cTrData,Ts,Tp);

@@ -1,4 +1,4 @@
-function spk_htmldoc(s,helpdir)
+function spk_htmldoc(s)
 
 % creates the html documentation by use of m2html.m
 
@@ -6,16 +6,13 @@ old_CD = cd;
 
 TargetDir = fileparts(which('al_spk'));
 
-if nargin<2
-    % make the directory one up the current directory
-    [TargetDir,CurrDir] = strtok(fliplr(TargetDir),'\');
-    TargetDir = fliplr(TargetDir);
-    CurrDir = fliplr(CurrDir);
-    cd(CurrDir);
-    
-    helpdir = fullfile(TargetDir,'htmldoc');
-end
-    
+% make the directory one up the current directory
+[TargetDir,CurrDir] = strtok(fliplr(TargetDir),'\');
+TargetDir = fliplr(TargetDir);
+CurrDir = fliplr(CurrDir);
+cd(CurrDir);
+
+helpdir = fullfile(TargetDir,'htmldoc');
 
 if exist(helpdir)
     button = questdlg(['Do you really want to remove ...' helpdir]);

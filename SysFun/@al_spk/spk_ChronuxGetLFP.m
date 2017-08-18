@@ -15,7 +15,6 @@ function [dlfp,tlfp] = spk_ChronuxGetLFP(s,TimeWin,Event,TimeWinAlignFlag,Chan)
 %              s.currentanalog
 
 if nargin<5;Chan = [];end
-
 [dlfp,tlfp] = spk_getAnalog(s,TimeWin,Chan,Event);
 
 if iscell(dlfp) 
@@ -31,20 +30,16 @@ end
     
 
 function [dlfp,tlfp] = Convert2Chronux(dlfp,tlfp,TimeWin,TimeWinAlignFlag)
-
-AllNaNTrials = all(isnan(dlfp),2);
-
-NotNaNbins = all(~isnan(dlfp(~AllNaNTrials,:)),1);
+NotNaNbins = all(~isnan(dlfp),1);
 LoBin = find(NotNaNbins,1,'first');
 HiBin = find(NotNaNbins,1,'last');
-
 dlfp = dlfp(:,LoBin:HiBin);
 tlfp = tlfp(:,LoBin:HiBin);
 dlfp = dlfp';
 tStart = unique(tlfp(:,1));
 ntStart = length(tStart);
 if ntStart>1
-    fprintf(1,'spk_ChronuxGetLFP: Data trials have different start time.\n');
+    warning('Data trials have different start time.');
     % take the start time which is the least different from the mean of all
     for i=1:ntStart
         dt(i) = abs(mean(tlfp(:,1))-tStart(i));

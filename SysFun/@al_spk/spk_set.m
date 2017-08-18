@@ -15,10 +15,10 @@ for i = 1:numProp
      cval = varargin{i*2};
      
      switch cprop
-         case 'currenttrials'
-             if ~iscell(cval)
-                 cval = cval(:)';
-             end
+          case 'currenttrials'
+               if size(cval,1)>1
+                    cval = cval';
+               end
      end
                
      

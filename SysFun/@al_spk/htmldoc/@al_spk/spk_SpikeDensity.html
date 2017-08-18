@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_SpikeDensity</title>
+  <meta name="keywords" content="spk_SpikeDensity">
+  <meta name="description" content="Calculates the Spike Density Function over trials listed in s.currenttrials">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_SpikeDensity.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_SpikeDensity
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Calculates the Spike Density Function over trials listed in s.currenttrials</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [M,bins,Err,trial_d,h] = spk_density(s,sigma,win,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Calculates the Spike Density Function over trials listed in s.currenttrials
+ Time resolution 1 ms
+
+ function [M,bins,Err.S,trial_d,h] = spk_density(s,sigma,win,varargin)
+
+ INPUT
+ sigma ...... sigma of gaussian
+ win ........ smoothing window in ms
+ varargin ... line properties if not empty plots in the current axes
+
+ OUTPUT:
+ d - density in hertz</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li><li><a href="spk_CheckCurrentChannels.html" class="code" title="function out = spk_CheckCurrentChannels(s,SetAllIfEmpty)">spk_CheckCurrentChannels</a>	</li><li><a href="spk_CheckCurrentTrials.html" class="code" title="function [out,s] = spk_CheckCurrentTrials(s,SetAllIfEmpty)">spk_CheckCurrentTrials</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [M,bins,Err,trial_d,h] = spk_density(s,sigma,win,varargin)</a>
+0002 
+0003 <span class="comment">% Calculates the Spike Density Function over trials listed in s.currenttrials</span>
+0004 <span class="comment">% Time resolution 1 ms</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% function [M,bins,Err.S,trial_d,h] = spk_density(s,sigma,win,varargin)</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% INPUT</span>
+0009 <span class="comment">% sigma ...... sigma of gaussian</span>
+0010 <span class="comment">% win ........ smoothing window in ms</span>
+0011 <span class="comment">% varargin ... line properties if not empty plots in the current axes</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% OUTPUT:</span>
+0014 <span class="comment">% d - density in hertz</span>
+0015 
+0016 NumCurrChan = length(<a href="spk_CheckCurrentChannels.html" class="code" title="function out = spk_CheckCurrentChannels(s,SetAllIfEmpty)">spk_CheckCurrentChannels</a>(s,0));
+0017 numCurrTr = length(<a href="spk_CheckCurrentTrials.html" class="code" title="function [out,s] = spk_CheckCurrentTrials(s,SetAllIfEmpty)">spk_CheckCurrentTrials</a>(s,0));
+0018 h = [];
+0019 alpha = 0.05; <span class="comment">% for confidence interval</span>
+0020 <span class="comment">%__________________________________________________________________________</span>
+0021 <span class="comment">% time</span>
+0022 smoothwin      = -3*sigma:3*sigma;
+0023 smoothwinwidth = abs(diff([smoothwin(1) smoothwin(end)]));
+0024 
+0025 <span class="comment">% check time win</span>
+0026 <span class="keyword">if</span> length(win(:))&gt;2
+0027     <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'Time window must be [start end]. al_spk must be aligned.'</span>);
+0028 <span class="keyword">end</span>
+0029 timewin         = win(1):win(2);
+0030 bins      = timewin;
+0031 
+0032 M    = zeros(NumCurrChan,length(timewin)).*NaN;
+0033 Err.V   = zeros(NumCurrChan,length(timewin)).*NaN;
+0034 Err.S   = zeros(NumCurrChan,length(timewin)).*NaN;
+0035 Err.SE   = zeros(NumCurrChan,length(timewin)).*NaN;
+0036 Err.CI = zeros(NumCurrChan,length(timewin)).*NaN;
+0037 trial_d   = zeros(NumCurrChan,length(timewin),numCurrTr).*NaN;
+0038 
+0039 nBinSmoothWin = length(smoothwin);
+0040 nBinTimeBin = length(timewin);
+0041 
+0042 <span class="comment">%gaussians = exp(-(smoothwin/(2.*sigma)).^2)';</span>
+0043 <span class="comment">% is this an error ?????!!!!! rather:</span>
+0044 gaussians = exp(-(smoothwin.^2/(2.*sigma.^2)))';
+0045 gaussians = gaussians/sum(gaussians);
+0046 
+0047 <span class="comment">% if isempty(win) | nBinSmoothWin*3&gt;nBinTimeBin</span>
+0048 <span class="comment">%      warning('Please increase time window or decrease smoothwindow !');</span>
+0049 <span class="comment">%      M = NaN;</span>
+0050 <span class="comment">%      bins = NaN;</span>
+0051 <span class="comment">%      Err.S = NaN;</span>
+0052 <span class="comment">%      trial_d = NaN;</span>
+0053 <span class="comment">%      h = NaN;</span>
+0054 <span class="comment">%      return;</span>
+0055 <span class="comment">% end</span>
+0056 
+0057 
+0058 <span class="keyword">for</span> currChan = s.currentchan
+0059     currChanIndex = find(s.currentchan==currChan);
+0060     <span class="comment">%__________________________________________________________________________</span>
+0061     <span class="comment">% get spikes</span>
+0062     spkmat = zeros(nBinTimeBin,numCurrTr);
+0063     i=0;
+0064     <span class="keyword">for</span> trial = s.currenttrials
+0065         i  = i+1;
+0066         <span class="keyword">if</span> ~isempty(s.spk{currChan,trial})
+0067             currSpkTimes = ceil(s.spk{currChan,trial}.*(10^s.timeorder)./(10^(-3)));<span class="comment">%round milliseconds</span>
+0068             currSpkTimes = currSpkTimes(currSpkTimes&gt;=win(1)&amp;currSpkTimes&lt;=win(2));<span class="comment">% excise spikes outside window</span>
+0069             spkmat(currSpkTimes-win(1)+1,i) = 1;<span class="comment">% times as index in spkmat</span>
+0070         <span class="keyword">end</span>
+0071     <span class="keyword">end</span>
+0072     
+0073     <span class="comment">%_______________________</span>
+0074     <span class="comment">% filter with gaussian</span>
+0075     spkmat = cat(1,zeros(nBinSmoothWin*3,numCurrTr),spkmat,zeros(nBinSmoothWin*3,numCurrTr));<span class="comment">% append zeros</span>
+0076     smooth = filtfilt(gaussians,1,spkmat);
+0077     smooth = smooth(nBinSmoothWin*3+1:size(smooth,1)-nBinSmoothWin*3,:);<span class="comment">% cut zeros</span>
+0078     smooth = smooth'.*1000;<span class="comment">% convert to spikes/sec</span>
+0079     
+0080     <span class="comment">% safetime = find(timewin&gt;timewin(1)+smoothwinwidth &amp; timewin&lt;timewin(end)-smoothwinwidth);</span>
+0081     <span class="comment">% if isempty(safetime);error('Can not calculate density !');end</span>
+0082     <span class="comment">% timewin = timewin(safetime);</span>
+0083     <span class="comment">% smooth = smooth(safetime,:);</span>
+0084     
+0085     <span class="comment">%_________________</span>
+0086     <span class="comment">% OUTPUT</span>
+0087     M(currChanIndex,:)    = sum(smooth,1)./numCurrTr;
+0088     
+0089     <span class="comment">%_____________________________</span>
+0090     <span class="comment">% Determine standard deviation.</span>
+0091     <span class="keyword">if</span> nargout&gt;2 &amp; numCurrTr&gt;1
+0092         Err.V(currChanIndex,:) = sum( (smooth -repmat(M(currChanIndex,:),[numCurrTr,1])).^2 ,1)./(numCurrTr-1);
+0093         Err.S(currChanIndex,:) = sqrt(Err.V(currChanIndex,:));
+0094         Err.SE(currChanIndex,:) = Err.S(currChanIndex,:)./sqrt(numCurrTr);
+0095         
+0096         <span class="comment">% confidence interval of the mean</span>
+0097         dF = numCurrTr-1;
+0098         tcrit = tinv(1-alpha/2,dF);
+0099         Err.CI(currChanIndex,:) = tcrit.*Err.SE(currChanIndex,:);
+0100 
+0101     <span class="keyword">end</span>
+0102     
+0103     <span class="comment">%____________________________</span>
+0104     <span class="comment">% trial data</span>
+0105     <span class="keyword">if</span> nargout&gt;3
+0106         trial_d(currChanIndex,:,:) = permute(smooth,[3 2 1]);
+0107     <span class="keyword">end</span>
+0108     
+0109 <span class="keyword">end</span>
+0110 <span class="comment">%___________________________</span>
+0111 <span class="comment">% plot density</span>
+0112 h = [];
+0113 <span class="keyword">if</span> nargin&lt;4;<span class="keyword">return</span>;<span class="keyword">end</span>
+0114 <span class="keyword">if</span> NumCurrChan&gt;1
+0115     <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'Cannot plot more than one channel!'</span>);
+0116 <span class="keyword">end</span>
+0117 
+0118 <span class="comment">% h(1) = patch( ...</span>
+0119 <span class="comment">%     [bins bins], ...</span>
+0120 <span class="comment">%     [M-Err.S M+Err.S], ...</span>
+0121 <span class="comment">%     [0.6 0.6 0.6], ...</span>
+0122 <span class="comment">%     'linestyle','none');</span>
+0123 h(2) = line(bins,M,varargin{:});</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

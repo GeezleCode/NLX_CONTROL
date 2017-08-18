@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_TrialEventLimit</title>
+  <meta name="keywords" content="spk_TrialEventLimit">
+  <meta name="description" content="returns the time window between earliest and latest event of">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_TrialEventLimit.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_TrialEventLimit
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>returns the time window between earliest and latest event of</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [TimeWin,AlignTimes,s] = spk_TrialEventLimit(s) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> returns the time window between earliest and latest event of
+ trials given in s.currenttrials; set by &gt;&gt;spk_set(s,'currentrials',[ ... ])
+
+ [TimeWin,AlignTimes,s] = spk_TrialEventLimit(s)
+
+ OUTPUT
+ TimeWin ...... two column array, trials in rows
+ AlignTimes ... column vector of align times for each trial</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>	returns and check for number of trials in @al_spk object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_DeleteStartTrials.html" class="code" title="function [s,i] = spk_DeleteStartTrials(s,opt,par)">spk_DeleteStartTrials</a>	removes trials from the beginning of the file</li></ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [TimeWin,AlignTimes,s] = spk_TrialEventLimit(s)</a>
+0002 
+0003 <span class="comment">% returns the time window between earliest and latest event of</span>
+0004 <span class="comment">% trials given in s.currenttrials; set by &gt;&gt;spk_set(s,'currentrials',[ ... ])</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% [TimeWin,AlignTimes,s] = spk_TrialEventLimit(s)</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% OUTPUT</span>
+0009 <span class="comment">% TimeWin ...... two column array, trials in rows</span>
+0010 <span class="comment">% AlignTimes ... column vector of align times for each trial</span>
+0011 
+0012 TrialNum = <a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>(s);
+0013 <span class="keyword">if</span> isempty(s.currenttrials)
+0014     s.currenttrials = 1:TrialNum;
+0015 <span class="keyword">end</span>
+0016 CurrTrialNum = length(s.currenttrials);
+0017 
+0018 TimeWin = ones(CurrTrialNum,2).*NaN;
+0019 AlignTimes = ones(CurrTrialNum,1).*NaN;
+0020 nEvTypes = size(s.events,1);
+0021 
+0022 <span class="keyword">for</span> i = 1:CurrTrialNum
+0023     <span class="keyword">for</span> iEvType = 1:nEvTypes
+0024         <span class="keyword">if</span> ~isempty(s.events{iEvType,i})
+0025             
+0026             currMax = max(squeeze(s.events{iEvType,i}));
+0027             currMin = min(squeeze(s.events{iEvType,i}));
+0028             
+0029             <span class="keyword">if</span> isnan(TimeWin(i,1)) || currMin&lt;TimeWin(i,1)
+0030                 TimeWin(i,1) = currMin;
+0031             <span class="keyword">end</span>
+0032             <span class="keyword">if</span> isnan(TimeWin(i,2)) || currMax&gt;TimeWin(i,2)
+0033                 TimeWin(i,2) = currMax;
+0034             <span class="keyword">end</span>
+0035             
+0036 <span class="comment">%             if currMin&gt;0 &amp;&amp; (isnan(TimeWin(i,1)) || currMin&lt;TimeWin(i,1))</span>
+0037 <span class="comment">%                 TimeWin(i,1) = currMin;</span>
+0038 <span class="comment">%             end</span>
+0039 <span class="comment">%             if currMax&gt;0 &amp;&amp; (isnan(TimeWin(i,2)) || currMax&gt;TimeWin(i,2))</span>
+0040 <span class="comment">%                 TimeWin(i,2) = currMax;</span>
+0041 <span class="comment">%             end</span>
+0042             
+0043             
+0044         <span class="keyword">end</span>
+0045     <span class="keyword">end</span>
+0046     AlignTimes(i,1) = s.align(s.currenttrials(i));
+0047 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of al_spk</title>
+  <meta name="keywords" content="al_spk">
+  <meta name="description" content="Constructor for the @al_spk class">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; al_spk.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>al_spk
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Constructor for the @al_spk class</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function s = al_spk(x) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Constructor for the @al_spk class
+
+ function s = neurons(x)
+ s        - @al_spk object
+ x        - INPUT
+
+ MAG 28.08.2004</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_loadstruct.html" class="code" title="function s = spk_loadstruct(s,LoadPath)">spk_loadstruct</a>	loads a file in mat format to a @al_spk object</li></ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function s = al_spk(x)</a>
+0002 
+0003 <span class="comment">% Constructor for the @al_spk class</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% function s = neurons(x)</span>
+0006 <span class="comment">% s        - @al_spk object</span>
+0007 <span class="comment">% x        - INPUT</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% MAG 28.08.2004</span>
+0010 
+0011 structure;<span class="comment">%Read the default data structure.</span>
+0012 
+0013 nin = nargin;
+0014 
+0015 <span class="keyword">if</span> nin ==0 
+0016    <span class="comment">% Default constructor</span>
+0017    s = class(s,<span class="string">'al_spk'</span>);
+0018    
+0019 <span class="keyword">elseif</span> isa(x,<span class="string">'struct'</span>)
+0020    
+0021    xFields = fieldnames(x);
+0022    sFields = fieldnames(s);
+0023    nrFields = length(sFields);
+0024    <span class="keyword">for</span> fieldNr = 1:nrFields
+0025        indexInx = strmatch(sFields{fieldNr},xFields,<span class="string">'exact'</span>);
+0026        <span class="keyword">if</span> ~isempty(indexInx)
+0027            s = setfield(s,sFields{fieldNr},getfield(x,xFields{indexInx}));
+0028        <span class="keyword">end</span>   
+0029    <span class="keyword">end</span>
+0030    
+0031    s = class(s,<span class="string">'al_spk'</span>);
+0032    
+0033 <span class="keyword">elseif</span> isa(x,<span class="string">'al_spk'</span>)
+0034    <span class="comment">% Copy constructor</span>
+0035    s = x;    
+0036    
+0037 <span class="keyword">else</span>
+0038    s = class(s,<span class="string">'al_spk'</span>);
+0039    <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(s,<span class="string">'No such constructor'</span>)
+0040    
+0041 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

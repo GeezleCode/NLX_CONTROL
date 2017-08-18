@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of MakeContents</title>
+  <meta name="keywords" content="MakeContents">
+  <meta name="description" content="MAKECONTENTS  makes Contents file in current working directory.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; MakeContents.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>MakeContents
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>MAKECONTENTS  makes Contents file in current working directory.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function MakeContents(aString) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">MAKECONTENTS  makes Contents file in current working directory.
+   MAKECONTENTS(STRING) creates a standard &quot;Contents.m&quot; file in the
+   current directory by assembling the first comment (H1) line in
+   each function found in the current working directory.  If a 
+   &quot;Contents.m&quot; file exists, it is renamed to &quot;Contents.old&quot;, before
+   a new &quot;Contents.m&quot; file is created.  STRING is inserted as the 
+   first line of the &quot;Contents.m&quot; file;  if omitted, a blank line 
+   is inserted instead.  The function changes permission on the 
+   resultant &quot;Contents.m&quot; file to rw-r--r-- on Unix systems.
+
+ Updated 29 June 2000. tuned by Alwin Gieselmann 07/2003
+
+ See also <a href="Contents.html" class="code" title="">CONTENTS</a>.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function MakeContents(aString)</a>
+0002 
+0003 <span class="comment">%MAKECONTENTS  makes Contents file in current working directory.</span>
+0004 <span class="comment">%   MAKECONTENTS(STRING) creates a standard &quot;Contents.m&quot; file in the</span>
+0005 <span class="comment">%   current directory by assembling the first comment (H1) line in</span>
+0006 <span class="comment">%   each function found in the current working directory.  If a</span>
+0007 <span class="comment">%   &quot;Contents.m&quot; file exists, it is renamed to &quot;Contents.old&quot;, before</span>
+0008 <span class="comment">%   a new &quot;Contents.m&quot; file is created.  STRING is inserted as the</span>
+0009 <span class="comment">%   first line of the &quot;Contents.m&quot; file;  if omitted, a blank line</span>
+0010 <span class="comment">%   is inserted instead.  The function changes permission on the</span>
+0011 <span class="comment">%   resultant &quot;Contents.m&quot; file to rw-r--r-- on Unix systems.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Updated 29 June 2000. tuned by Alwin Gieselmann 07/2003</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% See also CONTENTS.</span>
+0016 
+0017 
+0018 <span class="comment">% Author(s): L. Bertuccioli</span>
+0019 <span class="comment">%            A. Prasad</span>
+0020 
+0021 <span class="comment">% Based on mkcontents.m by Denis Gilbert</span>
+0022 
+0023 
+0024 <span class="comment">% Default value of input string</span>
+0025 <span class="keyword">if</span> nargin &lt; 1,
+0026      aString =<span class="string">' '</span>;
+0027 <span class="keyword">end</span>
+0028 
+0029 disp([<span class="string">'Creating &quot;Contents.m&quot; in '</span> pwd])
+0030 <span class="keyword">if</span> exist([pwd filesep <span class="string">'Contents.m'</span>]) ~= 0 
+0031      copyfile(<span class="string">'Contents.m'</span>,<span class="string">'Contents.old'</span>);
+0032      delete Contents.m  
+0033 <span class="keyword">end</span>
+0034 
+0035 <span class="comment">% Header lines</span>
+0036 line1 = [<span class="string">'% '</span> aString];
+0037 line2 = [<span class="string">'% Path -&gt;  '</span> pwd];
+0038 
+0039 <span class="comment">% Structure with fields files.m, files.mat, etc.</span>
+0040 files = what;  
+0041 <span class="comment">% Note: the field files.m does not include contents.m (IMPORTANT)</span>
+0042 <span class="comment">% Do not displace this line of code above or below its present location</span>
+0043 <span class="comment">% to avoid error messages.</span>
+0044 
+0045 <span class="keyword">if</span> length(files.m)==0
+0046      warning(<span class="string">'No m-files found in this directory'</span>)
+0047      <span class="keyword">return</span>
+0048 <span class="keyword">end</span>
+0049 
+0050 fcontents = fopen(<span class="string">'Contents.m'</span>,<span class="string">'w'</span>); 
+0051 fprintf(fcontents,<span class="string">'%s\n'</span>,line1);     
+0052 fprintf(fcontents,<span class="string">'%s\n'</span>,line2);     
+0053 fprintf(fcontents,<span class="string">'%% \n'</span>);
+0054 
+0055 <span class="comment">% Write first lines to Contents.m if they exist</span>
+0056 <span class="keyword">for</span> i = 1:length(files.m)
+0057    fid=fopen(files.m{i},<span class="string">'r'</span>); 
+0058    aLine = fgetl(fid);
+0059    
+0060    <span class="keyword">if</span> (length(aLine)&gt;=8) &amp; (strcmp(aLine(1:8),<span class="string">'function'</span>) == 1),
+0061        count_percent = 0;
+0062        
+0063        <span class="keyword">while</span> count_percent &lt; 1 &amp; feof(fid)==0;
+0064            line = fgetl(fid);
+0065            <span class="keyword">if</span> length(line) &gt; 0
+0066                <span class="keyword">if</span> ~isempty(findstr(line,<span class="string">'%'</span>))
+0067                    count_percent = count_percent + 1;
+0068                    <span class="comment">% tuned by Alwin 23. July 2003</span>
+0069                    <span class="comment">%[tt,rr]=strtok(line(2:length(line)));</span>
+0070                    rr = line(2:length(line));
+0071                    rr = fliplr(deblank(fliplr(rr)));
+0072                    fn = strtok(char(files.m(i)),<span class="string">'.'</span>);
+0073                    n = size(char(files.m),2) - length(fn) - 1;
+0074                    line = [<span class="string">'%   '</span> fn blanks(n) <span class="string">'- '</span> rr];
+0075                    fprintf(fcontents,<span class="string">'%s\n'</span>,line);
+0076               <span class="keyword">end</span> <span class="comment">% if ~isempty</span>
+0077          <span class="keyword">end</span> <span class="comment">% if length</span>
+0078          <span class="keyword">if</span> feof(fid)==1  
+0079           fn = strtok(char(files.m(i)),<span class="string">'.'</span>);
+0080           n = size(char(files.m),2) - length(fn) - 1;
+0081           line = [<span class="string">'%   '</span> fn blanks(n) <span class="string">'- (No help available)'</span>];
+0082           fprintf(fcontents,<span class="string">'%s\n'</span>,line); 
+0083          <span class="keyword">end</span> <span class="comment">% if feof</span>
+0084     <span class="keyword">end</span> <span class="comment">% while</span>
+0085    <span class="keyword">end</span> <span class="comment">% if strcmp</span>
+0086    fclose(fid);
+0087 <span class="keyword">end</span>
+0088 
+0089 fclose(fcontents);
+0090 
+0091 <span class="comment">% Change permissions on Contents.m file</span>
+0092 <span class="comment">% only valid for Unix systems, no effect in Win32 systems</span>
+0093 !chmod go+r Contents.m</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

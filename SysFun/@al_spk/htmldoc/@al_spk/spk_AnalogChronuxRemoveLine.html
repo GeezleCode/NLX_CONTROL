@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_AnalogChronuxRemoveLine</title>
+  <meta name="keywords" content="spk_AnalogChronuxRemoveLine">
+  <meta name="description" content="applies chronux functions to analog data. s.currentanalog must be set">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_AnalogChronuxRemoveLine.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_AnalogChronuxRemoveLine
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>applies chronux functions to analog data. s.currentanalog must be set</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function s = spk_AnalogChronuxRemoveLine(s,params,f0,method,movingwin,tau) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> applies chronux functions to analog data. s.currentanalog must be set
+ s = spk_AnalogChronuxRemoveLine(s,params,f0,method)
+
+ method .... 'rmlinesc' or 'rmlinesmovingwinc'</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_AnalogRemoveNaNs.html" class="code" title="function s = spk_AnalogRemoveNaNs(s)">spk_AnalogRemoveNaNs</a>	removes the NaN's introduced by padding the analog trial matrix</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function s = spk_AnalogChronuxRemoveLine(s,params,f0,method,movingwin,tau)</a>
+0002 
+0003 <span class="comment">% applies chronux functions to analog data. s.currentanalog must be set</span>
+0004 <span class="comment">% s = spk_AnalogChronuxRemoveLine(s,params,f0,method)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% method .... 'rmlinesc' or 'rmlinesmovingwinc'</span>
+0007 
+0008 <span class="keyword">if</span> nargin&lt;4 || isempty(method)
+0009     method = <span class="string">'rmlinesc'</span>;
+0010 <span class="keyword">end</span>
+0011 
+0012 <span class="comment">%% Chronux parameter</span>
+0013 <span class="keyword">if</span> isempty(params)
+0014     params.tapers = [3 5];
+0015     params.pad = 0;
+0016     params.Fs = [];
+0017     params.fpass = [];
+0018 <span class="keyword">end</span>
+0019 
+0020 p = [];<span class="comment">% p value</span>
+0021 plt = <span class="string">'n'</span>;<span class="comment">% plot flag</span>
+0022 <span class="keyword">if</span> nargin&lt;5
+0023     movingwin = [];<span class="comment">% [window winstep] required for rmlinesmovingwinc</span>
+0024     tau = [];<span class="comment">% smoothing parameter</span>
+0025 <span class="keyword">end</span>
+0026 
+0027 <span class="comment">%% loop the channels</span>
+0028 nChan = length(s.currentanalog);
+0029 disp(<span class="string">'spk_AnalogChronuxRemoveLine is removing line noise ...'</span>);
+0030 
+0031 <span class="keyword">for</span> iCh = 1:nChan
+0032     ChNr = s.currentanalog(iCh);
+0033     params.Fs = s.analogfreq(ChNr);
+0034 
+0035     s = <a href="spk_AnalogRemoveNaNs.html" class="code" title="function s = spk_AnalogRemoveNaNs(s)">spk_AnalogRemoveNaNs</a>(s);
+0036     
+0037     <span class="keyword">switch</span> method
+0038         <span class="keyword">case</span> <span class="string">'rmlinesc'</span>
+0039             s.analog{ChNr} = rmlinesc(s.analog{ChNr}',params,p,plt,f0);
+0040         <span class="keyword">case</span> <span class="string">'rmlinesmovingwinc'</span>
+0041             [s.analog{ChNr},datafit,Amps,freqs] = rmlinesmovingwinc(s.analog{ChNr}',movingwin,tau,params,p,plt,f0);
+0042     <span class="keyword">end</span>
+0043     s.analog{ChNr} = s.analog{ChNr}';
+0044 <span class="keyword">end</span>
+0045 
+0046 
+0047</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

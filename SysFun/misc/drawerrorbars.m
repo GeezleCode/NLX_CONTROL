@@ -9,10 +9,9 @@ function [whisker,tee] = drawerrorbars(x,y,l,u,teeoption,whiskerprop,teeprop)
 % y ............... values
 % l ............... distance to lower confidence border
 % u ............... distance to upper confidence border
-% teeoption ....... numeric       : length of tee in units of x axis 
+% tee ............. numeric       : length of tee in units of x axis 
 %                   0             : no tee
 %                   '-' 'marker'  : lower and upper errors are two line objects
-%                   'PATCH'
 % whiskerprop ..... cell array, lineproperties for the whiskers
 % teeprop ......... cell array, lineproperties for the tees
 
@@ -30,17 +29,12 @@ tee = cell(2,nGrp);
 for i = 1:nGrp
 
      % draw tee
-     if ischar(teeoption) && strcmp(upper(teeoption),'PATCH')
-         NotNaNs = find(~isnan(x(:,i))&~isnan(y(:,i))&~isnan(l(:,i))&~isnan(u(:,i)));
-         whisker{1,i} = patch( ...
-             'XDATA',[x(NotNaNs,i);flipud(x(NotNaNs,i))], ...
-             'YDATA',[[y(NotNaNs,i)-l(NotNaNs,i)];flipud([y(NotNaNs,i)+u(NotNaNs,i)])], ...
-             'CDATA',[0 0 0], ...
-             'edgecolor','k','facecolor',[.5 .5 .5]);
-         set(whisker{1,i},whiskerprop{:});
-     elseif ischar(teeoption) & strcmp(teeoption,'-')
-         tee{2,i} = line(x(:,i)',[y(:,i)-l(:,i)]','marker','none','linestyle',teeoption,'tag','ltee',teeprop{:});
-         tee{1,i} = line(x(:,i)',[y(:,i)+u(:,i)]','marker','none','linestyle',teeoption,'tag','utee',teeprop{:});
+     if ischar(teeoption) & strcmp(upper(teeoption),'PATCH')
+          tee{1,i} = patch([x(:,i);flipud(x(:,i))],[[y(:,i)-l(:,i)];flipud([y(:,i)+u(:,i)])],'k');
+          set(tee{1,i},whiskerprop{:});
+      elseif ischar(teeoption) & strcmp(teeoption,'-')
+          tee{2,i} = line(x(:,i)',[y(:,i)-l(:,i)]','marker','none','linestyle',teeoption,'tag','ltee',teeprop{:});
+          tee{1,i} = line(x(:,i)',[y(:,i)+u(:,i)]','marker','none','linestyle',teeoption,'tag','utee',teeprop{:});
 %      elseif ischar(teeoption) & ~strcmp(teeoption,'-')
 %           tee{2,i} = line(x(:,i)',[y(:,i)-l(:,i)]','marker',teeoption,'linestyle','none','tag','ltee',teeprop{:});
 %           tee{1,i} = line(x(:,i)',[y(:,i)+u(:,i)]','marker',teeoption,'linestyle','none','tag','utee',teeprop{:});

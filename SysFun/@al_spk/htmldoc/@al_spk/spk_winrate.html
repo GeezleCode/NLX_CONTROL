@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_winrate</title>
+  <meta name="keywords" content="spk_winrate">
+  <meta name="description" content="calculate rate of the current trials">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_winrate.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_winrate
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>calculate rate of the current trials</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [r,n,dt] = spk_winrate(s,win) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> calculate rate of the current trials
+ take all trials if not trials selected
+
+ function [r,n,dt] = spk_winrate(s,win)
+
+ INPUT
+ win[n,[low hi],ith win] ........... two column vector or matrix, rows must be 1 or
+                                     number of selected trials
+ trialNr ........................... trial numbers 
+
+ OUTPUT
+ r [chan,trial,ith win] ......... rates for every trial 
+ n [chan,trial,ith win] ......... number of spikes in every trial
+ dt [trial,ith win] ............. width of time window</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [r,n,dt] = spk_winrate(s,win)</a>
+0002 
+0003 <span class="comment">% calculate rate of the current trials</span>
+0004 <span class="comment">% take all trials if not trials selected</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% function [r,n,dt] = spk_winrate(s,win)</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% INPUT</span>
+0009 <span class="comment">% win[n,[low hi],ith win] ........... two column vector or matrix, rows must be 1 or</span>
+0010 <span class="comment">%                                     number of selected trials</span>
+0011 <span class="comment">% trialNr ........................... trial numbers</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% OUTPUT</span>
+0014 <span class="comment">% r [chan,trial,ith win] ......... rates for every trial</span>
+0015 <span class="comment">% n [chan,trial,ith win] ......... number of spikes in every trial</span>
+0016 <span class="comment">% dt [trial,ith win] ............. width of time window</span>
+0017 
+0018 [numChans,numTrials] = size(s.spk);
+0019 
+0020 <span class="keyword">if</span> isempty(s.currentchan)
+0021     s.currentchan = 1:size(s.spk,1);
+0022 <span class="keyword">end</span>
+0023 numCurrChans = length(s.currentchan);
+0024 <span class="comment">%______________________________________________________</span>
+0025 <span class="comment">% check trials to process</span>
+0026 <span class="keyword">if</span>  isempty(s.currenttrials);
+0027     s.currenttrials = 1:numTrials;
+0028 <span class="keyword">end</span>
+0029 numCurrTrials = length(s.currenttrials);
+0030 
+0031 <span class="comment">%______________________________________________________</span>
+0032 <span class="comment">% check the time windows</span>
+0033 <span class="keyword">if</span> size(win,1)==1
+0034     win = repmat(win,numTrials,1);
+0035 <span class="keyword">elseif</span> size(win,1)~=numCurrTrials
+0036     <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'spk_winrate: window matrix must have as many rows as number of selected trials !'</span>);
+0037 <span class="keyword">end</span>
+0038 
+0039 [numTrWin,numWinBorders,numWin] = size(win);
+0040 
+0041 <span class="comment">%______________________________________________________</span>
+0042 <span class="comment">% calculation</span>
+0043 r = zeros(numCurrChans,numCurrTrials).*NaN;
+0044 n = zeros(numCurrChans,numCurrTrials).*NaN;
+0045 dt  = zeros(1,numCurrTrials).*NaN;
+0046 
+0047 <span class="keyword">for</span> i = 1:numCurrTrials
+0048      j = s.currenttrials(i);
+0049      <span class="keyword">for</span> m = 1:numWin
+0050         dt(i,m) = abs(diff(win(i,:,m)));
+0051         <span class="keyword">for</span> k = 1: numCurrChans
+0052             n(k,i,m) = sum(s.spk{s.currentchan(k),j}&gt;=win(i,1,m) &amp; s.spk{s.currentchan(k),j}&lt;=win(i,2,m));
+0053             r(k,i,m) = (n(k,i,m)/dt(i,m)).*(10^(s.timeorder*(-1)));
+0054         <span class="keyword">end</span>
+0055     <span class="keyword">end</span>
+0056 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 25-Apr-2006 16:24:52 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

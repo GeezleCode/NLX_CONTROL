@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of structure</title>
+  <meta name="keywords" content="structure">
+  <meta name="description" content="this script provides the default structure for the neurons Object">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">@al_spk</a> &gt; <a href="index.html">private</a> &gt; structure.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk\private&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>structure
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>this script provides the default structure for the neurons Object</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> this script provides the default structure for the neurons Object</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../@al_spk/al_spk.html" class="code" title="function s = al_spk(x)">al_spk</a>	Constructor for the @al_spk class</li></ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% this script provides the default structure for the neurons Object</span>
+0002 
+0003 s.version = [];
+0004 s.name = <span class="string">''</span>;
+0005 s.tag  = <span class="string">''</span>;
+0006 s.comment  = <span class="string">''</span>;
+0007 s.subject = <span class="string">''</span>;
+0008 s.file = <span class="string">''</span>;
+0009 s.date = <span class="string">''</span>;
+0010 
+0011 s.unittype = <span class="string">''</span>;<span class="comment">% e.g. 'MUA' 'SUA'</span>
+0012 s.channel = <span class="string">''</span>;<span class="comment">%changed to cell array of strings 3/02/05</span>
+0013 s.currentchan = [];
+0014 s.chancolor = [];
+0015 s.spk = [];<span class="comment">% spike data [1,trial number]; changed to [numChan,trial number] 3/02/05</span>
+0016 s.timeorder = [];<span class="comment">%power of ten of time values (e.g. msec. -3)</span>
+0017 
+0018 s.analog = []; <span class="comment">% analog data, different channels in rows</span>
+0019 s.analogname = <span class="string">''</span>; <span class="comment">% name of analog rows, e.g. 'eyeX' etc.</span>
+0020 s.analogtime = []; <span class="comment">%</span>
+0021 s.analogfreq = []; <span class="comment">% sample frequency of analog data</span>
+0022 s.analogalignbin = [];
+0023 s.currentanalog = [];
+0024 
+0025 s.events = []; <span class="comment">% NOT TRUE anymore: 3D-Array for event bins rows:trials cols:eventspertrial planes:eventtype</span>
+0026                <span class="comment">% [eventnumber,trialnumber]</span>
+0027 s.eventlabel = <span class="string">''</span>;<span class="comment">% one string for every eventtype</span>
+0028 s.eventcolors = [];
+0029 s.eventmode = <span class="string">''</span>;<span class="comment">% mode of event detection</span>
+0030 
+0031 s.align = [];<span class="comment">% alignbin for every cell</span>
+0032 s.alignevent = <span class="string">''</span>;
+0033 
+0034 s.trialcode = [];<span class="comment">% numerical codes for different groups in columns</span>
+0035 s.trialcodelabel = <span class="string">''</span>;<span class="comment">% character array</span>
+0036 
+0037 s.currenttrials = [];
+0038 
+0039 
+0040 s.stimulus = [];
+0041 s.userdata = [];
+0042 s.binwidth = [];
+0043 s.timewin = [];
+0044 s.plotwin = [];
+0045 s.analysewin = [];<span class="comment">% regions of interest, single windows for each trial in rows</span>
+0046 s.baselinewin = [];</pre></div>
+<hr><address>Generated on Tue 25-Apr-2006 16:24:52 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

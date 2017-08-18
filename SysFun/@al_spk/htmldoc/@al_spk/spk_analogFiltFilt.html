@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_analogFiltFilt</title>
+  <meta name="keywords" content="spk_analogFiltFilt">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_analogFiltFilt.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_analogFiltFilt
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function s = spk_analogFiltFilt(s,FilterFun,FilterParam) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function s = spk_analogFiltFilt(s,FilterFun,FilterParam)</a>
+0002 
+0003 numAna = length(s.currentanalog);
+0004 
+0005 <span class="keyword">for</span> iA = s.currentanalog
+0006     iANr = find(s.currentanalog==iA);
+0007 
+0008     <span class="keyword">switch</span> FilterFun
+0009         <span class="keyword">case</span> <span class="string">'butter'</span>
+0010             FilterParam{2} = FilterParam{2} ./ (s.analogfreq(iA)/2);
+0011             [b,a] = butter(FilterParam{:});
+0012     <span class="keyword">end</span>
+0013     
+0014 <span class="comment">% %     The length of the input x must be more than three times</span>
+0015 <span class="comment">% %     the filter order, defined as max(length(b)-1,length(a)-1).</span>
+0016 <span class="comment">%     if size(s.analog{iA},2)</span>
+0017 <span class="comment">%         error('The length of the input x must be more than three times the filter order');</span>
+0018 <span class="comment">%     end</span>
+0019     
+0020     [NumTrials,NumSamples] = size(s.analog{s.currentanalog(iA)});
+0021     <span class="keyword">if</span> isempty(s.currenttrials)
+0022         s.currenttrials = 1:NumTrials;
+0023     <span class="keyword">end</span>
+0024     NumTrials = length(s.currenttrials);
+0025     
+0026     <span class="keyword">for</span> iT = 1:NumTrials
+0027         currNaNs = find(~isnan(s.analog{iA}(s.currenttrials(iT),:)));
+0028         <span class="keyword">if</span> isempty(currNaNs)
+0029             warning(<span class="string">'spk_analogFiltFilt: no data in trial?'</span>);
+0030         <span class="keyword">elseif</span> length(currNaNs)&lt;= max(length(b)-1,length(a)-1)
+0031             warning(<span class="string">'spk_analogFiltFilt: to few samples in trial?'</span>);
+0032         <span class="keyword">elseif</span> any(diff(currNaNs)&gt;1)
+0033             warning(<span class="string">'spk_analogFiltFilt: missing data in trial?'</span>);
+0034         <span class="keyword">else</span>
+0035             s.analog{iA}(s.currenttrials(iT),[currNaNs(1):currNaNs(end)] ) = (filtfilt(b,a,s.analog{iA}(s.currenttrials(iT),[currNaNs(1):currNaNs(end)] )));
+0036         <span class="keyword">end</span>
+0037     <span class="keyword">end</span>
+0038 
+0039 <span class="keyword">end</span>
+0040</pre></div>
+<hr><address>Generated on Tue 25-Apr-2006 16:24:52 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

@@ -33,7 +33,6 @@ end
 s.analog{AnalogIndex} = [];
 s.analogname{AnalogIndex} = analogname;
 s.analogtime{AnalogIndex} = [];
-s.analogunits{AnalogIndex} = 'digital';
 
 % check sample frequency
 currSF = unique(NCS.SF);

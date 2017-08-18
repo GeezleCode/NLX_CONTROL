@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_ChronuxGetSpike</title>
+  <meta name="keywords" content="spk_ChronuxGetSpike">
+  <meta name="description" content="extract spike data to chronux format: struct(chan/trials).times; in SEC.!">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_ChronuxGetSpike.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_ChronuxGetSpike
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>extract spike data to chronux format: struct(chan/trials).times; in SEC.!</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function x = spk_ChronuxGetSpike(s,tWin,Ev,TimeWinAlignFlag,ChNr,TrNr) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> extract spike data to chronux format: struct(chan/trials).times; in SEC.!
+ x = spk_ChronuxGetSpike(s,tWin,Ev,TimeWinAlignFlag,ChNr,TrNr)
+
+ tWin ............... relative event window
+ Ev ................. char/numeric; if set tWin works as an offset to the event
+ TimeWinAlignFlag ... aligns to start of time window
+ tPrec .......... temporal precision of timestamps, removes dup. timestamps as well.
+ precision. Removes the resulting timestamp duplicates
+ ChNr,TrNr .......... channel index and trial index</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_getSpikes.html" class="code" title="function [spks,tWin] = spk_getSpikes(s,tWin,Ev)">spk_getSpikes</a>	get the spikes within a time window</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function x = spk_ChronuxGetSpike(s,tWin,Ev,TimeWinAlignFlag,ChNr,TrNr)</a>
+0002 
+0003 <span class="comment">% extract spike data to chronux format: struct(chan/trials).times; in SEC.!</span>
+0004 <span class="comment">% x = spk_ChronuxGetSpike(s,tWin,Ev,TimeWinAlignFlag,ChNr,TrNr)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% tWin ............... relative event window</span>
+0007 <span class="comment">% Ev ................. char/numeric; if set tWin works as an offset to the event</span>
+0008 <span class="comment">% TimeWinAlignFlag ... aligns to start of time window</span>
+0009 <span class="comment">% tPrec .......... temporal precision of timestamps, removes dup. timestamps as well.</span>
+0010 <span class="comment">% precision. Removes the resulting timestamp duplicates</span>
+0011 <span class="comment">% ChNr,TrNr .......... channel index and trial index</span>
+0012 
+0013 <span class="keyword">if</span> nargin&gt;=6&amp;&amp;~isempty(TrNr);s.currenttrials = TrNr;<span class="keyword">end</span>
+0014 <span class="keyword">if</span> nargin&gt;=5&amp;&amp;~isempty(ChNr);s.currentchan = ChNr;<span class="keyword">end</span>
+0015 <span class="keyword">if</span> nargin&lt;4;TimeWinAlignFlag==true;<span class="keyword">end</span>
+0016 
+0017 <span class="comment">% extract spikes in time window</span>
+0018 [spks,tWin] = <a href="spk_getSpikes.html" class="code" title="function [spks,tWin] = spk_getSpikes(s,tWin,Ev)">spk_getSpikes</a>(s,tWin,Ev);
+0019 
+0020 <span class="comment">% loop thru channels and trials</span>
+0021 [nCh,nTr] = size(spks);
+0022 x = struct(<span class="string">'times'</span>,cell(nCh,nTr));
+0023 <span class="keyword">for</span> iCh = 1:nCh
+0024     <span class="keyword">for</span> iTr = 1:nTr
+0025         
+0026         <span class="comment">% align</span>
+0027         <span class="keyword">if</span> TimeWinAlignFlag
+0028             spks{iCh,iTr} = spks{iCh,iTr} - tWin(iTr,1);
+0029         <span class="keyword">end</span>
+0030         
+0031         <span class="comment">% convert to sec</span>
+0032         spks{iCh,iTr} = spks{iCh,iTr}.*(10^(s.timeorder));
+0033         
+0034         <span class="comment">% put into structure, make sure spikestimes are column vector</span>
+0035         x(iCh,iTr).times = spks{iCh,iTr}(:);
+0036     <span class="keyword">end</span>
+0037 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

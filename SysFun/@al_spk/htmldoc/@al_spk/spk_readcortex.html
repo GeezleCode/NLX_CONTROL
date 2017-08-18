@@ -1,0 +1,215 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_readcortex</title>
+  <meta name="keywords" content="spk_readcortex">
+  <meta name="description" content="reads a cortex file in @al_spk object">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_readcortex.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_readcortex
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>reads a cortex file in @al_spk object</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [s,unknownEv] = spk_readcortex(s,filepath,SpkCodes,response_errors,readEyeFlag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> reads a cortex file in @al_spk object
+ [s,unknownEv] = spk_readcortex(s,filepath,SpkCodes,response_errors)
+
+ INPUT
+ filepath .......... full path to cortex file
+ SpkCodes .......... cortex spike codes to read in different channels ([] reads all)
+ response_errors ... response errors to read in ([] reads all)
+ readEyeFlag ....... 1/0 flag for reading eye data
+
+ OUTPUT
+ unknownEv ... encodes not in the cortex encode list according to
+              ctx_encodelist.m</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function  s = addEvents(s,i,Ev)</a></li></ul>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [s,unknownEv] = spk_readcortex(s,filepath,SpkCodes,response_errors,readEyeFlag)</a>
+0002 
+0003 <span class="comment">% reads a cortex file in @al_spk object</span>
+0004 <span class="comment">% [s,unknownEv] = spk_readcortex(s,filepath,SpkCodes,response_errors)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% INPUT</span>
+0007 <span class="comment">% filepath .......... full path to cortex file</span>
+0008 <span class="comment">% SpkCodes .......... cortex spike codes to read in different channels ([] reads all)</span>
+0009 <span class="comment">% response_errors ... response errors to read in ([] reads all)</span>
+0010 <span class="comment">% readEyeFlag ....... 1/0 flag for reading eye data</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% OUTPUT</span>
+0013 <span class="comment">% unknownEv ... encodes not in the cortex encode list according to</span>
+0014 <span class="comment">%              ctx_encodelist.m</span>
+0015 
+0016 <span class="keyword">if</span> nargin&lt;5
+0017     readEyeFlag = 0;
+0018     <span class="keyword">if</span> nargin&lt;4
+0019         response_errors = [];
+0020     <span class="keyword">end</span>;<span class="keyword">end</span>
+0021 
+0022 <span class="keyword">if</span> ~isnumeric(SpkCodes)
+0023     <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'spike codes have to be numeric !'</span>)
+0024 <span class="keyword">end</span>
+0025 <span class="comment">%_______________________________________</span>
+0026 <span class="comment">% set file data</span>
+0027 <span class="keyword">if</span> nargin&lt;2 | isempty(filepath);
+0028     [fName,fPath] = uigetfile(<span class="string">'*.*'</span>,<span class="string">'open a CORTEX data file'</span>);
+0029     <span class="keyword">if</span> fName==0;<span class="keyword">return</span>;<span class="keyword">end</span>
+0030     filepath = fullfile(fPath,fName);
+0031 <span class="keyword">end</span>
+0032 
+0033 [fpath,fname,fext] = fileparts(filepath);
+0034 fprop = dir(filepath); 
+0035 
+0036 <span class="comment">%=========================================================</span>
+0037 <span class="comment">% read cortex file</span>
+0038 [EVT,EOG,EPP,HD] = ctx_read(filepath,[1 readEyeFlag 0]);
+0039 <span class="comment">%=========================================================</span>
+0040 
+0041 <span class="keyword">if</span> isempty(response_errors)
+0042     readResErr = logical(ones(1,size(HD,2)));
+0043 <span class="keyword">else</span>
+0044     readResErr = ismember(HD(14,:),response_errors);
+0045     EVT = EVT(:,readResErr);
+0046     HD = HD(:,readResErr);
+0047 <span class="keyword">end</span>
+0048 [HDrows,TrialNum] = size(HD);
+0049 [ctxEvents,ctxEvEncodes,ctxSpkEncodes] = ctx_encodelist;
+0050 
+0051 selectedSpikeCodes = SpkCodes;
+0052 numselectedSpikeCodes = length(selectedSpikeCodes);
+0053 <span class="comment">%________________________________________</span>
+0054 <span class="comment">% prepare @al_spk object</span>
+0055 s.name = <span class="string">''</span>;
+0056 s.tag  = <span class="string">''</span>;
+0057 s.subject = <span class="string">''</span>;
+0058 <span class="comment">% s.file = [fname,fext];</span>
+0059 s.file = strrep(filepath,<span class="string">'\'</span>,<span class="string">'/'</span>);
+0060 s.channel = cellstr(num2str(selectedSpikeCodes'));
+0061 s.date = fprop.date;
+0062 s.unittype = <span class="string">''</span>;
+0063 s.stimulus = <span class="string">''</span>;
+0064 s.eventlabel = []; <span class="comment">% temporarily convert event labels to numbers because of cortex encoding</span>
+0065 <span class="comment">% HEADER: 2 cond_no 3 repeat_no 4 block_no 5 trial_no 12 expected_response 13 response 14 response_error</span>
+0066 <span class="comment">% 10 eye_storage_rate 11 kHz_resolution</span>
+0067 HeaderIndex = [2 3 4 5 12 13 14];
+0068 s.trialcodelabel = {<span class="string">'condition'</span>,<span class="string">'repeat'</span>,<span class="string">'block'</span>,<span class="string">'trial'</span>,<span class="string">'expected_response'</span>,<span class="string">'response'</span>,<span class="string">'response_error'</span>};
+0069 s.timeorder = -3;
+0070 
+0071 <span class="keyword">if</span> readEyeFlag
+0072     s.analogname{1} = <span class="string">'EOGX'</span>;
+0073     s.analogname{2} = <span class="string">'EOGY'</span>;
+0074     s.analogFreq = 1000./unique(HD(10,:));
+0075 <span class="keyword">end</span>
+0076 
+0077 <span class="comment">%________________________________________</span>
+0078 <span class="comment">% loop trials</span>
+0079 unknownEv = cell(1,TrialNum);
+0080 
+0081 hwait = waitbar(0,[<span class="string">'building @al_spk object from '</span> s.file ]);
+0082 <span class="keyword">for</span> i = 1:TrialNum
+0083     
+0084     <span class="comment">%__________________________________________________</span>
+0085     <span class="comment">% read trial properties</span>
+0086     s.trialcode(1:length(HeaderIndex),i) = HD(HeaderIndex,i);
+0087 <span class="comment">%     s.trialcode(2,i) = HD(3,i);</span>
+0088 <span class="comment">%     s.trialcode(3,i) = HD(4,i);</span>
+0089 <span class="comment">%     s.trialcode(4,i) = HD(5,i);</span>
+0090 <span class="comment">%     s.trialcode(5,i) = HD(12,i);</span>
+0091 <span class="comment">%     s.trialcode(6,i) = HD(13,i);</span>
+0092 <span class="comment">%     s.trialcode(7,i) = HD(14,i);</span>
+0093     
+0094     <span class="comment">%___________________________________________________</span>
+0095     <span class="comment">% check events of this trial</span>
+0096     isSpkChan           = ismember(EVT{i}(:,2),selectedSpikeCodes);
+0097     isSpkEventCode      = ismember(EVT{i}(:,2),ctxSpkEncodes);
+0098     isCTXencode         = ismember(EVT{i}(:,2),ctxEvEncodes);
+0099     
+0100     <span class="comment">%__________________________________________________</span>
+0101     <span class="comment">% read spikes of the particular channel</span>
+0102     <span class="comment">% vertical vector of spike times in each cell</span>
+0103     <span class="keyword">for</span> j=1:numselectedSpikeCodes
+0104         s.spk{j,i} = EVT{i}(ismember(EVT{i}(:,2),selectedSpikeCodes(j)),1);
+0105     <span class="keyword">end</span>
+0106     
+0107     <span class="comment">%__________________________________________________</span>
+0108     <span class="comment">% vertical vector of event times in each cell</span>
+0109     <span class="comment">% cortex events</span>
+0110     s = <a href="#_sub1" class="code" title="subfunction  s = addEvents(s,i,Ev)">addEvents</a>(s,i,EVT{i}((~isSpkEventCode &amp; isCTXencode),:));
+0111     
+0112     <span class="comment">% get the non defined events</span>
+0113     unknownEv{i} = EVT{i}((~isSpkEventCode &amp; ~isCTXencode),:);
+0114     
+0115     
+0116     <span class="comment">%__________________________________________________</span>
+0117     <span class="comment">% read eye data</span>
+0118     <span class="keyword">if</span> readEyeFlag
+0119         s.analog{1,i} = EOG{i}(1:2:end-1);
+0120         s.analog{2,i} = EOG{i}(2:2:end);
+0121     <span class="keyword">end</span>
+0122     
+0123     waitbar(i./TrialNum,hwait);
+0124 <span class="keyword">end</span>
+0125 
+0126 <span class="comment">%__________________________________________________</span>
+0127 <span class="comment">% finish events</span>
+0128 waitbar(1,hwait,<span class="string">'make string event label'</span>);
+0129 numEventTypes = size(s.eventlabel,2);
+0130 <span class="comment">% eventcolors</span>
+0131 s.eventcolors = ones(numEventTypes,3).*NaN;
+0132 
+0133 <span class="comment">% ctx events</span>
+0134 eventlabel = cell(1,numEventTypes);
+0135 [isCTXencode,CTXencodeIndex] = ismember(s.eventlabel,ctxEvEncodes);
+0136 <span class="keyword">if</span> any(isCTXencode);eventlabel(isCTXencode) = ctxEvents(CTXencodeIndex)';<span class="keyword">end</span>
+0137 
+0138 s.eventlabel = eventlabel;
+0139 
+0140 <span class="comment">%__________________________________________________</span>
+0141 close(hwait)
+0142 
+0143 <span class="comment">%++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span>
+0144 <span class="comment">%++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span>
+0145 <a name="_sub1" href="#_subfunctions" class="code">function  s = addEvents(s,i,Ev)</a>
+0146 
+0147 e = unique(Ev(:,2));
+0148 <span class="keyword">for</span> ce = 1:length(e)
+0149     code = e(ce);
+0150     evIndex = (s.eventlabel==code);
+0151     <span class="keyword">if</span> ~any(evIndex)
+0152         s.eventlabel = [s.eventlabel code];
+0153         evIndex = size(s.eventlabel,2);
+0154     <span class="keyword">end</span>
+0155     s.events{evIndex,i} = Ev(Ev(:,2)==code ,1);
+0156 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

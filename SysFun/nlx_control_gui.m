@@ -124,7 +124,7 @@ function spkObjectLoad_Callback(hObject, eventdata, handles)
 global NLX_CONTROL_SETTINGS
 global SPK;
 
-SPK = spk_loadstruct(al_spk);
+SPK = spk_loadstruct(al_spk,[nlx_control_getDataDir '\']);
 if isempty(SPK);return;end
 if isempty(NLX_CONTROL_SETTINGS)
     settings_load_Callback;
@@ -208,10 +208,7 @@ global NLX_CONTROL_SETTINGS
 [SettingsFileName,SettingsFileDir] = uigetfile('*.m','LOAD settings structure via *.m file',nlx_control_getSettingsDir);
 if SettingsFileName==0;return;end
 [SettingsFileDir,SettingsFileName,SettingsFileExt] = fileparts(fullfile(SettingsFileDir,SettingsFileName));
-oldCD = cd;
-cd(SettingsFileDir);
 NLX_CONTROL_SETTINGS = feval(SettingsFileName);
-cd(oldCD);
 disp(NLX_CONTROL_SETTINGS);
 set(nlx_control_getMainWindowHandle,'name',['NLX CONTROL - ' SettingsFileName]);
 

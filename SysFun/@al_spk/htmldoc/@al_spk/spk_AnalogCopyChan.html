@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_AnalogCopyChan</title>
+  <meta name="keywords" content="spk_AnalogCopyChan">
+  <meta name="description" content="makes a copy of an analog channel within the same object">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_AnalogCopyChan.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_AnalogCopyChan
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>makes a copy of an analog channel within the same object</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [s,iNewChan] = spk_AnalogCopyChan(s,ChanName,NewChanName) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> makes a copy of an analog channel within the same object</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_AnalogCheckChan.html" class="code" title="function n = spk_AnalogCheckChan(s)">spk_AnalogCheckChan</a>	check for consistency of analog channel data, returns number of channels.</li><li><a href="spk_findAnalog.html" class="code" title="function [i,sf] = spk_findAnalog(s,ChanName,PatternFlag)">spk_findAnalog</a>	finds an analog channel, or channels featuring a pattern</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_AnalogAngularDist.html" class="code" title="function s = spk_AnalogAngularDist(s,S1Chans,S2Chans,NewChanName)">spk_AnalogAngularDist</a>	calculates the angular distance between signal S1 to S2</li><li><a href="spk_AnalogCart2Pol.html" class="code" title="function s = spk_AnalogCart2Pol(s,XChanName,YChanName,NewXName,NewYName)">spk_AnalogCart2Pol</a>	Applies cart2pol.m to analog data.</li><li><a href="spk_AnalogChanSum.html" class="code" title="function s = spk_AnalogChanSum(s,Mode,S1Chan,S2Chan,NewChan,InverseFlag)">spk_AnalogChanSum</a>	Sum or multiply two analog channels. First one is reference SF</li><li><a href="spk_AnalogCircularDist.html" class="code" title="function s = spk_AnalogCircularDist(s,SigChans,RefChans,ThChanName,RChanName,AbsFlag)">spk_AnalogCircularDist</a>	calculates the circular distance between XY signal S1 and signal S2</li><li><a href="spk_AnalogDiff.html" class="code" title="function s = spk_AnalogDiff(s,ChanName,n,NewChanName)">spk_AnalogDiff</a>	Differentiates analog channel using diff.m. Only works on all trials.</li><li><a href="spk_AnalogEuclidDist.html" class="code" title="function s = spk_AnalogEuclidDist(s,SigChans,RefChans,ThChanName,RChanName)">spk_AnalogEuclidDist</a>	calculates the euclidean distance from signal SigChans to signal RefChans</li><li><a href="spk_AnalogGradient.html" class="code" title="function s = spk_AnalogGradient(s,ChanName,n,NewChanName)">spk_AnalogGradient</a>	Differentiates analog channel using gradient.m. Only works on all trials.</li><li><a href="spk_AnalogPol2Cart.html" class="code" title="function s = spk_AnalogPol2Cart(s,ThetaChanName,RChanName,NewThetaName,NewRName)">spk_AnalogPol2Cart</a>	Applies cart2pol.m to analog data.</li><li><a href="spk_AnalogRectify.html" class="code" title="function s = spk_AnalogRectify(s,ChanName,NewChanName)">spk_AnalogRectify</a>	rectifies (applies abs.m) analog channel.</li></ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [s,iNewChan] = spk_AnalogCopyChan(s,ChanName,NewChanName)</a>
+0002 
+0003 <span class="comment">% makes a copy of an analog channel within the same object</span>
+0004 iChan = <a href="spk_findAnalog.html" class="code" title="function [i,sf] = spk_findAnalog(s,ChanName,PatternFlag)">spk_findAnalog</a>(s,ChanName);
+0005 n = <a href="spk_AnalogCheckChan.html" class="code" title="function n = spk_AnalogCheckChan(s)">spk_AnalogCheckChan</a>(s);
+0006 iNewChan = n+1;
+0007 
+0008 s.analogname{iNewChan} = NewChanName;
+0009 
+0010 s.analog{iNewChan} = s.analog{iChan};
+0011 s.analogunits{iNewChan} = s.analogunits{iChan};
+0012 <span class="keyword">if</span> ~isempty(s.analogtime)
+0013     s.analogtime{iNewChan} = s.analogtime{iChan};
+0014 <span class="keyword">end</span>
+0015 s.analogfreq(iNewChan) = s.analogfreq(iChan);
+0016 s.analogalignbin(iNewChan) = s.analogalignbin(iChan);</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

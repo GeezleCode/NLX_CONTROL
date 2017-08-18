@@ -17,11 +17,7 @@ if nargin<3 || isempty(ChanName)
         iChan = s.currentanalog;
     end
 else
-    iChan = spk_findAnalog(s,ChanName);
-end
-
-if all(isnan(iChan))
-    error('Did not find analog channel !!');
+    iChan = spk_FindAnalog(s,ChanName);
 end
 nChan = length(iChan);
 

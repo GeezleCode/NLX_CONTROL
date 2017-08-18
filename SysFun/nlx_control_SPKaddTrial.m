@@ -14,7 +14,7 @@ for i=1:nEl
 end
 
 %% get SPK data
-SPKNumTrials = spk_TrialNum(s);
+SPKNumTrials = spk_numtrials(s);
 trialcodelabel = spk_get(s,'trialcodelabel');
 trialcodelabel_n = length(trialcodelabel);
 Evlabel = spk_get(s,'eventlabel');

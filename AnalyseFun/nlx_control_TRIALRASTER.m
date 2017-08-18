@@ -37,10 +37,19 @@ axes(axesH);cla;
 line(xlim,[0 0],'linestyle','-','color',[.5 .5 .5],'linewidth',0.75,'clipping','off');
 
 %% Events
-currTrEvents = spk_getTrialData(SPK,'events',t);
-currTrialAlignEventTime = currTrEvents{spk_findEventlabel(SPK,NLX_CONTROL_SETTINGS.CurrTrialAlignEventName)};
+currTrEvents = spk_getTrialData(SPK,t,'events'); % extract events from SPK data at pos t
+currTrialAlignEventTimeArray = currTrEvents{spk_findeventlabel(SPK,NLX_CONTROL_SETTINGS.CurrTrialAlignEventName)};
+currTrialAlignEventTime = currTrialAlignEventTimeArray(1);
 currEvTrain = sort(cat(2,currTrEvents{:}));
-currEvTrain = currEvTrain - currTrialAlignEventTime;
+try
+    currEvTrain = currEvTrain - currTrialAlignEventTime;
+catch err
+    disp('currEvTrain');
+    disp(size(currEvTrain));
+    disp('currTrialAlignEventTime');
+    disp(size(currTrialAlignEventTime));   
+    disp(err);
+end
 currEvTrainNum = length(currEvTrain);
 
 text(xlim(1),-0.5,'EV', ...
@@ -51,8 +60,8 @@ line(repmat(currEvTrain,[2 1]),[ones(1,currEvTrainNum).*-1;zeros(1,currEvTrainNu
 %% plot SPIKE channels
 currSpkTrain = [];
 SPK = spk_set(SPK,'currenttrials',t,'currentchan',[]);
-currTrspk = spk_getTrialData(SPK,'spk',t);
-currTrAl = spk_getTrialData(SPK,'align',t);
+currTrspk = spk_getTrialData(SPK,t,'spk');
+currTrAl = spk_getTrialData(SPK,t,'align');
 for j=1:length(ChanIndex)
     text(xlim(1),-0.5+j,ChanLabel{j}, ...
         'fontsize',8,'color',NLX_CONTROL_SETTINGS.SpikeChanColor(ChanIndex(j),:), ...

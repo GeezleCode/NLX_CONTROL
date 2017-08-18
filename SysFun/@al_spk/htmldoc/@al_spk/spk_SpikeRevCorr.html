@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_SpikeRevCorr</title>
+  <meta name="keywords" content="spk_SpikeRevCorr">
+  <meta name="description" content="count spikes related to reverse correlation stimulus">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_SpikeRevCorr.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_SpikeRevCorr
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>count spikes related to reverse correlation stimulus</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [r,c,n] = spk_SpikeRevCorr(s,OnsetEvent,Win,Tau,SeqIndex,SeqLength) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> count spikes related to reverse correlation stimulus
+ Stimulus sequence should be in the field s.stimulus as 
+ a nx2 vector [StimN x [t,StimIDNr]].
+ [r,n] = spk_SPKRevCorr(s,OnsetEvent,Win,Tau,SeqIndex)
+ OnsetEvent ...
+ Win ..........
+ Tau ..........
+ SeqIndex .....
+
+ r ... [PresNr,StimNr,ChNr,Tau] rate
+ c ... [PresNr,StimNr,ChNr,Tau] spike count
+ n ... [1,StimNr] number of presentations</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li><li><a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>	returns and check for number of trials in @al_spk object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [r,c,n] = spk_SpikeRevCorr(s,OnsetEvent,Win,Tau,SeqIndex,SeqLength)</a>
+0002 
+0003 <span class="comment">% count spikes related to reverse correlation stimulus</span>
+0004 <span class="comment">% Stimulus sequence should be in the field s.stimulus as</span>
+0005 <span class="comment">% a nx2 vector [StimN x [t,StimIDNr]].</span>
+0006 <span class="comment">% [r,n] = spk_SPKRevCorr(s,OnsetEvent,Win,Tau,SeqIndex)</span>
+0007 <span class="comment">% OnsetEvent ...</span>
+0008 <span class="comment">% Win ..........</span>
+0009 <span class="comment">% Tau ..........</span>
+0010 <span class="comment">% SeqIndex .....</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% r ... [PresNr,StimNr,ChNr,Tau] rate</span>
+0013 <span class="comment">% c ... [PresNr,StimNr,ChNr,Tau] spike count</span>
+0014 <span class="comment">% n ... [1,StimNr] number of presentations</span>
+0015 
+0016 nTau = length(Tau);
+0017 
+0018 <span class="comment">%% check trial number</span>
+0019 nTotTr = <a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>(s);
+0020 [dummy,nRVTr] = size(s.stimulus);
+0021 <span class="keyword">if</span> isempty(s.currenttrials)
+0022     iTr = 1:nTotTr;
+0023 <span class="keyword">else</span>
+0024     iTr = s.currenttrials;
+0025 <span class="keyword">end</span>
+0026 nTr = length(iTr);
+0027 
+0028 <span class="comment">%% get sequence</span>
+0029 nSeq = cellfun(<span class="string">'size'</span>,s.stimulus(iTr),1);
+0030 <span class="keyword">if</span> length(unique(nSeq))&gt;1
+0031     warning(<span class="string">'inconsistent length of revcorr sequence!'</span>);
+0032     iTr(nSeq~=SeqLength) = [];
+0033     nTr = length(iTr);
+0034 <span class="keyword">end</span>
+0035 
+0036 <span class="comment">%% get event</span>
+0037 EvNr = strmatch(OnsetEvent,s.eventlabel);
+0038 
+0039 <span class="comment">%% spike channel</span>
+0040 <span class="keyword">if</span> isempty(s.currentchan)
+0041     s.currentchan = 1:size(s.spk,1);
+0042 <span class="keyword">end</span>
+0043 nCh = length(s.currentchan);
+0044 
+0045 
+0046 <span class="comment">%% loop trials</span>
+0047 nStim = 1000;
+0048 nPres = 50;
+0049 r = zeros(nPres,1000,nCh,nTau).*NaN;
+0050 c = zeros(nPres,1000,nCh,nTau).*NaN;
+0051 n = zeros(1,1000);
+0052 
+0053 <span class="keyword">for</span> i = 1:nTr
+0054     ID = s.stimulus{iTr(i)}(SeqIndex,2);
+0055     t = s.events{EvNr,iTr(i)};
+0056     <span class="keyword">if</span> length(t)~=length(ID)
+0057         <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'Number of stimuli does not match number of onset events!'</span>);
+0058     <span class="keyword">end</span>
+0059     <span class="keyword">for</span> it = 1:length(t)
+0060         n(ID(it)) = n(ID(it))+1;
+0061         <span class="keyword">for</span> iCh = 1:nCh
+0062             <span class="keyword">for</span> iTau = 1:nTau
+0063                 c(n(ID(it)),ID(it),iCh,iTau) = sum(s.spk{s.currentchan(iCh),iTr(i)} &gt;= t(it)+Tau(iTau)+Win(1) &amp; s.spk{s.currentchan(iCh),iTr(i)} &lt; t(it)+Tau(iTau)+Win(2));
+0064                 r(n(ID(it)),ID(it),iCh,iTau) = c(n(ID(it)),ID(it),iCh,iTau) / diff(Win) *(10^(s.timeorder*(-1)));
+0065             <span class="keyword">end</span>
+0066         <span class="keyword">end</span>
+0067     <span class="keyword">end</span>
+0068 <span class="keyword">end</span>
+0069 
+0070 <span class="comment">%% remove NaNs</span>
+0071 r(:,n==0,:,:) = [];
+0072 c(:,n==0,:,:) = [];
+0073 n(n==0) = [];
+0074 r = r(1:max(n),:,:,:);
+0075 c = c(1:max(n),:,:,:);</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

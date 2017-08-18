@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_AnalogFindPeaks</title>
+  <meta name="keywords" content="spk_AnalogFindPeaks">
+  <meta name="description" content="finds extrem values as well as plateaus">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_AnalogFindPeaks.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_AnalogFindPeaks
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>finds extrem values as well as plateaus</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [maxT,maxV,minT,minV,platT,platV,mxi,mni,pli] = spk_AnalogFindPeaks(s,TW,ChanName,endflag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> finds extrem values as well as plateaus
+ [maxT,maxV,minT,minV,platT,platV,mxi,mni,pli] = spk_AnalogFindPeaks(s,TW,ChanName,endflag)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_AnalogTimeVec.html" class="code" title="function t = spk_AnalogTimeVec(s,Chan)">spk_AnalogTimeVec</a>	retrieves times of analog data bins</li><li><a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>	returns and check for number of trials in @al_spk object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [maxT,maxV,minT,minV,platT,platV,mxi,mni,pli] = spk_AnalogFindPeaks(s,TW,ChanName,endflag)</a>
+0002 
+0003 <span class="comment">% finds extrem values as well as plateaus</span>
+0004 <span class="comment">% [maxT,maxV,minT,minV,platT,platV,mxi,mni,pli] = spk_AnalogFindPeaks(s,TW,ChanName,endflag)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%</span>
+0007 
+0008 
+0009 <span class="comment">%% get the channel index</span>
+0010 iChan = spk_FindAnalog(s,ChanName);
+0011 s.currentanalog = iChan;
+0012 
+0013 <span class="comment">%% get trials</span>
+0014 numTrials = <a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>(s);
+0015 <span class="keyword">if</span> isempty(s.currenttrials)
+0016     s.currenttrials = 1:numTrials;
+0017 <span class="keyword">end</span>
+0018 nTr = length(s.currenttrials);
+0019 
+0020 <span class="comment">%% get window</span>
+0021 tVec = <a href="spk_AnalogTimeVec.html" class="code" title="function t = spk_AnalogTimeVec(s,Chan)">spk_AnalogTimeVec</a>(s);
+0022 <span class="keyword">if</span> ~isempty(TW)
+0023     BW = find(tVec&gt;=TW(1)&amp;tVec&lt;=TW(2));
+0024 <span class="keyword">else</span>
+0025     BW = 1:length(tVec);
+0026 <span class="keyword">end</span>
+0027 
+0028 <span class="comment">%% find peaks and valleys</span>
+0029 <span class="keyword">for</span> iTr=1:nTr
+0030     Y = s.analog{iChan}(s.currenttrials(iTr),BW);
+0031     dY = diff(Y,1,2);
+0032     not_plateau_ind = find(dY~=0);
+0033     mxi{iTr} = find( ([dY(:,not_plateau_ind) 0]&lt;0) &amp; ([0 dY(:,not_plateau_ind)]&gt;0) );
+0034     mni{iTr} = find( ([dY(:,not_plateau_ind) 0]&gt;0) &amp; ([0 dY(:,not_plateau_ind)]&lt;0) );
+0035     mxi{iTr} = not_plateau_ind(mxi{iTr});
+0036     mni{iTr} = not_plateau_ind(mni{iTr});
+0037     
+0038     <span class="keyword">if</span> endflag
+0039         <span class="keyword">if</span> Y(1)&gt;Y(2);mxi{iTr} = [1 mxi{iTr}];<span class="keyword">end</span>
+0040         <span class="keyword">if</span> Y(end)&gt;Y(end-1);mxi{iTr} = [mxi{iTr} length(Y)];<span class="keyword">end</span>
+0041         <span class="keyword">if</span> Y(1)&lt;Y(2);mni = [1 mni{iTr}];<span class="keyword">end</span>
+0042         <span class="keyword">if</span> Y(end)&lt;Y(end-1);mni = [mni{iTr} length(Y)];<span class="keyword">end</span>
+0043     <span class="keyword">end</span>
+0044     
+0045     
+0046     mxi{iTr} = mxi{iTr}+BW(1)-1;
+0047     mni{iTr} = mni{iTr}+BW(1)-1;
+0048     
+0049     maxT{iTr} = tVec(mxi{iTr});
+0050     maxV{iTr} = s.analog{iChan}(s.currenttrials(iTr),mxi{iTr});
+0051     minT{iTr} =  tVec(mni{iTr});
+0052     minV{iTr} = s.analog{iChan}(s.currenttrials(iTr),mni{iTr});
+0053     
+0054     <span class="comment">% get plateau starts and ends</span>
+0055     <span class="keyword">if</span> ~any(dY==0)
+0056         pli{iTr} = [];
+0057         platT{iTr} = [];
+0058         platV{iTr} = [];
+0059     <span class="keyword">else</span>
+0060         pli{iTr}(:,1) = find(diff([0 dY==0],1,2)==1);
+0061         pli{iTr}(:,2) = find(diff([dY==0 0],1,2)==-1) + 1;
+0062         pli{iTr} = pli{iTr}+BW(1)-1;
+0063         platT{iTr} =  tVec(pli{iTr});
+0064         platV{iTr} = s.analog{iChan}(s.currenttrials(iTr),pli{iTr}(:,1));
+0065     <span class="keyword">end</span>
+0066 
+0067 <span class="keyword">end</span>
+0068</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

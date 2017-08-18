@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_gettrialcodes</title>
+  <meta name="keywords" content="spk_gettrialcodes">
+  <meta name="description" content="returns the trial codes trials trials given in s.currenttrials ; set by >>spk_set(s,'currentrials',[ ... ])">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_gettrialcodes.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_gettrialcodes
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>returns the trial codes trials trials given in s.currenttrials ; set by >>spk_set(s,'currentrials',[ ... ])</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [TrialCodes,TrialCodeLabelIndex] = spk_gettrialcodes(s,TrialCodeLabel) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> returns the trial codes trials trials given in s.currenttrials ; set by &gt;&gt;spk_set(s,'currentrials',[ ... ])
+ [TrialCodes,TrialCodeLabelIndex] = spk_gettrialcodes(s,TrialCodeLabel)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_findtrialcodelabel.html" class="code" title="function i = spk_findtrialcodelabel(s,trialcodelabel)">spk_findtrialcodelabel</a>	returns the index of a trialcodelabel</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="../@al_spk/construction/spk_nlxget_old1.html" class="code" title="function s = spk_nlxget(s,p,dofun)">spk_nlxget_old1</a>	connects to a cheetah data acquisition software and writes data into a</li><li><a href="../@al_spk/construction/spk_nlxget_old2.html" class="code" title="function s = spk_nlxget(s,p,dofun)">spk_nlxget_old2</a>	connects to a cheetah data acquisition software and writes data into a</li><li><a href="../@al_spk/construction/spk_nlxget_old3.html" class="code" title="function s = spk_nlxget(s,p,dofun)">spk_nlxget_old3</a>	connects to a cheetah data acquisition software and writes data into a</li><li><a href="../@al_spk/construction/spk_nlxget_old4.html" class="code" title="function s = spk_nlxget(s,p,dofun)">spk_nlxget_old4</a>	connects to a cheetah data acquisition software and writes data into a</li><li><a href="../@al_spk/construction/spk_nlxget_old5.html" class="code" title="function s = spk_nlxget(s,p,dofun)">spk_nlxget_old5</a>	connects to a cheetah data acquisition software and writes data into a</li><li><a href="../@al_spk/construction/spk_nlxget_old6.html" class="code" title="function s = spk_nlxget(s,p,dofun)">spk_nlxget_old6</a>	connects to a cheetah data acquisition software and writes data into a</li><li><a href="../@al_spk/construction/spk_nlxget_old7.html" class="code" title="function s = spk_nlxget(s,p,dofun)">spk_nlxget_old7</a>	connects to a cheetah data acquisition software and writes data into a</li><li><a href="spk_nlxget.html" class="code" title="function s = spk_nlxget(s,p,dofun)">spk_nlxget</a>	connects to a cheetah data acquisition software and writes data into a</li><li><a href="spk_nlxreadspikedata.html" class="code" title="function s = spk_nlxreadspikedata(s,nlxFile,SpikeAcqWin,SpikeAcqWinOffset,EventNr)">spk_nlxreadspikedata</a>	reads spike data from a neuralynx *.nse file</li></ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [TrialCodes,TrialCodeLabelIndex] = spk_gettrialcodes(s,TrialCodeLabel)</a>
+0002 
+0003 <span class="comment">% returns the trial codes trials trials given in s.currenttrials ; set by &gt;&gt;spk_set(s,'currentrials',[ ... ])</span>
+0004 <span class="comment">% [TrialCodes,TrialCodeLabelIndex] = spk_gettrialcodes(s,TrialCodeLabel)</span>
+0005 
+0006 TrialCodeLabelIndex = <a href="spk_findtrialcodelabel.html" class="code" title="function i = spk_findtrialcodelabel(s,trialcodelabel)">spk_findtrialcodelabel</a>(s,TrialCodeLabel);
+0007 
+0008 <span class="keyword">if</span> size(s.trialcode,1)&lt;TrialCodeLabelIndex
+0009     TrialCodes = [];
+0010 <span class="keyword">elseif</span> isempty(s.currenttrials)
+0011     TrialCodes = s.trialcode(TrialCodeLabelIndex,:);
+0012 <span class="keyword">else</span>
+0013     TrialCodes = s.trialcode(TrialCodeLabelIndex,s.currenttrials);
+0014 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 25-Apr-2006 16:24:52 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

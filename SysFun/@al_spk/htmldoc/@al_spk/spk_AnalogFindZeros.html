@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_AnalogFindZeros</title>
+  <meta name="keywords" content="spk_AnalogFindZeros">
+  <meta name="description" content="finds zero bins">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_AnalogFindZeros.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_AnalogFindZeros
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>finds zero bins</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [zeroT,zeroV,zeroB] = spk_AnalogFindZeros(s,TW,ChanName) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> finds zero bins
+ [zeroT,zeroV,zeroB] = spk_AnalogFindZeros(s,TW,ChanName)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_AnalogTimeVec.html" class="code" title="function t = spk_AnalogTimeVec(s,Chan)">spk_AnalogTimeVec</a>	retrieves times of analog data bins</li><li><a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>	returns and check for number of trials in @al_spk object</li><li><a href="spk_findAnalog.html" class="code" title="function [i,sf] = spk_findAnalog(s,ChanName,PatternFlag)">spk_findAnalog</a>	finds an analog channel, or channels featuring a pattern</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [zeroT,zeroV,zeroB] = spk_AnalogFindZeros(s,TW,ChanName)</a>
+0002 
+0003 <span class="comment">% finds zero bins</span>
+0004 <span class="comment">% [zeroT,zeroV,zeroB] = spk_AnalogFindZeros(s,TW,ChanName)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%</span>
+0007 
+0008 
+0009 <span class="comment">%% get the channel index</span>
+0010 iChan = <a href="spk_findAnalog.html" class="code" title="function [i,sf] = spk_findAnalog(s,ChanName,PatternFlag)">spk_findAnalog</a>(s,ChanName);
+0011 s.currentanalog = iChan;
+0012 
+0013 <span class="comment">%% get trials</span>
+0014 numTrials = <a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>(s);
+0015 <span class="keyword">if</span> isempty(s.currenttrials)
+0016     s.currenttrials = 1:numTrials;
+0017 <span class="keyword">end</span>
+0018 nTr = length(s.currenttrials);
+0019 
+0020 <span class="comment">%% get window</span>
+0021 tVec = <a href="spk_AnalogTimeVec.html" class="code" title="function t = spk_AnalogTimeVec(s,Chan)">spk_AnalogTimeVec</a>(s);
+0022 <span class="keyword">if</span> ~isempty(TW)
+0023     BW = find(tVec&gt;=TW(1)&amp;tVec&lt;=TW(2));
+0024 <span class="keyword">else</span>
+0025     BW = 1:length(tVec);
+0026 <span class="keyword">end</span>
+0027 
+0028 <span class="comment">%% find zeros</span>
+0029 Y = s.analog{iChan}(s.currenttrials,BW);
+0030 PreZeroBins = (Y(:,1:end-1)&lt;0 &amp; Y(:,2:end)&gt;0) | (Y(:,1:end-1)&gt;0 &amp; Y(:,2:end)&lt;0);
+0031 ZeroBins = Y==0;
+0032 
+0033 <span class="keyword">for</span> iTr=1:nTr
+0034     zeroB{iTr} = [];
+0035     <span class="keyword">if</span> any(PreZeroBins(iTr,:))
+0036         zeroB{iTr}(:,1) = find(PreZeroBins(iTr,:))';
+0037         zeroB{iTr}(:,2) = zeroB{iTr}(:,1)+1;
+0038     <span class="keyword">end</span>
+0039         
+0040     <span class="keyword">if</span> any(ZeroBins(iTr,:))
+0041         zeroB{iTr} = cat(1,zeroB{iTr},[find(ZeroBins(iTr,:))' find(ZeroBins(iTr,:))']);
+0042     <span class="keyword">end</span>
+0043         
+0044     zeroB{iTr} = zeroB{iTr}+BW(1)-1;
+0045     zeroT{iTr} = tVec(zeroB{iTr});
+0046     <span class="keyword">if</span> isempty(zeroB{iTr})
+0047         zeroV{iTr} = [];
+0048     <span class="keyword">else</span>
+0049         zeroV{iTr} = [s.analog{iChan}(s.currenttrials(iTr),zeroB{iTr}(:,1))' s.analog{iChan}(s.currenttrials(iTr),zeroB{iTr}(:,2))'];
+0050     <span class="keyword">end</span>
+0051 <span class="keyword">end</span>
+0052</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

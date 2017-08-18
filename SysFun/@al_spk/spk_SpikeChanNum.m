@@ -10,16 +10,7 @@ function [NumChan,ChanLabel,EmptyChan,NumSpk] = spk_SpikeChanNum(s);
 % NumSp ....... number of spikes per trial per channel
 
 NumChan = size(s.spk,1);
-NumChanLabel = length(s.channel);
-NumUnittypes = length(s.unittype);
-
-%% check consistency
-if NumChan~=NumChanLabel
-    error('Channel number (s.spk) and channel label (s.channel) are inconsistent !');
-end
-if NumChan~=NumUnittypes && ~isempty(s.unittype)
-    error('Channel number (s.spk) and unit types (s.unittype) are inconsistent !');
-end
+NumChanLabel = size(s.channel,1);
 
 ChanLabel = s.channel;
 

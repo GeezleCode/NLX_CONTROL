@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_TrialMerge</title>
+  <meta name="keywords" content="spk_TrialMerge">
+  <meta name="description" content="Merges trial data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_TrialMerge.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_TrialMerge
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Merges trial data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function y = spk_TrialMerge(s,MergeIndex,TrialCodeConversion) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Merges trial data
+ s = spk_TrialMerge(s,MergeIndex)
+
+ MergeIndex ............ cell array with indices to merge
+ TrialCodeConversion ... n X 2 cell array. First column gives the
+                         trialcodelabel to convert. Second column gives
+                         the new trialcodelabels. The value of each trial
+                         forms a value of new to which each of the old
+                         trialcodelabel get.
+                         e.g. {'oldTrialCode' {'newTrialCode1'
+                         'newTrialCode2'...}}
+                         TrialCodeLabel not in first column of 
+                         TrialCodeConversion all take the TrialCodeValue
+                         of the first trial in MergeIndex.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_Align.html" class="code" title="function s = spk_align(s,aligntimes,mode)">spk_Align</a>	align all time data</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function y = spk_TrialMerge(s,MergeIndex,TrialCodeConversion)</a>
+0002 
+0003 <span class="comment">% Merges trial data</span>
+0004 <span class="comment">% s = spk_TrialMerge(s,MergeIndex)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% MergeIndex ............ cell array with indices to merge</span>
+0007 <span class="comment">% TrialCodeConversion ... n X 2 cell array. First column gives the</span>
+0008 <span class="comment">%                         trialcodelabel to convert. Second column gives</span>
+0009 <span class="comment">%                         the new trialcodelabels. The value of each trial</span>
+0010 <span class="comment">%                         forms a value of new to which each of the old</span>
+0011 <span class="comment">%                         trialcodelabel get.</span>
+0012 <span class="comment">%                         e.g. {'oldTrialCode' {'newTrialCode1'</span>
+0013 <span class="comment">%                         'newTrialCode2'...}}</span>
+0014 <span class="comment">%                         TrialCodeLabel not in first column of</span>
+0015 <span class="comment">%                         TrialCodeConversion all take the TrialCodeValue</span>
+0016 <span class="comment">%                         of the first trial in MergeIndex.</span>
+0017 
+0018 nM = length(MergeIndex);
+0019 
+0020 <span class="comment">%% prepare output</span>
+0021 s = <a href="spk_Align.html" class="code" title="function s = spk_align(s,aligntimes,mode)">spk_Align</a>(s,[],4);<span class="comment">% recreate original timedata</span>
+0022 y = s;
+0023 
+0024 <span class="comment">%% merge EVENT data</span>
+0025 nEv = size(s.events,1);
+0026 y.events = cell(nEv,nM);
+0027 <span class="keyword">for</span> iM = 1:nM
+0028     nMergeTr = length(MergeIndex{iM});
+0029     <span class="keyword">for</span> iEv = 1:nEv
+0030         y.events{iEv,iM} = cat(1,s.events{iEv,MergeIndex{iM}});
+0031         y.events{iEv,iM} = unique(y.events{iEv,iM});<span class="comment">% eradicate duplicates</span>
+0032     <span class="keyword">end</span>
+0033 <span class="keyword">end</span>
+0034 
+0035 <span class="comment">%% merge TRIALCODES</span>
+0036 [nTC,nTr] = size(s.trialcode);
+0037 y.trialcode = ones(nTC,nM).*NaN;
+0038 <span class="comment">% first use trialcodes of all the first trials</span>
+0039 <span class="keyword">for</span> iM = 1:nM
+0040     <span class="keyword">for</span> iTC = 1:nTC
+0041         y.trialcode(iTC,iM) = s.trialcode(iTC,MergeIndex{iM}(1));
+0042     <span class="keyword">end</span>
+0043 <span class="keyword">end</span>
+0044 <span class="comment">% create new trialcodes and assign values</span>
+0045 <span class="keyword">if</span> ~isempty(TrialCodeConversion)
+0046     [TCLabel2Convert,TCLabel2ConvertIndex] = ismember(s.trialcodelabel,TrialCodeConversion(:,1));
+0047     TCLabel2Convert = find(TCLabel2Convert);
+0048     nTCLabel2Convert = length(TCLabel2Convert);
+0049 
+0050     <span class="keyword">for</span> i = 1:nTCLabel2Convert
+0051         cTCNr = size(y.trialcode,1);
+0052         NewTrialCodeLabel = TrialCodeConversion{TCLabel2ConvertIndex(TCLabel2Convert(i)),2};
+0053         nNewTrialCodeLabel = length(NewTrialCodeLabel);
+0054         NewTrialCodeLabelIndex = cTCNr+1:cTCNr+nNewTrialCodeLabel;
+0055         y.trialcode(NewTrialCodeLabelIndex,:) = NaN;
+0056         y.trialcodelabel(NewTrialCodeLabelIndex) = NewTrialCodeLabel;
+0057         
+0058         <span class="keyword">for</span> iM = 1:nM
+0059             y.trialcode(NewTrialCodeLabelIndex,iM) = s.trialcode(TCLabel2Convert(i),MergeIndex{iM});
+0060         <span class="keyword">end</span>
+0061     <span class="keyword">end</span>
+0062 <span class="keyword">end</span>
+0063 
+0064 <span class="comment">%% merge SPIKE data</span>
+0065 y.channel = {};
+0066 y.spk = {};
+0067 
+0068 <span class="comment">%% merge ANALOG data</span>
+0069 y.analog = {}; 
+0070 y.analogtime = []; 
+0071 y.analogalignbin = [];
+0072 
+0073 <span class="comment">%%</span>
+0074 y.align = [];
+0075 y.alignevent = <span class="string">''</span>;</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

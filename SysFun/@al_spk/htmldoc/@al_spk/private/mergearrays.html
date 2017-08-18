@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mergearrays</title>
+  <meta name="keywords" content="mergearrays">
+  <meta name="description" content="[new,alignBin]  = mergearrays(X,dim,align)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">@al_spk</a> &gt; <a href="index.html">private</a> &gt; mergearrays.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk\private&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>mergearrays
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>[new,alignBin]  = mergearrays(X,dim,align)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [Y,alignBin]  = mergearrays(X,dim,align) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> [new,alignBin]  = mergearrays(X,dim,align)
+
+ Merge vectors or matrices along dim aligned to align
+ Missmatched areas of array are padded with NaNs
+
+ INPUT
+ X ........... cell array
+ dim ......... dimension of concatenation
+ align ....... alignment indices in 3 dimensions for every cell [cellnr,dim]
+ OUTPUT
+ Y ........... new array
+ alignBin .... row aligned to of the new matrix
+
+ Alwin 8/2002</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../@al_spk/error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../@al_spk/spk_NLX_readNCS.html" class="code" title="function [s,ok] = spk_NLX_readNCS(s,NLXFileName,NLXTrialWin,NLXFileWin,analogname)">spk_NLX_readNCS</a>	reads spike data from a neuralynx *.nse file</li></ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Y,alignBin]  = mergearrays(X,dim,align)</a>
+0002 
+0003 <span class="comment">% [new,alignBin]  = mergearrays(X,dim,align)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Merge vectors or matrices along dim aligned to align</span>
+0006 <span class="comment">% Missmatched areas of array are padded with NaNs</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% INPUT</span>
+0009 <span class="comment">% X ........... cell array</span>
+0010 <span class="comment">% dim ......... dimension of concatenation</span>
+0011 <span class="comment">% align ....... alignment indices in 3 dimensions for every cell [cellnr,dim]</span>
+0012 <span class="comment">% OUTPUT</span>
+0013 <span class="comment">% Y ........... new array</span>
+0014 <span class="comment">% alignBin .... row aligned to of the new matrix</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Alwin 8/2002</span>
+0017 
+0018 numArr = length(X);
+0019 <span class="keyword">if</span> numArr==0;
+0020     Y = NaN;alignBin = NaN;<span class="keyword">return</span>;
+0021 <span class="keyword">end</span>
+0022 
+0023 <span class="keyword">if</span> nargin&lt;3
+0024      align = ones(numArr,3);
+0025      <span class="keyword">if</span> nargin&lt;2
+0026           dim = 1;
+0027 <span class="keyword">end</span>;<span class="keyword">end</span>
+0028 <span class="keyword">if</span> size(align,2)&lt;3
+0029      <a href="../../@al_spk/error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'''align'' must be 3-Column-Vector with alignment indices for every: [cellnr,dim] !'</span>);
+0030 <span class="keyword">end</span>
+0031 
+0032 <span class="comment">% get sizes of arrays</span>
+0033 SIZES = [];
+0034 <span class="keyword">for</span> i = 1:numArr
+0035      cArrSize = size(X{i});
+0036      <span class="keyword">if</span> length(cArrSize)&lt;3;cArrSize = cat(2,cArrSize,ones(1,3-length(cArrSize)));<span class="keyword">end</span>
+0037      SIZES = cat(1,SIZES,cArrSize);
+0038 <span class="keyword">end</span>
+0039 maxSIZES = max(SIZES);
+0040 
+0041 <span class="comment">% dimension to pad with NaN's</span>
+0042 paddims = setxor([1 2 3],dim);
+0043 <span class="keyword">if</span> length(maxSIZES)&lt;3 &amp; dim~=3
+0044      paddims(find(paddims==3)) = [];
+0045 <span class="keyword">end</span>
+0046 
+0047      <span class="keyword">for</span> cdim = paddims
+0048           alignBin(cdim) = max(align(:,cdim));
+0049           HEADnum    = alignBin(cdim) - align(:,cdim);
+0050           <span class="keyword">for</span> i = 1:numArr
+0051                cSize = size(X{i});
+0052                cSize(cdim) = HEADnum(i);
+0053                X{i} = cat(cdim,ones(cSize).*NaN,X{i});
+0054           <span class="keyword">end</span>
+0055           tail(:,cdim) = SIZES(:,cdim)-align(:,cdim);
+0056           TAILnum = max(tail(:,cdim))-tail(:,cdim);
+0057           <span class="keyword">for</span> i = 1:numArr
+0058                cSize = size(X{i});
+0059                cSize(cdim) = TAILnum(i);
+0060                X{i} = cat(cdim,X{i},ones(cSize).*NaN);
+0061           <span class="keyword">end</span>
+0062      <span class="keyword">end</span>
+0063 
+0064 Y = cat(dim,X{:});</pre></div>
+<hr><address>Generated on Tue 25-Apr-2006 16:24:52 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

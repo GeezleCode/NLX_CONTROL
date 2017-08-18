@@ -15,10 +15,6 @@ if ~isempty(s.spk);
     c.spk = s.spk(:,i);
 end
 
-if ~isempty(s.spkwave);
-    c.spkwave = s.spkwave(:,i);
-end
-
 if ~isempty(s.analog);
     for k = 1:length(s.analog)
         c.analog{k} = s.analog{k}(i,:);           

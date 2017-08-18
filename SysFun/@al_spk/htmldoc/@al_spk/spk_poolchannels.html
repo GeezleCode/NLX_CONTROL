@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_poolchannels</title>
+  <meta name="keywords" content="spk_poolchannels">
+  <meta name="description" content="pool the spikes of different channels">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_poolchannels.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_poolchannels
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>pool the spikes of different channels</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function pooled_s = spk_poolchannels(s,poolChan) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> pool the spikes of different channels
+ spike times in s.spk cells must be horizontal vectors
+ s = spk_poolchannels(s,poolChan)
+
+ poolChan .... cell array, can be numeric (index to s.spk) or characters (strmatch to s.channels 
+               in different rows)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function pooled_s = spk_poolchannels(s,poolChan)</a>
+0002 
+0003 <span class="comment">% pool the spikes of different channels</span>
+0004 <span class="comment">% spike times in s.spk cells must be horizontal vectors</span>
+0005 <span class="comment">% s = spk_poolchannels(s,poolChan)</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% poolChan .... cell array, can be numeric (index to s.spk) or characters (strmatch to s.channels</span>
+0008 <span class="comment">%               in different rows)</span>
+0009 
+0010 [numChan,numTrials] = size(s.spk);
+0011 NumNewChan = length(poolChan);
+0012 
+0013 pooled_s = s;
+0014 pooled_s.spk = cell(NumNewChan,numTrials);
+0015 pooled_s.channel = {<span class="string">''</span>};
+0016 
+0017 <span class="comment">% transform channel names into indices</span>
+0018 isCharPoolChan = cellfun(<span class="string">'isclass'</span>,poolChan,<span class="string">'char'</span>);
+0019 <span class="keyword">for</span> i = find(isCharPoolChan);
+0020     currChanNames = poolChan{i};
+0021     currChanNamesNum = size(currChanNames,1);
+0022     poolChan{i} = ones(currChanNamesNum,1).*NaN;
+0023     <span class="keyword">for</span> k = 1:currChanNamesNum
+0024         poolChan{i}(k) = strmatch(currChanNames(k,:),s.channel);
+0025     <span class="keyword">end</span>
+0026 <span class="keyword">end</span>
+0027 
+0028 <span class="comment">% merge channels</span>
+0029 <span class="keyword">for</span> i = 1:NumNewChan
+0030     pooled_s.channel{i,1} = strvcat(s.channel{poolChan{i},i});
+0031     <span class="keyword">for</span> k = 1:numTrials
+0032         pooled_s.spk{i,k} = cat(2,s.spk{poolChan{i},k});
+0033     <span class="keyword">end</span>
+0034 <span class="keyword">end</span>
+0035 
+0036</pre></div>
+<hr><address>Generated on Tue 25-Apr-2006 16:24:52 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

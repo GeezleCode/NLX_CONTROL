@@ -364,7 +364,7 @@ while DO_GET_NLX_DATA
         
         % check for save reading of trial data
         if any(~ismember(p.MandatoryEvents,evTTL(evType==0|evType==1))) 
-            fprintf(1,['\nWARNING: *** OMIT trial due to MISSING EVENTS *** ' num2str(p.MandatoryEvents(~ismember(p.MandatoryEvents,evTTL(evType==0|evType==1)))) ' !']);
+            fprintf(1,['\nWARNING: *** OMIT trial due to MISSING EVENTS  (spk_NLX_get)*** ' num2str(p.MandatoryEvents(~ismember(p.MandatoryEvents,evTTL(evType==0|evType==1)))) ' !']);
             fprintf(logfid,['\nWARNING: *** OMIT trial due to MISSING EVENTS *** ' num2str(p.MandatoryEvents(~ismember(p.MandatoryEvents,evTTL(evType==0|evType==1)))) ' !']);
         elseif (currPresentationNum ~= p.PresentationNum & p.CutCortexTrial == 1)
             fprintf(1,['\nWARNING: *** OMIT trial due to NON EXPECTED NUMBER OF PRESENTATIONS ! ***']);

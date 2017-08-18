@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_findAnalogEventBin</title>
+  <meta name="keywords" content="spk_findAnalogEventBin">
+  <meta name="description" content="returns analog data for a given event">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_findAnalogEventBin.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_findAnalogEventBin
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>returns analog data for a given event</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [v,t,i,terr] = spk_findAnalogEventBin(s,ChanName,EventLabel) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> returns analog data for a given event
+ uses s.currenttrials. 
+ v ...... [nChans x nTrials] analog value 
+ t ...... [nChans x nTrials] event time 
+ i ...... [nChans x nTrials] bin number  
+ terr ... [nChans x nTrials] time error of bin in reference to event</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_AnalogTimeVec.html" class="code" title="function t = spk_AnalogTimeVec(s,Chan)">spk_AnalogTimeVec</a>	retrieves times of analog data bins</li><li><a href="spk_findAnalog.html" class="code" title="function [i,sf] = spk_findAnalog(s,ChanName,PatternFlag)">spk_findAnalog</a>	finds an analog channel, or channels featuring a pattern</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_AnalogRemoveLineWin.html" class="code" title="function s = spk_AnalogRemoveLineWin(s,Fl,WinEv,doPlot)">spk_AnalogRemoveLineWin</a>	fits a sine wave of frequency f to each trial and substract the mean</li></ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [v,t,i,terr] = spk_findAnalogEventBin(s,ChanName,EventLabel)</a>
+0002 
+0003 <span class="comment">% returns analog data for a given event</span>
+0004 <span class="comment">% uses s.currenttrials.</span>
+0005 <span class="comment">% v ...... [nChans x nTrials] analog value</span>
+0006 <span class="comment">% t ...... [nChans x nTrials] event time</span>
+0007 <span class="comment">% i ...... [nChans x nTrials] bin number</span>
+0008 <span class="comment">% terr ... [nChans x nTrials] time error of bin in reference to event</span>
+0009 
+0010 <span class="comment">%% get the channel index</span>
+0011 <span class="keyword">if</span> nargin&lt;2 || isempty(ChanName)
+0012     <span class="keyword">if</span> isempty(s.currentanalog);
+0013         iChan = 1:size(s.analog,2);
+0014     <span class="keyword">else</span>
+0015         iChan = s.currentanalog;
+0016     <span class="keyword">end</span>
+0017 <span class="keyword">else</span>
+0018     iChan = <a href="spk_findAnalog.html" class="code" title="function [i,sf] = spk_findAnalog(s,ChanName,PatternFlag)">spk_findAnalog</a>(s,ChanName);
+0019 <span class="keyword">end</span>
+0020 nChan = length(iChan);
+0021 
+0022 
+0023 <span class="comment">%% get time vector for this channel</span>
+0024 <span class="keyword">for</span> iCh = 1:nChan
+0025     s.currentanalog = iChan(iCh);
+0026     tVec{iCh} = <a href="spk_AnalogTimeVec.html" class="code" title="function t = spk_AnalogTimeVec(s,Chan)">spk_AnalogTimeVec</a>(s);
+0027 <span class="keyword">end</span>
+0028 
+0029 <span class="comment">%% set current trials</span>
+0030 <span class="keyword">if</span> isempty(s.currenttrials)
+0031     s.currenttrials = 1:size(s.analog{iChan},1);
+0032 <span class="keyword">end</span>
+0033 nTr = length(s.currenttrials);
+0034 
+0035 <span class="comment">%% get event index</span>
+0036 iEv = strmatch(EventLabel,s.eventlabel,<span class="string">'exact'</span>);
+0037 
+0038 <span class="comment">%% loop trials and chans</span>
+0039 v = zeros(nChan,nTr).*NaN;
+0040 t = zeros(nChan,nTr).*NaN;
+0041 i = zeros(nChan,nTr).*NaN;
+0042 <span class="keyword">for</span> iCh = 1:nChan
+0043     cnt = 0;
+0044     <span class="keyword">for</span> iTr = s.currenttrials
+0045         cnt=cnt+1;
+0046         <span class="keyword">if</span> isempty(s.events{iEv,iTr}) || numel(s.events{iEv,iTr})&gt;1
+0047             <span class="keyword">continue</span>;
+0048         <span class="keyword">end</span>
+0049         t(iCh,cnt) = s.events{iEv,iTr};
+0050         [dummy,i(iCh,cnt)] = min(abs(tVec{iCh}-t(iCh,cnt)));
+0051         terr(iCh,cnt) = tVec{iCh}(i(iCh,cnt))-t(iCh,cnt);
+0052         v(iCh,cnt) = s.analog{iChan(iCh)}(iTr,i(iCh,cnt));
+0053     <span class="keyword">end</span>
+0054 <span class="keyword">end</span>
+0055         
+0056 
+0057         
+0058 
+0059 
+0060 
+0061 
+0062</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

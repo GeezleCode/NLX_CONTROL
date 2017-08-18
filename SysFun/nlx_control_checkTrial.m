@@ -9,8 +9,10 @@ AcqWin1_EvIdx = Ev_findTTL(Ev,NLX_CONTROL_SETTINGS.AcqEvents(1),[CTX.TrialStartT
 AcqWin2_EvIdx = Ev_findTTL(Ev,NLX_CONTROL_SETTINGS.AcqEvents(2),[CTX.TrialStartTime(CTX.Pointer) Ev_currTimeStamp(Ev)],0);
 
 if any(~FoundMandatory)
-    message = ['WARNING: *** OMIT trial due to MISSING EVENTS ***' num2str(NLX_CONTROL_SETTINGS.MandatoryEvents(~FoundMandatory)) ' !'];
-    
+    message = ['WARNING: *** OMIT trial due to MISSING EVENTS(checkTrial) ***' num2str(NLX_CONTROL_SETTINGS.MandatoryEvents(~FoundMandatory)) ' !'];
+    disp(NLX_CONTROL_SETTINGS.MandatoryEvents);
+    disp('---')
+    disp(Ev);
 elseif (length(CTX.StimulusCodes(CTX.Pointer,:)) ~= NLX_CONTROL_SETTINGS.PresentationNum && NLX_CONTROL_SETTINGS.CutCortexTrial == 1)
     message = ['WARNING: *** OMIT trial due to NON EXPECTED NUMBER OF PRESENTATIONS ! ***'];
 

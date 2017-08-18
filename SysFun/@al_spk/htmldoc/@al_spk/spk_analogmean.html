@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_AnalogMean</title>
+  <meta name="keywords" content="spk_AnalogMean">
+  <meta name="description" content="Calculate mean value of analog channel">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_AnalogMean.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_AnalogMean
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Calculate mean value of analog channel</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [M,STD,SE,tx,DATA] = spk_AnalogMean(s,ChanName,TimeWin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Calculate mean value of analog channel
+ [M,STD,SE,DATA] = spk_AnalogMean(s,ChanName,TimeWin)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li><li><a href="spk_AnalogTimeVec.html" class="code" title="function t = spk_AnalogTimeVec(s,Chan)">spk_AnalogTimeVec</a>	retrieves times of analog data bins</li><li><a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>	returns and check for number of trials in @al_spk object</li><li><a href="spk_set.html" class="code" title="function s = spk_set(s,varargin)">spk_set</a>	set the fields of an @al_spk object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [M,STD,SE,tx,DATA] = spk_AnalogMean(s,ChanName,TimeWin)</a>
+0002 
+0003 <span class="comment">% Calculate mean value of analog channel</span>
+0004 <span class="comment">% [M,STD,SE,DATA] = spk_AnalogMean(s,ChanName,TimeWin)</span>
+0005 
+0006 <span class="comment">%% get the channel index</span>
+0007 <span class="keyword">if</span> nargin&lt;2 || isempty(ChanName)
+0008     <span class="keyword">if</span> isempty(s.currentanalog);
+0009         iChan = 1:size(s.analog,2);
+0010     <span class="keyword">else</span>
+0011         iChan = s.currentanalog;
+0012     <span class="keyword">end</span>
+0013 <span class="keyword">else</span>
+0014     iChan = spk_FindAnalog(s,ChanName);
+0015 <span class="keyword">end</span>
+0016 nChan = length(iChan);
+0017 <span class="keyword">if</span> nChan&gt;1;<a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'Only 1 channel allowed!'</span>);<span class="keyword">end</span>
+0018 
+0019 <span class="comment">%% get trials</span>
+0020 numTrials = <a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>(s);
+0021 <span class="keyword">if</span> isempty(s.currenttrials)
+0022     s.currenttrials = 1:numTrials;
+0023 <span class="keyword">end</span>
+0024 numCurrenttrials = length(s.currenttrials);
+0025 
+0026 <span class="comment">%% calc mean</span>
+0027 [nTr,numSamples] = size(s.analog{iChan});
+0028 
+0029 <span class="comment">%% get bins</span>
+0030 s = <a href="spk_set.html" class="code" title="function s = spk_set(s,varargin)">spk_set</a>(s,<span class="string">'currentanalog'</span>,iChan);
+0031 TimeData = <a href="spk_AnalogTimeVec.html" class="code" title="function t = spk_AnalogTimeVec(s,Chan)">spk_AnalogTimeVec</a>(s);
+0032 <span class="keyword">if</span> nargin&gt;=3 &amp;&amp; ~isempty(TimeWin) &amp;&amp; length(TimeWin)==2
+0033     iBins = find(TimeData&gt;=TimeWin(1)&amp;TimeData&lt;=TimeWin(2));
+0034 <span class="keyword">elseif</span> nargin&gt;=3 &amp;&amp; ~isempty(TimeWin) &amp;&amp; length(TimeWin)==1
+0035     [dummy,iBins] = min(abs(TimeData-TimeWin));
+0036 <span class="keyword">else</span>
+0037     iBins = 1:length(TimeData);
+0038 <span class="keyword">end</span>
+0039 
+0040 tx = TimeData(iBins);
+0041 
+0042 <span class="comment">%% get data</span>
+0043 DATA = s.analog{iChan}(s.currenttrials,iBins);
+0044 NaNs = isnan(DATA);
+0045 n = sum(~NaNs,1);
+0046 DATA(NaNs) = 0;
+0047 
+0048 <span class="comment">%% mean</span>
+0049 M = sum(DATA,1)./n;
+0050 
+0051 <span class="comment">%% variance, standard deviation, standard error</span>
+0052 ERR = DATA - repmat(M,[numCurrenttrials,1]);
+0053 ERR(NaNs) = 0;
+0054 V = sum(ERR.*ERR,1)./n;
+0055 STD = sqrt(V);
+0056 SE = STD./sqrt(n);
+0057</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

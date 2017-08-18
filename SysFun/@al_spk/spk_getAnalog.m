@@ -1,7 +1,7 @@
-function [x,T,bwidth,bWin] = spk_getAnalog(s,TimeWin,ChanName,Event)
+function [x,T,bwidth,bwin] = spk_getAnalog(s,TimeWin,ChanName,Event)
 % extracts analog data from the object.
 %
-% [x,T,bwidth,bWin] = spk_getAnalog(s,TimeWin,RemoveNaNs,ChanName,Event)
+% [x,T,bwidth,bwin] = spk_getAnalog(s,TimeWin,RemoveNaNs,ChanName,Event)
 %
 % TimeWin .... [lo hi] time window in units of s.timeorder, relative to
 %              Event
@@ -16,13 +16,10 @@ function [x,T,bwidth,bWin] = spk_getAnalog(s,TimeWin,ChanName,Event)
 % x .............. analog data [trials x bins] in cells per channel 
 % T .............. time data [trials x bins]
 % bwidth ......... temporal gap between bins
-% bWin ........... bin boundaries of analog data
+% bwin ........... bin boundaries of analog data
 %
 % if ther is only one channel x and T are converted to numerical arrays
 
-if nargin<4
-    Event = [];
-end
 %% if ChanName exists as input, overwrite s.currentanalog
 if nargin>=3 && ~isempty(ChanName)
     if iscell(ChanName) || ischar(ChanName)
@@ -43,12 +40,14 @@ if isempty(s.currenttrials)
 end
 nTr = length(s.currenttrials);
 
+bwin = spk_AnalogEventWindow(s,Event,TimeWin);
+
+
 %% loop channels
-[bWin,tWin,tVec] = spk_AnalogEventWindow(s,Event,TimeWin);
 for iCh = 1:nChan
     cChNr = s.currentanalog(iCh);
     bwidth(iCh) = (1/s.analogfreq(cChNr))/(10^s.timeorder);
-    blength{iCh} = diff(bWin(:,:,iCh),[],2)+1;
+    blength{iCh} = diff(bwin(:,:,iCh),[],2)+1;
     
     x{iCh} = ones(nTr,max(blength{iCh})).*NaN;
     T{iCh} = ones(nTr,max(blength{iCh})).*NaN;
@@ -57,8 +56,8 @@ for iCh = 1:nChan
 
     %% get data
     for iTr = 1:nTr
-        x{iCh}(iTr,1:blength{iCh}(iTr)) = s.analog{cChNr}(s.currenttrials(iTr),bWin(iTr,1,iCh):bWin(iTr,2,iCh));
-        T{iCh}(iTr,1:blength{iCh}(iTr)) = t(1,bWin(iTr,1,iCh):bWin(iTr,2,iCh));% take time window of first trial!!
+        x{iCh}(iTr,1:blength{iCh}(iTr)) = s.analog{cChNr}(s.currenttrials(iTr),bwin(iTr,1,iCh):bwin(iTr,2,iCh));
+        T{iCh}(iTr,1:blength{iCh}(iTr)) = t(1,bwin(iTr,1,iCh):bwin(iTr,2,iCh));% take time window of first trial!!
     end
     
 end

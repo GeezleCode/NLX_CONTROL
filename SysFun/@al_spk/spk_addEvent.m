@@ -1,28 +1,20 @@
-function [s,EvFoundIndex] = spk_addEvent(s,EventLabel,EventValue,TrialNr)
+function s = spk_addEvent(s,EventLabel,EventValue,TrialNr)
 
-% adds events
-% s = spk_addEvent(s,EventLabel,EventValue,TrialNr)
-% EventLabel ... 
-% EventValue ...
-% TrialNr ......
-
-
-numEventLabel = length(s.eventlabel);
+EventLabelIndex = strmatch(upper(EventLabel),upper(s.eventlabel),'exact');
+numEventLabel =  size(s.eventlabel,2);
 numTrials =  size(s.events,2);
-if nargin<4
-    TrialNr = 1:numTrials;
+
+% add eventlabel if non existing
+if isempty(EventLabelIndex)
+    EventLabelIndex = numEventLabel+1;
+    s.eventlabel{EventLabelIndex} = EventLabel;
+    if numTrials>0
+        s.events{EventLabelIndex,1:numTrials} = [];
+    end
 end
-if ischar(EventLabel)
-    EventLabel = {EventLabel};
+
+% set values of events
+if nargin>2
+    s.events(EventLabelIndex,TrialNr) = EventValue;
 end
-
-% get existing eventlabel
-[EvFound,EvFoundIndex] = ismember(EventLabel,s.eventlabel);
-
-% handle new events
-EvFoundIndex(~EvFound) = numEventLabel + [1:sum(~EvFound)];% create new event indices
-s.eventlabel(EvFoundIndex(~EvFound)) = EventLabel(~EvFound);% set new event label
-
-% set values
-s.events(EvFoundIndex,TrialNr) = EventValue(EvFound);
-
+    

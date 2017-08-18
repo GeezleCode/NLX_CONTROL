@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_AddAnalogChan</title>
+  <meta name="keywords" content="spk_AddAnalogChan">
+  <meta name="description" content="adds a new channel to analog data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_AddAnalogChan.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_AddAnalogChan
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>adds a new channel to analog data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [s,ChanNr] = spk_AddAnalogChan(s,Name,Data,SF,Time,Units,AlignBin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> adds a new channel to analog data</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_AnalogCheckChan.html" class="code" title="function n = spk_AnalogCheckChan(s)">spk_AnalogCheckChan</a>	check for consistency of analog channel data, returns number of channels.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_ReadMane2.html" class="code" title="function s = spk_ReadMane2(s,FilePath,Chan)">spk_ReadMane2</a>	reads a mane2 file into a @al_spk object</li></ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [s,ChanNr] = spk_AddAnalogChan(s,Name,Data,SF,Time,Units,AlignBin)</a>
+0002 
+0003 <span class="comment">% adds a new channel to analog data</span>
+0004 
+0005 currChanNr = <a href="spk_AnalogCheckChan.html" class="code" title="function n = spk_AnalogCheckChan(s)">spk_AnalogCheckChan</a>(s);
+0006 ChanNr = currChanNr+1;
+0007 
+0008 s.analog{ChanNr} = Data;
+0009 s.analogunits{ChanNr} = Units;
+0010 s.analogname{ChanNr} = Name;
+0011 s.analogtime{ChanNr} = Time;
+0012 s.analogfreq(ChanNr) = SF;
+0013 s.analogalignbin(ChanNr) = AlignBin;
+0014</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_TrialGroups</title>
+  <meta name="keywords" content="spk_TrialGroups">
+  <meta name="description" content="group trials according to a trialcode label">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_TrialGroups.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_TrialGroups
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>group trials according to a trialcode label</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [y,TrialCodes] = spk_TrialGroups(s,GroupTerm) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> group trials according to a trialcode label
+ [y,TrialCodes] = spk_TrialGroups(s,GroupTerm)
+ GroupTerm .... char , a trialcode label
+ y ............ cell array containing trial indices
+ TrialCodes ... trialcodes according to y</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [y,TrialCodes] = spk_TrialGroups(s,GroupTerm)</a>
+0002 
+0003 <span class="comment">% group trials according to a trialcode label</span>
+0004 <span class="comment">% [y,TrialCodes] = spk_TrialGroups(s,GroupTerm)</span>
+0005 <span class="comment">% GroupTerm .... char , a trialcode label</span>
+0006 <span class="comment">% y ............ cell array containing trial indices</span>
+0007 <span class="comment">% TrialCodes ... trialcodes according to y</span>
+0008 
+0009 <span class="comment">%% check GroupTerm</span>
+0010 iGrp = strmatch(GroupTerm,s.trialcodelabel,<span class="string">'exact'</span>);
+0011 <span class="keyword">if</span> isempty(iGrp)
+0012     fprintf(1,[<span class="string">'Did not find trialcodelabel called '</span> GroupTerm <span class="string">'!\n'</span>]);
+0013     fprintf(1,[<span class="string">'choose from:\n'</span>]);
+0014     fprintf(1,[<span class="string">'%s\n'</span>],s.trialcodelabel{:});
+0015     <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">''</span>);
+0016 <span class="keyword">end</span>
+0017 
+0018 <span class="comment">%% Get the trialcodes</span>
+0019 TrialCodes = unique(s.trialcode(iGrp,:));
+0020 nTrCd = length(TrialCodes);
+0021 y = cell(1,nTrCd);
+0022 <span class="keyword">for</span> iTrCd = 1:nTrCd
+0023     y{iTrCd} = find(s.trialcode(iGrp,:)==TrialCodes(iTrCd));
+0024 <span class="keyword">end</span>
+0025</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

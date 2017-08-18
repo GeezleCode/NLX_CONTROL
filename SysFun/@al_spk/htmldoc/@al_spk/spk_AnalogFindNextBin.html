@@ -1,0 +1,196 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_AnalogFindNextBin</title>
+  <meta name="keywords" content="spk_AnalogFindNextBin">
+  <meta name="description" content="Go through analog bins until a bin is found.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_AnalogFindNextBin.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_AnalogFindNextBin
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Go through analog bins until a bin is found.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [t,x,b,tStart,xStart,bStart] = spk_AnalogFindNextBin(s,tStart,SearchTerm,SearchPar,MoveDir) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Go through analog bins until a bin is found.
+ Needs 'currentanalog' and 'currenttrials' to be set.
+ [t,x,b,tStart,xStart,bStart] = spk_AnalogFindNextBin(s,tStart,SearchTerm,SearchPar,MoveDir)
+
+ tStart .................. [double] time to start search from. 
+                           [char] name of event or bin number.
+ SearchTerm/SearchPar .... 
+        'ZERO'             looks for value crossing zeros
+        'SIGN' [+/-1]      looks for an change in sign of value
+        'SLOPE' [+/-1]     looks for next change in sign of bin difference
+        'SLOPE+SIGN' [+/-1 +/-1]      combines both
+        'PERCENT' [x]      looks for over/undershoot of value in relation 
+                           to start bin.
+        'OVERSHOOT' 'UNDERSHOOT' same as 'PERCENT' but using absolute
+                                 values
+ MoveDir .............. [-x,+x] search direction/stepsize from tStart on</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li><li><a href="spk_AnalogTimeVec.html" class="code" title="function t = spk_AnalogTimeVec(s,Chan)">spk_AnalogTimeVec</a>	retrieves times of analog data bins</li><li><a href="spk_getEvents.html" class="code" title="function [evCells,i] = spk_getEvents(s,eventlabel)">spk_getEvents</a>	returns the events; omit input for info</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [t,x,b,tStart,xStart,bStart] = spk_AnalogFindNextBin(s,tStart,SearchTerm,SearchPar,MoveDir)</a>
+0002 
+0003 <span class="comment">% Go through analog bins until a bin is found.</span>
+0004 <span class="comment">% Needs 'currentanalog' and 'currenttrials' to be set.</span>
+0005 <span class="comment">% [t,x,b,tStart,xStart,bStart] = spk_AnalogFindNextBin(s,tStart,SearchTerm,SearchPar,MoveDir)</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% tStart .................. [double] time to start search from.</span>
+0008 <span class="comment">%                           [char] name of event or bin number.</span>
+0009 <span class="comment">% SearchTerm/SearchPar ....</span>
+0010 <span class="comment">%        'ZERO'             looks for value crossing zeros</span>
+0011 <span class="comment">%        'SIGN' [+/-1]      looks for an change in sign of value</span>
+0012 <span class="comment">%        'SLOPE' [+/-1]     looks for next change in sign of bin difference</span>
+0013 <span class="comment">%        'SLOPE+SIGN' [+/-1 +/-1]      combines both</span>
+0014 <span class="comment">%        'PERCENT' [x]      looks for over/undershoot of value in relation</span>
+0015 <span class="comment">%                           to start bin.</span>
+0016 <span class="comment">%        'OVERSHOOT' 'UNDERSHOOT' same as 'PERCENT' but using absolute</span>
+0017 <span class="comment">%                                 values</span>
+0018 <span class="comment">% MoveDir .............. [-x,+x] search direction/stepsize from tStart on</span>
+0019 
+0020 <span class="comment">%% check current channels</span>
+0021 iChan = s.currentanalog;
+0022 nChan = length(iChan);
+0023 <span class="keyword">if</span> nChan&gt;1
+0024     <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'Don''t select more than one channel!'</span>);
+0025 <span class="keyword">end</span>
+0026 [nTotTr,nBin] = size(s.analog{iChan});
+0027 
+0028 <span class="comment">%% set current trials</span>
+0029 <span class="keyword">if</span> isempty(s.currenttrials)
+0030     s.currenttrials = 1:size(s.analog{iChan},2);
+0031 <span class="keyword">end</span>
+0032 nTr = length(s.currenttrials);
+0033 
+0034 <span class="comment">%% get start bin</span>
+0035 tVec = <a href="spk_AnalogTimeVec.html" class="code" title="function t = spk_AnalogTimeVec(s,Chan)">spk_AnalogTimeVec</a>(s);
+0036 <span class="keyword">if</span> isnumeric(tStart)
+0037     <span class="keyword">if</span> numel(tStart)&gt;1 &amp;&amp; size(tStart,1)==1;<a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">''</span>);<span class="keyword">end</span>
+0038     <span class="keyword">for</span> iTr=1:size(tStart,1)
+0039         [bStartErr,bStart(iTr)] = min(abs(tVec-tStart(iTr)));
+0040     <span class="keyword">end</span>
+0041 <span class="keyword">elseif</span> ischar(tStart)
+0042     <span class="keyword">if</span> all(ismember(<span class="string">'12'</span>,<span class="string">'0123456789'</span>))
+0043         bStart = sscanf(tStart,<span class="string">'%d'</span>);
+0044     <span class="keyword">else</span>
+0045         tStart = <a href="spk_getEvents.html" class="code" title="function [evCells,i] = spk_getEvents(s,eventlabel)">spk_getEvents</a>(s,tStart);
+0046         tStart(cellfun(<span class="string">'isempty'</span>,tStart)) = {NaN};
+0047         <span class="keyword">if</span> any(cellfun(<span class="string">'prodofsize'</span>,tStart)~=1)
+0048             <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'Start events contain more than one time!'</span>);
+0049         <span class="keyword">end</span>
+0050         <span class="keyword">if</span> length(tStart)~=nTr
+0051             <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'This one shouldn''t occur'</span>);
+0052         <span class="keyword">end</span>
+0053         tStart = cat(1,tStart{:});
+0054         [dummy,bStart] = ismember(tStart,tVec);
+0055     <span class="keyword">end</span>
+0056 <span class="keyword">end</span>
+0057 nbStart = length(bStart);
+0058 <span class="keyword">if</span> nbStart==1
+0059     bStart = ones(nTr,1).*bStart;
+0060     nbStart = nTr;
+0061 <span class="keyword">elseif</span> nbStart~=nTr
+0062     <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'error'</span>);
+0063 <span class="keyword">end</span>
+0064 
+0065 <span class="comment">%% preallocate results</span>
+0066 b = ones(nTr,1).*NaN;
+0067 t = ones(nTr,1).*NaN;
+0068 x = ones(nTr,1).*NaN;
+0069 
+0070 <span class="comment">%% loop trials</span>
+0071 <span class="keyword">for</span> iTr = 1:nTr
+0072     cPar = SearchPar;
+0073     cVec = s.analog{iChan}(s.currenttrials(iTr),:);
+0074     cBin = bStart(iTr);
+0075     xStart(iTr,1) = cVec(cBin);
+0076     tStart(iTr,1) = tVec(cBin);
+0077     <span class="keyword">switch</span> upper(SearchTerm)
+0078         <span class="keyword">case</span> <span class="string">'ZERO'</span>
+0079             <span class="comment">% return the bin before crossing zero (change of signs)</span>
+0080             <span class="keyword">while</span> (MoveDir==-1&amp;&amp;cBin&gt;1) || (MoveDir==1&amp;&amp;cBin&lt;nBin)
+0081                 cVal = cVec(cBin);
+0082                 <span class="keyword">if</span> isnan(cVal) || cVal==0
+0083                     <span class="keyword">break</span>;
+0084                 <span class="keyword">elseif</span> isempty(cPar) &amp;&amp; cVal*cVec(cBin+MoveDir)&lt;0
+0085                     <span class="keyword">break</span>;
+0086                 <span class="keyword">elseif</span> ~isempty(cPar) &amp;&amp; cPar&lt;0 &amp;&amp; cVal&lt;0 &amp;&amp; cVal*cVec(cBin+MoveDir)&lt;0    
+0087                     <span class="keyword">break</span>;
+0088                 <span class="keyword">elseif</span> ~isempty(cPar) &amp;&amp; cPar&gt;0 &amp;&amp; cVal&gt;0 &amp;&amp; cVal*cVec(cBin+MoveDir)&lt;0    
+0089                     <span class="keyword">break</span>;
+0090                 <span class="keyword">end</span>
+0091                 cBin = cBin+MoveDir;
+0092             <span class="keyword">end</span>
+0093             <span class="keyword">if</span> cBin&gt;0 &amp;&amp; cBin&lt;=nBin
+0094                 b(iTr,1) = cBin;
+0095                 t(iTr,1) = tVec(cBin);
+0096                 x(iTr,1) = cVec(cBin);
+0097             <span class="keyword">end</span>
+0098             
+0099         <span class="keyword">case</span> <span class="string">'SLOPE'</span>
+0100             <span class="comment">% returns the bin before the increment changes sign</span>
+0101             <span class="keyword">while</span> (MoveDir==-1&amp;&amp;cBin&gt;1) || (MoveDir==1&amp;&amp;cBin&lt;nBin)
+0102                 cVal = cVec(cBin);
+0103                 dBins = sort([cBin cBin+MoveDir]);
+0104                 cSlope = diff(cVec(dBins));
+0105                 <span class="keyword">if</span> (cBin-MoveDir&gt;nBin ||  (cBin-MoveDir&lt;1))
+0106                     PreSlope = NaN;
+0107                 <span class="keyword">else</span>
+0108                     dBins = sort([cBin cBin-MoveDir]);
+0109                     PreSlope = diff(cVec(dBins));
+0110                 <span class="keyword">end</span>
+0111                 <span class="keyword">if</span> isnan(cVal)
+0112                     <span class="keyword">break</span>;
+0113                 <span class="keyword">elseif</span> isempty(cPar) &amp;&amp; cSlope*PreSlope&lt;0
+0114                     <span class="keyword">break</span>;
+0115                 <span class="keyword">elseif</span> ~isempty(cPar) &amp;&amp; cPar&lt;0 &amp;&amp; PreSlope&lt;0 &amp;&amp; cSlope*PreSlope&lt;0    
+0116                     <span class="keyword">break</span>;
+0117                 <span class="keyword">elseif</span> ~isempty(cPar) &amp;&amp; cPar&gt;0 &amp;&amp; PreSlope&gt;0 &amp;&amp; cSlope*PreSlope&lt;0    
+0118                     <span class="keyword">break</span>;
+0119                 <span class="keyword">end</span>
+0120                 cBin = cBin+MoveDir;
+0121             <span class="keyword">end</span>
+0122             <span class="keyword">if</span> cBin&gt;0 &amp;&amp; cBin&lt;=nBin
+0123                 b(iTr,1) = cBin;
+0124                 t(iTr,1) = tVec(cBin);
+0125                 x(iTr,1) = cVec(cBin);
+0126             <span class="keyword">end</span>
+0127         <span class="keyword">case</span> <span class="string">'PERCENT'</span>
+0128             <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'-------------------- Under construction -----------------------------'</span>);
+0129         <span class="keyword">case</span> <span class="string">'UNDERSHOOT'</span>
+0130             <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'-------------------- Under construction -----------------------------'</span>);
+0131         <span class="keyword">case</span> <span class="string">'OVERSHOOT'</span>
+0132             <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'-------------------- Under construction -----------------------------'</span>);
+0133     <span class="keyword">end</span> 
+0134 <span class="keyword">end</span>
+0135</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

@@ -43,10 +43,8 @@ for iCh = 1:nChan
     cnt = 0;
     for iTr = s.currenttrials
         cnt=cnt+1;
-        if isempty(s.events{iEv,iTr})
-            error('Can''t find event %s!!',EventLabel);
-        elseif numel(s.events{iEv,iTr})>1
-            error('Too many events of >%s<!!',EventLabel);
+        if isempty(s.events{iEv,iTr}) || numel(s.events{iEv,iTr})>1
+            continue;
         end
         t(iCh,cnt) = s.events{iEv,iTr};
         [dummy,i(iCh,cnt)] = min(abs(tVec{iCh}-t(iCh,cnt)));

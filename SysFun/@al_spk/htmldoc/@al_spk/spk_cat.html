@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_cat</title>
+  <meta name="keywords" content="spk_cat">
+  <meta name="description" content="concatenation of @al_spk objects">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_cat.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_cat
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>concatenation of @al_spk objects</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function s = spk_cat(s,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> concatenation of @al_spk objects</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function s = spk_cat(s,varargin)</a>
+0002 
+0003 <span class="comment">% concatenation of @al_spk objects</span>
+0004 
+0005 
+0006 FileNum = length(varargin);
+0007 <span class="keyword">for</span> i = 1:FileNum
+0008     total = spk_numtrials(varargin{i});
+0009 <span class="keyword">end</span>
+0010 currTrialNumadded = 0;
+0011 
+0012 <span class="comment">% check analog sample frequency</span>
+0013 SFs = unique(cat(2,s.analogfreq,varargin{i}.analogfreq));
+0014 <span class="keyword">if</span> length(SFs)&gt;1;<a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'Different sampling frequency'</span>);<span class="keyword">end</span>
+0015 
+0016 
+0017 hwait = waitbar(0,<span class="string">'merge @al_spk objects...'</span>);
+0018 <span class="keyword">for</span> i = 1:FileNum;
+0019     s.version = [];
+0020     s.name = <span class="string">''</span>;
+0021     s.tag  = <span class="string">''</span>;
+0022     s.comment  = <span class="string">''</span>;
+0023     s.subject = <span class="string">''</span>;
+0024     s.file = <span class="string">''</span>;
+0025     s.date = <span class="string">''</span>;
+0026 
+0027     s.currenttrials = [];
+0028     s.stimulus = [];
+0029     s.userdata = [];
+0030     s.binwidth = [];
+0031     s.timewin = [];
+0032     s.plotwin = [];
+0033     s.analysewin = [];<span class="comment">% regions of interest, single windows for each trial in rows</span>
+0034     s.baselinewin = [];
+0035 
+0036     <span class="comment">% spike data ------------------------------------------------------</span>
+0037     s.unittype = <span class="string">''</span>;
+0038     s.currentchan = [];
+0039     s.chancolor = [];
+0040     s.timeorder = varargin{i}.timeorder;
+0041 
+0042     <span class="keyword">if</span> isempty(s.channel) &amp; isempty(s.spk)
+0043         s.channel = varargin{i}.channel;
+0044         s.spk = varargin{i}.spk;
+0045     <span class="keyword">else</span>
+0046         oldTrialNum = size(s.spk,2);
+0047         newTrialNum = size(varargin{i}.spk,2);
+0048         [TF,LOC] = ismember(varargin{i}.channel,s.channel);
+0049         s.channel = cat(1,s.channel,varargin{i}.channel(~TF));
+0050         spkToAdd = cell(size(s.spk,1),newTrialNum);
+0051         s.spk = cat(1,s.spk,cell(length(find(~TF)),oldTrialNum));
+0052         <span class="keyword">for</span> j = 1:length(varargin{i}.channel)
+0053             <span class="keyword">if</span> TF(j)
+0054                 spkToAdd(LOC(j),:) = varargin{i}.spk(j,:);
+0055             <span class="keyword">end</span>
+0056         <span class="keyword">end</span>
+0057         spkToAdd = cat(1,spkToAdd,varargin{i}.spk(~TF,:));
+0058         s.spk = cat(2,s.spk,spkToAdd);
+0059     <span class="keyword">end</span>
+0060     
+0061     <span class="comment">% analog data ------------------------------------------------------</span>
+0062     s.currentanalog = [];
+0063     <span class="keyword">if</span> isempty(s.analog)
+0064         s.analog = varargin{i}.analog;
+0065         s.analogname = varargin{i}.analogname;
+0066         s.analogtime = varargin{i}.analogtime; 
+0067         s.analogfreq = varargin{i}.analogfreq;
+0068         s.analogalignbin = varargin{i}.analogalignbin;
+0069     <span class="keyword">else</span>
+0070         <span class="keyword">for</span> k=1:length(s.analog)
+0071             [s.analog{k},AlignBin]  = mergearrays([s.analog(k) varargin{i}.analog(k)],1,[1 s.analogalignbin(k) 1;1 varargin{i}.analogalignbin(k) 1]);
+0072             s.analogalignbin(k) = AlignBin(2);
+0073         <span class="keyword">end</span>
+0074         
+0075     <span class="keyword">end</span>
+0076     
+0077     <span class="comment">% events ---------------------------------------------------------------</span>
+0078     s.eventcolors = [];
+0079     s.eventmode = <span class="string">''</span>;
+0080     
+0081     <span class="keyword">if</span> isempty(s.eventlabel) &amp; isempty(s.events)
+0082         s.eventlabel = varargin{i}.eventlabel;
+0083         s.events = varargin{i}.events;
+0084     <span class="keyword">else</span>
+0085         oldTrialNum = size(s.events,2);
+0086         newTrialNum = size(varargin{i}.spk,2);
+0087         [TF,LOC] = ismember(varargin{i}.eventlabel,s.eventlabel);
+0088         s.eventlabel = cat(2,s.eventlabel,varargin{i}.eventlabel(~TF));
+0089         eventsToAdd = cell(size(s.events,1),newTrialNum);
+0090         s.events = cat(1,s.events,cell(length(find(~TF)),oldTrialNum));
+0091         <span class="keyword">for</span> j = 1:length(varargin{i}.eventlabel)
+0092             <span class="keyword">if</span> TF(j)
+0093                 eventsToAdd(LOC(j),:) = varargin{i}.events(j,:);
+0094             <span class="keyword">end</span>
+0095         <span class="keyword">end</span>
+0096         eventsToAdd = cat(1,eventsToAdd,varargin{i}.events(~TF,:));
+0097         s.events = cat(2,s.events,eventsToAdd);
+0098     <span class="keyword">end</span>
+0099 
+0100     <span class="comment">% align ---------------------------------------------------------------</span>
+0101     s.alignevent = <span class="string">''</span>;
+0102     s.align = cat(2,s.align,varargin{i}.align);
+0103     
+0104     <span class="comment">% trialcode  ---------------------------------------------------------------</span>
+0105     <span class="keyword">if</span> isempty(s.trialcodelabel) &amp; isempty(s.trialcode)
+0106         s.trialcodelabel = varargin{i}.trialcodelabel;
+0107         s.trialcode = varargin{i}.trialcode;
+0108     <span class="keyword">else</span>
+0109         oldTrialNum = size(s.trialcode,2);
+0110         newTrialNum = size(varargin{i}.spk,2);
+0111         [TF,LOC] = ismember(varargin{i}.trialcodelabel,s.trialcodelabel);
+0112         s.trialcodelabel = cat(2,s.trialcodelabel,varargin{i}.trialcodelabel(~TF));
+0113         trialcodeToAdd = zeros(size(s.trialcode,1),newTrialNum).*NaN;
+0114         s.trialcode = cat(1,s.trialcode,zeros(length(find(~TF)),oldTrialNum).*NaN);
+0115         <span class="keyword">for</span> j = 1:length(varargin{i}.trialcodelabel)
+0116             <span class="keyword">if</span> TF(j)
+0117                 trialcodeToAdd(LOC(j),:) = varargin{i}.trialcode(j,:);
+0118             <span class="keyword">end</span>
+0119         <span class="keyword">end</span>
+0120         trialcodeToAdd = cat(1,trialcodeToAdd,varargin{i}.trialcode(~TF,:));
+0121         s.trialcode = cat(2,s.trialcode,trialcodeToAdd);
+0122     <span class="keyword">end</span>
+0123 
+0124     <span class="comment">% add merge info  ---------------------------------------------------------------</span>
+0125     MergeObjectNrIndex = strmatch(upper(<span class="string">'MergedObjectNr'</span>),upper(s.trialcodelabel));
+0126     <span class="keyword">if</span> isempty(MergeObjectNrIndex)
+0127         MergeObjectNrIndex = size(s.trialcodelabel,2)+1;
+0128         s.trialcodelabel(MergeObjectNrIndex) = {<span class="string">'MergedObjectNr'</span>};
+0129     <span class="keyword">end</span>
+0130     s.trialcode(MergeObjectNrIndex,size(s.trialcode,2)-size(varargin{i}.trialcode,2)+1 : size(s.trialcode,2)) = i;
+0131         
+0132     
+0133     waitbar(i/FileNum,hwait);
+0134 <span class="keyword">end</span>
+0135 close(hwait);
+0136 <span class="keyword">return</span>
+0137</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

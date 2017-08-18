@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_ExtractSpikeChan</title>
+  <meta name="keywords" content="spk_ExtractSpikeChan">
+  <meta name="description" content="extracts an object with the selected channels">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_ExtractSpikeChan.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_ExtractSpikeChan
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>extracts an object with the selected channels</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function s = spk_ExtractSpikeChan(s,ExtrChan) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> extracts an object with the selected channels
+ s = spk_ExtractSpikeChan(s,ExtrChan)
+ ExtrChan ... Either the channel number (numeric) or channel name (char)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_findSpikeChan.html" class="code" title="function ChanIndex = spk_findSpikeChan(s,ChanName)">spk_findSpikeChan</a>	get the indices of channels as appearing in s.channel</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_ExtractSpikeUnitTypes.html" class="code" title="function s = spk_ExtractSpikeUnitTypes(s,UnitTypes)">spk_ExtractSpikeUnitTypes</a>	extracts an object with spike channels of the given unittype</li></ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function s = spk_ExtractSpikeChan(s,ExtrChan)</a>
+0002 
+0003 <span class="comment">% extracts an object with the selected channels</span>
+0004 <span class="comment">% s = spk_ExtractSpikeChan(s,ExtrChan)</span>
+0005 <span class="comment">% ExtrChan ... Either the channel number (numeric) or channel name (char)</span>
+0006 
+0007 [numChan,numTrials] = size(s.spk);
+0008 <span class="keyword">if</span> iscell(ExtrChan)
+0009     ExtrChanIndex = <a href="spk_findSpikeChan.html" class="code" title="function ChanIndex = spk_findSpikeChan(s,ChanName)">spk_findSpikeChan</a>(s,ExtrChan);
+0010 <span class="keyword">elseif</span> isnumeric(ExtrChan)
+0011     ExtrChanIndex = ExtrChan;
+0012 <span class="keyword">end</span>
+0013 
+0014 s.unittype = s.unittype(ExtrChanIndex);
+0015 s.channel = s.channel(ExtrChanIndex);
+0016 s.spk = s.spk(ExtrChanIndex,:);</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

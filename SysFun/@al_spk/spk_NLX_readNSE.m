@@ -1,4 +1,4 @@
-function s = spk_NLX_readNSE(s,NSE,NLXWin,ElName,WinMode,AddChannelFlag,NLXClusterNr)
+function s = spk_NLX_readNSE(s,NSE,NLXWin,ElName,WinMode,AddChannelFlag)
 
 % reads spike data from a neuralynx *.nse file
 %
@@ -10,8 +10,7 @@ function s = spk_NLX_readNSE(s,NSE,NLXWin,ElName,WinMode,AddChannelFlag,NLXClust
 %                            used to construct neuralynx times
 %                      'ABS' NLXWin times are absolute neuralynx times
 %                            s.align is substracted for alignment
-% AddChannelFlag ..... if true existing channels won't be deleted
-% NLXClusterNr ....... select clusters to read in, replace if exist
+% AddChannelFlag ..... if 1 existing channels won't be deleted
 
 if nargin<6
 	AddChannelFlag = 0;
@@ -23,68 +22,56 @@ if nargin<6
 
 TimeDimDiff = (-6) - s.timeorder;
 
-%% check Neuralynx clusters
-if nargin<7
-    NLXClusterNr = unique(NSE.ClusterNr);
-    if any(NLXClusterNr<0 | NLXClusterNr>100)
-        NLXClusterNr(NLXClusterNr<0 || NLXClusterNr>100) = [];
-    end
+% check clusters
+NLXcells = unique(NSE.ClusterNr);
+NLXcellNum = length(NLXcells);
+if NLXcellNum==0
+    warning('spk_NLX_readNSE: did not find any spikes!');
+    return;
 end
-nNLXCluster = length(NLXClusterNr);   
-for i=1:nNLXCluster
-	NLXClusterNames{i} = sprintf('%s.%02.0f',ElName,NLXClusterNr(i));
+for i=1:NLXcellNum
+	ChannelNames{i} = sprintf([ElName '.%02.0f'],NLXcells(i));
 end
 
-%% clear object from spike data
+% clear object from spike data
 numTrials = size(s.events,2);
 
-if isempty(s.spk)
-    s.spk = cell(0,0);
-    s.channel = cell(0,0);
-end
 if AddChannelFlag
-    % replace existing channels, add new channels
-    NumChan = length(s.channel);
-    NewNumChan = NumChan;
-    NLXChanNr = zeros(1,nNLXCluster);
-    for i = 1:nNLXCluster
-        isExistChan =  strcmpi(NLXClusterNames{i},s.channel);
-        if any(isExistChan)
-            NLXChanNr(i) = find(isExistChan);
-            s.spk(NLXChanNr(i),1:numTrials) = {[]};
-        else
-            NewNumChan = NewNumChan+1;
-            NLXChanNr(i) = NewNumChan;
-            s.spk(NLXChanNr(i),1:numTrials) = {[]};
-            s.channel(NLXChanNr(i)) = NLXClusterNames(i);
-        end
+	NumChan = size(s.spk,1);
+    if any(ismember(s.channel,ChannelNames))
+        error('Found duplicate channel names!');
     end
+    if isempty(s.channel)&NumChan==0
+        s.spk = {};
+        s.channel = {};
+    end
+	s.spk(NumChan+1:NumChan+NLXcellNum,:) = {[]};
+	s.channel(NumChan+1:NumChan+NLXcellNum) = ChannelNames;
 else
 	NumChan = 0;
-	s.spk = cell(nNLXCluster,numTrials);
-	s.channel = NLXClusterNames;
-    s.unittype = {};
-    NLXChanNr = [1:nNLXCluster];
+	s.spk = cell(NLXcellNum,numTrials);
+	s.channel = ChannelNames;
 end
 
-%% loop trials
+% loop trials
 hwait = waitbar(0,'Extract spikes from neuralynx NSE file ...');
 for i = 1:numTrials
     
 	% load spike times into object
-    for j = 1:nNLXCluster
+    for j = 1:NLXcellNum
+        chanInd = NumChan+j;
 		% load spikes
 		% extract the ncs data
 		switch upper(WinMode)
 			case 'REL'
 				if size(NLXWin,1)>1
-					s.spk{NLXChanNr(j),i} =  NSE.TimeStamps(NSE.ClusterNr==NLXClusterNr(j) & NSE.TimeStamps>=(NLXWin(i,1)+s.align(i))./(10^TimeDimDiff) & NSE.TimeStamps<=(NLXWin(2)+s.align(i))./(10^TimeDimDiff)) .* (10^TimeDimDiff) - s.align(i);
+					s.spk{chanInd,i} =  NSE.TimeStamps(NSE.ClusterNr==NLXcells(j) & NSE.TimeStamps>=(NLXWin(i,1)+s.align(i))./(10^TimeDimDiff) & NSE.TimeStamps<=(NLXWin(2)+s.align(i))./(10^TimeDimDiff)) .* (10^TimeDimDiff) - s.align(i);
 				else
-					s.spk{NLXChanNr(j),i} =  NSE.TimeStamps(NSE.ClusterNr==NLXClusterNr(j) & NSE.TimeStamps>=(NLXWin(1)+s.align(i))./(10^TimeDimDiff) & NSE.TimeStamps<=(NLXWin(2)+s.align(i))./(10^TimeDimDiff)) .* (10^TimeDimDiff) - s.align(i);
+					s.spk{chanInd,i} =  NSE.TimeStamps(NSE.ClusterNr==NLXcells(j) & NSE.TimeStamps>=(NLXWin(1)+s.align(i))./(10^TimeDimDiff) & NSE.TimeStamps<=(NLXWin(2)+s.align(i))./(10^TimeDimDiff)) .* (10^TimeDimDiff) - s.align(i);
 				end
 			case 'ABS'
 				if size(NLXWin,1)>1
-					s.spk{NLXChanNr(j),i} =  NSE.TimeStamps(NSE.ClusterNr==NLXClusterNr(j) & NSE.TimeStamps>=NLXWin(i,1) & NSE.TimeStamps<=NLXWin(i,2)) .* (10^TimeDimDiff) - s.align(i);
+					s.spk{chanInd,i} =  NSE.TimeStamps(NSE.ClusterNr==NLXcells(j) & NSE.TimeStamps>=NLXWin(i,1) & NSE.TimeStamps<=NLXWin(i,2)) .* (10^TimeDimDiff) - s.align(i);
 				else
 					error('');
 				end

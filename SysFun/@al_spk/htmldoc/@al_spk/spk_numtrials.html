@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_numtrials</title>
+  <meta name="keywords" content="spk_numtrials">
+  <meta name="description" content="returns and check for number of trials in @al_spk object">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_numtrials.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_numtrials
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>returns and check for number of trials in @al_spk object</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function total = spk_numtrials(s) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> returns and check for number of trials in @al_spk object
+ function total = spk_numtrials(s)
+
+ total ... total number of trials</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="../@al_spk/construction/spk_appendtrial.html" class="code" title="function s = spk_appendtrial(s,spk,analog,events,align,trialcode)">spk_appendtrial</a>	append trial data to object</li><li><a href="../@al_spk/construction/spk_nlxget_old1.html" class="code" title="function s = spk_nlxget(s,p,dofun)">spk_nlxget_old1</a>	connects to a cheetah data acquisition software and writes data into a</li><li><a href="../@al_spk/construction/spk_nlxget_old2.html" class="code" title="function s = spk_nlxget(s,p,dofun)">spk_nlxget_old2</a>	connects to a cheetah data acquisition software and writes data into a</li><li><a href="../@al_spk/construction/spk_nlxget_old3.html" class="code" title="function s = spk_nlxget(s,p,dofun)">spk_nlxget_old3</a>	connects to a cheetah data acquisition software and writes data into a</li><li><a href="../@al_spk/construction/spk_nlxget_old4.html" class="code" title="function s = spk_nlxget(s,p,dofun)">spk_nlxget_old4</a>	connects to a cheetah data acquisition software and writes data into a</li><li><a href="../@al_spk/construction/spk_nlxget_old5.html" class="code" title="function s = spk_nlxget(s,p,dofun)">spk_nlxget_old5</a>	connects to a cheetah data acquisition software and writes data into a</li><li><a href="../@al_spk/construction/spk_nlxget_old6.html" class="code" title="function s = spk_nlxget(s,p,dofun)">spk_nlxget_old6</a>	connects to a cheetah data acquisition software and writes data into a</li><li><a href="../@al_spk/construction/spk_nlxget_old7.html" class="code" title="function s = spk_nlxget(s,p,dofun)">spk_nlxget_old7</a>	connects to a cheetah data acquisition software and writes data into a</li><li><a href="spk_NLX_readNCS.html" class="code" title="function [s,ok] = spk_NLX_readNCS(s,NLXFileName,NLXTrialWin,NLXFileWin,analogname)">spk_NLX_readNCS</a>	reads spike data from a neuralynx *.nse file</li><li><a href="spk_NLX_readNSE.html" class="code" title="function s = spk_NLX_readNSE(s,NLXFileName,NLXTrialWin,NLXFileWin)">spk_NLX_readNSE</a>	reads spike data from a neuralynx *.nse file</li><li><a href="spk_TrialEventLimit.html" class="code" title="function [TimeWin,AlignTimes,s] = spk_TrialEventLimit(s)">spk_TrialEventLimit</a>	returns the time window between earliest and latest event of</li><li><a href="spk_TrialEventWindow.html" class="code" title="function [TimeWin,AlignTimes,s] = spk_TrialEventWindow(s,LoEventLabel,HiEventLabel,EventNr)">spk_TrialEventWindow</a>	returns the time window between two specified events</li><li><a href="spk_addTrialData.html" class="code" title="function [s,TrialNr] = spk_addTrialData(s,TrialNr,varargin)">spk_addTrialData</a>	check input</li><li><a href="spk_analogLine.html" class="code" title="function [h,s] = spk_analogLine(s,TrialYDiff,varargin)">spk_analogLine</a>	</li><li><a href="spk_getevents.html" class="code" title="function [evCells,i] = spk_getevents(s,eventlabel)">spk_getevents</a>	returns the events as a cell array</li><li><a href="spk_gettrialdata.html" class="code" title="function values = spk_gettrialdata(s,PropName)">spk_gettrialdata</a>	gets data of trials specified by s.currenttrials</li><li><a href="spk_nlxget.html" class="code" title="function s = spk_nlxget(s,p,dofun)">spk_nlxget</a>	connects to a cheetah data acquisition software and writes data into a</li><li><a href="spk_rastertrial.html" class="code" title="function spk_rastertrial(s)">spk_rastertrial</a>	plots a raster plot for trials given s.currenttrials</li></ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function total = spk_numtrials(s)</a>
+0002 
+0003 <span class="comment">% returns and check for number of trials in @al_spk object</span>
+0004 <span class="comment">% function total = spk_numtrials(s)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% total ... total number of trials</span>
+0007 
+0008 
+0009 <span class="comment">% check trial numbers</span>
+0010 nTrials = zeros(1,6);
+0011 
+0012 nTrials(1) = size(s.spk,2);
+0013 nTrials(2) = size(s.events,2);
+0014 nTrials(3) = size(s.align,2);
+0015 nTrials(4) = size(s.trialcode,2);
+0016 nTrials(5) = size(s.stimulus,2);
+0017 
+0018 <span class="comment">% nAnalogTrials = cellfun('size',s.analog,1);</span>
+0019 
+0020 
+0021 <span class="keyword">if</span> any(nTrials==0 | isnan(nTrials))
+0022     nTrials = nTrials(nTrials~=0 &amp; ~isnan(nTrials));
+0023 <span class="comment">%     warning('spk_numtrials: empty fields in object !');</span>
+0024 <span class="keyword">end</span>
+0025 <span class="keyword">if</span> isempty(nTrials)
+0026     nTrials = 0;
+0027 <span class="keyword">end</span>
+0028 
+0029 total = unique(nTrials);
+0030 <span class="keyword">if</span> length(total)&gt;1
+0031     <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'inconsistency in number of trials !!!'</span>);
+0032 <span class="keyword">end</span>
+0033 
+0034 <span class="comment">% function nTrials = check_array(x,dim)</span>
+0035 <span class="comment">% if isempty(x)</span>
+0036 <span class="comment">%     nTrials = NaN;</span>
+0037 <span class="comment">% elseif iscell(x)</span>
+0038 <span class="comment">%     nTrials = cellfun('size',x,dim);</span>
+0039 <span class="comment">% elseif isnumeric(x)</span>
+0040 <span class="comment">%     nTrials = size(x,dim);</span>
+0041 <span class="comment">% end</span></pre></div>
+<hr><address>Generated on Tue 25-Apr-2006 16:24:52 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

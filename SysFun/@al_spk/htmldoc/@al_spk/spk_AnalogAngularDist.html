@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_AnalogAngularDist</title>
+  <meta name="keywords" content="spk_AnalogAngularDist">
+  <meta name="description" content="calculates the angular distance between signal S1 to S2">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_AnalogAngularDist.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_AnalogAngularDist
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>calculates the angular distance between signal S1 to S2</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function s = spk_AnalogAngularDist(s,S1Chans,S2Chans,NewChanName) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> calculates the angular distance between signal S1 to S2
+ s = spk_AnalogAngularDist(s,S1Chans,S2Chans,NewChanName)
+ S1Chans .... char an existing analog channel or a 
+ S2Chans .... Reference, as S1 or scalar</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li><li><a href="spk_AnalogCopyChan.html" class="code" title="function [s,iNewChan] = spk_AnalogCopyChan(s,ChanName,NewChanName)">spk_AnalogCopyChan</a>	makes a copy of an analog channel within the same object</li><li><a href="spk_AnalogTimeVec.html" class="code" title="function t = spk_AnalogTimeVec(s,Chan)">spk_AnalogTimeVec</a>	retrieves times of analog data bins</li><li><a href="spk_findAnalog.html" class="code" title="function [i,sf] = spk_findAnalog(s,ChanName,PatternFlag)">spk_findAnalog</a>	finds an analog channel, or channels featuring a pattern</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function out = shiftangles(in,center)</a></li></ul>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function s = spk_AnalogAngularDist(s,S1Chans,S2Chans,NewChanName)</a>
+0002 
+0003 <span class="comment">% calculates the angular distance between signal S1 to S2</span>
+0004 <span class="comment">% s = spk_AnalogAngularDist(s,S1Chans,S2Chans,NewChanName)</span>
+0005 <span class="comment">% S1Chans .... char an existing analog channel or a</span>
+0006 <span class="comment">% S2Chans .... Reference, as S1 or scalar</span>
+0007 
+0008 <span class="comment">%% get the channel index</span>
+0009 iSig1 = <a href="spk_findAnalog.html" class="code" title="function [i,sf] = spk_findAnalog(s,ChanName,PatternFlag)">spk_findAnalog</a>(s,S1Chans);
+0010 <span class="keyword">if</span> isnumeric(S2Chans)&amp;&amp;numel(S2Chans)==1
+0011    iSig2 = NaN;
+0012 <span class="keyword">else</span>
+0013     iSig2 = <a href="spk_findAnalog.html" class="code" title="function [i,sf] = spk_findAnalog(s,ChanName,PatternFlag)">spk_findAnalog</a>(s,S2Chans);
+0014 <span class="keyword">end</span>
+0015 
+0016 <span class="comment">%% copy channel data</span>
+0017 [s,iNew] = <a href="spk_AnalogCopyChan.html" class="code" title="function [s,iNewChan] = spk_AnalogCopyChan(s,ChanName,NewChanName)">spk_AnalogCopyChan</a>(s,S1Chans,NewChanName);
+0018 
+0019 <span class="keyword">if</span> ~isnan(iSig2)
+0020     <span class="comment">%% check for consistency of sampling</span>
+0021     <span class="keyword">if</span> s.analogfreq(iSig1)~=s.analogfreq(iSig2) || s.analogfreq(iSig1)~=s.analogfreq(iSig2)
+0022         <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'Sample Frequency of signal is inconsistent!'</span>);
+0023     <span class="keyword">end</span>
+0024 
+0025     tSig1 = <a href="spk_AnalogTimeVec.html" class="code" title="function t = spk_AnalogTimeVec(s,Chan)">spk_AnalogTimeVec</a>(s,S1Chans);
+0026     nBin = length(tSig1);
+0027 
+0028     tSig2 = <a href="spk_AnalogTimeVec.html" class="code" title="function t = spk_AnalogTimeVec(s,Chan)">spk_AnalogTimeVec</a>(s,S2Chans);
+0029 
+0030     <span class="comment">%% match time bins of signals</span>
+0031     i = ones(1,nBin);
+0032     <span class="keyword">for</span> iBin = 1:nBin
+0033         [dummy,i(iBin)] = min(abs(tSig1(iBin)-tSig2));
+0034     <span class="keyword">end</span>
+0035 
+0036     s.analog{iNew} = <a href="#_sub1" class="code" title="subfunction out = shiftangles(in,center)">shiftangles</a>(s.analog{iSig1}(:,i),s.analog{iSig2}(:,i));
+0037     
+0038 <span class="keyword">else</span>
+0039     s.analog{iNew} = <a href="#_sub1" class="code" title="subfunction out = shiftangles(in,center)">shiftangles</a>(s.analog{iSig1},S2Chans);
+0040 <span class="keyword">end</span>
+0041 
+0042 <span class="comment">%% -------------- subfunctions -------------------------------</span>
+0043 <a name="_sub1" href="#_subfunctions" class="code">function out = shiftangles(in,center)</a>
+0044 
+0045 <span class="comment">% function out = shiftangles(in,center)</span>
+0046 <span class="comment">%</span>
+0047 <span class="comment">% shifts an array of angles to the period [-pi pi]</span>
+0048 <span class="comment">% center becomes 0</span>
+0049 
+0050 out = in - center;
+0051 
+0052 i = find(out&lt;-pi);
+0053 f = ceil(abs(ceil(out(i)./pi))./2);
+0054 out(i) = out(i)+f.*(2*pi);
+0055 
+0056 i = find(out&gt;pi);
+0057 f = ceil(abs(floor(out(i)./pi))./2);
+0058 out(i) = out(i)-f.*(2*pi);</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

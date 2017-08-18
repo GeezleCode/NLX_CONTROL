@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_SpikeRandomTrain</title>
+  <meta name="keywords" content="spk_SpikeRandomTrain">
+  <meta name="description" content="shuffles spike trains in selected channels and trials">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_SpikeRandomTrain.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_SpikeRandomTrain
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>shuffles spike trains in selected channels and trials</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function s = spk_SpikeRandomTrain(s,TimeWin,Refract) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> shuffles spike trains in selected channels and trials
+ SPIKE times will be rounded to ms (integer spike times) !!!
+ uses the unifrnd.m to draw random spike times
+
+ s = spk_SpikeRandomTrain(s,TimeWin,Dist,Refract)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function s = spk_SpikeRandomTrain(s,TimeWin,Refract)</a>
+0002 
+0003 <span class="comment">% shuffles spike trains in selected channels and trials</span>
+0004 <span class="comment">% SPIKE times will be rounded to ms (integer spike times) !!!</span>
+0005 <span class="comment">% uses the unifrnd.m to draw random spike times</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% s = spk_SpikeRandomTrain(s,TimeWin,Dist,Refract)</span>
+0008 
+0009 ChInd =  s.currentchan;
+0010 nCh = length(ChInd);
+0011 TrInd = s.currenttrials;
+0012 nTr = length(TrInd);
+0013 
+0014 <span class="keyword">if</span> size(TimeWin,1)==1 &amp; nTr~=1
+0015     TimeWin = repmat(TimeWin,[nTr 1]);
+0016 <span class="keyword">end</span>
+0017 
+0018 <span class="keyword">for</span> iCh = 1:nCh
+0019     <span class="keyword">for</span> iTr = 1:nTr
+0020         TrNr = s.currenttrials(iTr);
+0021         s.spk{iCh,TrNr} = unique(round(s.spk{iCh,TrNr}));<span class="comment">% round to ms and remove double spikes</span>
+0022         cSpkIndex = s.spk{iCh,TrNr}&gt;=TimeWin(iTr,1) &amp; s.spk{iCh,TrNr}&lt;=TimeWin(iTr,2);
+0023         nSpk = sum(cSpkIndex);
+0024         WinWidth = TimeWin(iTr,2)-TimeWin(iTr,1);
+0025         ImpPerSec = nSpk/(WinWidth/1000);
+0026         currTrain = ones(1,nSpk).*NaN;
+0027         
+0028         
+0029         <span class="keyword">if</span> ImpPerSec&lt;=500 &amp; nSpk&gt;=2
+0030             SpkPool = TimeWin(iTr,1):1:TimeWin(iTr,2);
+0031             PoolIndex = find(~isnan(SpkPool));
+0032             nSpkPool = length(PoolIndex);
+0033             <span class="keyword">for</span> iSpk = 1:nSpk
+0034                 pInd = unidrnd(nSpkPool,1,1);
+0035                 currTrain(iSpk) = SpkPool(PoolIndex(pInd));
+0036                 SpkPool(PoolIndex(pInd):PoolIndex(pInd)+Refract) = NaN;
+0037                 PoolIndex = find(~isnan(SpkPool));
+0038                 nSpkPool = length(PoolIndex);
+0039                 <span class="keyword">if</span> all(isnan(SpkPool)) &amp; any(isnan(currTrain))
+0040                     currTrain = ones(1,nSpk).*NaN;
+0041                     warning(<span class="string">'Spike train simulation failure.'</span>);
+0042                 <span class="keyword">end</span>
+0043             <span class="keyword">end</span>
+0044         <span class="keyword">end</span>
+0045             
+0046 <span class="comment">%         if ImpPerSec&lt;=500 &amp; nSpk&gt;=2</span>
+0047 <span class="comment">%             currTrainDiff = diff(currTrain);</span>
+0048 <span class="comment">%             for iSpk = 1:nSpk</span>
+0049 <span class="comment">%                 if iSpk==1</span>
+0050 <span class="comment">%                     currTrain([1 2]) = round(TimeWin(iTr,1) + unifrnd(0,1).*WinWidth);</span>
+0051 <span class="comment">%                     currTrainDiff = diff(currTrain);</span>
+0052 <span class="comment">%                 else</span>
+0053 <span class="comment">%                     while isnan(currTrainDiff(iSpk-1)) || currTrainDiff(iSpk-1)&lt;=Refract</span>
+0054 <span class="comment">%                         currTrain(iSpk) = round(TimeWin(iTr,1) + unifrnd(0,1).*WinWidth);</span>
+0055 <span class="comment">%                         currTrain(1:iSpk) = sort(currTrain(1:iSpk));</span>
+0056 <span class="comment">%                         currTrainDiff = diff(currTrain);</span>
+0057 <span class="comment">%                     end</span>
+0058 <span class="comment">%                 end</span>
+0059 <span class="comment">%             end</span>
+0060 <span class="comment">%         end</span>
+0061         
+0062         s.spk{iCh,TrNr}(cSpkIndex) = currTrain;
+0063     <span class="keyword">end</span>
+0064 <span class="keyword">end</span>
+0065</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

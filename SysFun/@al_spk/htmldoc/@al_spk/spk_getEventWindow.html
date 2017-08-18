@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_getEventWindow</title>
+  <meta name="keywords" content="spk_getEventWindow">
+  <meta name="description" content="returns start and end time of a window defined by an event(s)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_getEventWindow.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_getEventWindow
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>returns start and end time of a window defined by an event(s)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [Win,EvTimes] = spk_getEventWindow(s,Ev,EvOffset) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> returns start and end time of a window defined by an event(s)
+ [Win,EvTimes] = spk_getEventWindow(s,Ev,EvOffset)
+
+ Ev ......... eventlabel
+ EvOffset ... eventlabel or a [nx2] matrix defining an offset to Ev</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>	returns and check for number of trials in @al_spk object</li><li><a href="spk_getEvents.html" class="code" title="function [evCells,i] = spk_getEvents(s,eventlabel)">spk_getEvents</a>	returns the events; omit input for info</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_AnalogEventWindow.html" class="code" title="function [b,t,tVec] = spk_AnalogEventWindow(s,Ev,EvOffset)">spk_AnalogEventWindow</a>	returns start and end bins of a window defined by an event(s)</li><li><a href="spk_getSpikes.html" class="code" title="function [spks,tWin] = spk_getSpikes(s,tWin,Ev)">spk_getSpikes</a>	get the spikes within a time window</li></ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Win,EvTimes] = spk_getEventWindow(s,Ev,EvOffset)</a>
+0002 
+0003 <span class="comment">% returns start and end time of a window defined by an event(s)</span>
+0004 <span class="comment">% [Win,EvTimes] = spk_getEventWindow(s,Ev,EvOffset)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Ev ......... eventlabel</span>
+0007 <span class="comment">% EvOffset ... eventlabel or a [nx2] matrix defining an offset to Ev</span>
+0008 
+0009 nTrTotal = <a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>(s);
+0010 <span class="keyword">if</span> isempty(s.currenttrials)
+0011     s.currenttrials = 1:nTrTotal;
+0012 <span class="keyword">end</span>
+0013 nTr = length(s.currenttrials);
+0014 
+0015 <span class="comment">%% get time window</span>
+0016 Win = ones(nTr,2).*NaN;
+0017 
+0018 <span class="keyword">if</span> isempty(Ev)
+0019     EvTimes = zeros(nTr,1);
+0020 <span class="keyword">else</span>
+0021     [EvTimes,i] = <a href="spk_getEvents.html" class="code" title="function [evCells,i] = spk_getEvents(s,eventlabel)">spk_getEvents</a>(s,Ev);
+0022     EvTimes = cat(1,EvTimes{:});
+0023 <span class="keyword">end</span>
+0024 
+0025 <span class="keyword">if</span> isempty(EvOffset)
+0026     Win = repmat(EvTimes,[1 2]);
+0027 <span class="keyword">elseif</span> ischar(EvOffset)
+0028     [EvOffsetTimes,i] = <a href="spk_getEvents.html" class="code" title="function [evCells,i] = spk_getEvents(s,eventlabel)">spk_getEvents</a>(s,EvOffset);
+0029     Win = [EvTimes cat(1,EvOffsetTimes{:})];
+0030 <span class="keyword">elseif</span> isnumeric(EvOffset)
+0031     Win = repmat(EvTimes,[1 2]) + repmat(EvOffset,[length(EvTimes) 1]);
+0032 <span class="keyword">end</span>
+0033</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

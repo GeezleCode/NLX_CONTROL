@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_revcorrtemp</title>
+  <meta name="keywords" content="spk_revcorrtemp">
+  <meta name="description" content="calculates a reverse correlation to a temporal sequence of different stimuli">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_revcorrtemp.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_revcorrtemp
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>calculates a reverse correlation to a temporal sequence of different stimuli</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function rcHist = spk_revcorrtemp(s,t,T) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> calculates a reverse correlation to a temporal sequence of different stimuli  
+ rcHist = spk_revcorrtemp(s,t,T)
+ t ... is a cell array with two column matrices for ALL trials of the object, 
+       describing the time window for each stimulus, all matrices must
+       have same number of rows (number of stimuli).
+ T ... temporal shift, can be a vector
+ rcHist ... 3 dim matrix of spike counts (num. of trials,num. of  stim.,temporal shifts,channels)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001   <span class="keyword">function</span> rcHist = spk_revcorrtemp(s,t,T)
+0002 
+0003 <span class="comment">% calculates a reverse correlation to a temporal sequence of different stimuli</span>
+0004 <span class="comment">% rcHist = spk_revcorrtemp(s,t,T)</span>
+0005 <span class="comment">% t ... is a cell array with two column matrices for ALL trials of the object,</span>
+0006 <span class="comment">%       describing the time window for each stimulus, all matrices must</span>
+0007 <span class="comment">%       have same number of rows (number of stimuli).</span>
+0008 <span class="comment">% T ... temporal shift, can be a vector</span>
+0009 <span class="comment">% rcHist ... 3 dim matrix of spike counts (num. of trials,num. of  stim.,temporal shifts,channels)</span>
+0010 
+0011 numT = length(T);
+0012 numTr = length(s.currenttrials);
+0013 <span class="keyword">if</span> length(t)~=numTr;<a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'wrong number of trials'</span>);<span class="keyword">end</span>
+0014 numStimArr = cellfun(<span class="string">'size'</span>,t,1);
+0015 numStim = unique(numStimArr);
+0016 <span class="keyword">if</span> length(numStim)&gt;1
+0017     warning([<span class="string">'Trials have different number of stimuli '</span> num2str(numStim) <span class="string">' !'</span>]);
+0018 <span class="keyword">end</span>
+0019 
+0020 [NumChan,ChanLabel,EmptyChan] = spk_numchan(s);
+0021 <span class="keyword">if</span> isempty(s.currentchan)
+0022     s.currentchan = [1:NumChan];
+0023 <span class="keyword">end</span>
+0024 
+0025 rcHist = zeros(numTr,max(numStim),numT,length(s.currentchan));
+0026 cnt = 0;
+0027 <span class="keyword">for</span> i = s.currenttrials <span class="comment">% loop trials</span>
+0028     cnt = cnt+1;
+0029     tind = find(s.currenttrials==i);
+0030     <span class="keyword">for</span> j = 1:size(t{tind},1) <span class="comment">% loop stimuli</span>
+0031         <span class="keyword">for</span> k = 1:numT <span class="comment">% loop the different time shifts</span>
+0032             
+0033             <span class="keyword">for</span> cc = s.currentchan
+0034                 <span class="keyword">if</span> isempty(s.spk{cc,i})
+0035                     rcHist(tind,j,k,s.currentchan==cc) = 0;
+0036                 <span class="keyword">else</span>
+0037                     rcHist(tind,j,k,s.currentchan==cc) = sum((s.spk{cc,i}-T(k) &gt;= t{tind}(j,1) &amp; s.spk{cc,i}-T(k) &lt; t{tind}(j,2)));
+0038                 <span class="keyword">end</span>
+0039             <span class="keyword">end</span>
+0040             
+0041         <span class="keyword">end</span>
+0042     <span class="keyword">end</span>
+0043 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

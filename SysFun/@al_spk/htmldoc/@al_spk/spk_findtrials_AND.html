@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_findtrials_AND</title>
+  <meta name="keywords" content="spk_findtrials_AND">
+  <meta name="description" content="find trials with trialcodes given in varargin">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_findtrials_AND.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_findtrials_AND
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>find trials with trialcodes given in varargin</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [INDEX,s] = spk_findtrials_AND(s,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> find trials with trialcodes given in varargin
+
+ INDEX = spk_findtrials_AND(s,trialcodelabel,val,...)
+
+ INPUT
+ trialcodelabel
+ val ... vector of trial code values to get
+
+ OUTPUT 
+ INDEX ... trialnumbers  
+ s ....... al_spk object with currenttrials field set to INDEX</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li><li><a href="spk_findtrialcodelabel.html" class="code" title="function i = spk_findtrialcodelabel(s,trialcodelabel)">spk_findtrialcodelabel</a>	returns the index of a trialcodelabel</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [INDEX,s] = spk_findtrials_AND(s,varargin)</a>
+0002 
+0003 <span class="comment">% find trials with trialcodes given in varargin</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% INDEX = spk_findtrials_AND(s,trialcodelabel,val,...)</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% INPUT</span>
+0008 <span class="comment">% trialcodelabel</span>
+0009 <span class="comment">% val ... vector of trial code values to get</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% OUTPUT</span>
+0012 <span class="comment">% INDEX ... trialnumbers</span>
+0013 <span class="comment">% s ....... al_spk object with currenttrials field set to INDEX</span>
+0014 
+0015 <span class="keyword">if</span> rem(length(varargin),2)~=0
+0016     <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'spk_findtrials_AND: input must be trialcodelabel/trialcode PAIRS !'</span>);
+0017 <span class="keyword">end</span>
+0018 
+0019 INDEX = [];
+0020 codenumber=0;
+0021 <span class="keyword">for</span> i=1:2:length(varargin)-1
+0022     codenumber=codenumber+1;
+0023     trcd_i = <a href="spk_findtrialcodelabel.html" class="code" title="function i = spk_findtrialcodelabel(s,trialcodelabel)">spk_findtrialcodelabel</a>(s,varargin{i});
+0024 
+0025     <span class="keyword">if</span> isempty(trcd_i);
+0026         <span class="keyword">continue</span>;
+0027     <span class="keyword">end</span>
+0028     
+0029     <span class="keyword">if</span> codenumber==1
+0030         INDEX = find(ismember(s.trialcode(trcd_i,:),varargin{i+1}));
+0031     <span class="keyword">elseif</span> codenumber&gt;1
+0032         INDEX = intersect(INDEX,find(ismember(s.trialcode(trcd_i,:),varargin{i+1})));
+0033     <span class="keyword">end</span>
+0034 <span class="keyword">end</span>
+0035 
+0036 s.currenttrials = INDEX;
+0037 
+0038 
+0039</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

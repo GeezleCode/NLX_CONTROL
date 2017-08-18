@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_AnalogXCorr</title>
+  <meta name="keywords" content="spk_AnalogXCorr">
+  <meta name="description" content="cross correlation between two channels">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_AnalogXCorr.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_AnalogXCorr
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>cross correlation between two channels</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [c,lags] = spk_AnalogXCorr(s,SigChan,RefChan,TW) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> cross correlation between two channels</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li><li><a href="spk_AnalogTimeVec.html" class="code" title="function t = spk_AnalogTimeVec(s,Chan)">spk_AnalogTimeVec</a>	retrieves times of analog data bins</li><li><a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>	returns and check for number of trials in @al_spk object</li><li><a href="spk_findAnalog.html" class="code" title="function [i,sf] = spk_findAnalog(s,ChanName,PatternFlag)">spk_findAnalog</a>	finds an analog channel, or channels featuring a pattern</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [c,lags] = spk_AnalogXCorr(s,SigChan,RefChan,TW)</a>
+0002 
+0003 <span class="comment">% cross correlation between two channels</span>
+0004 
+0005 nTr = <a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>(s);
+0006 
+0007 <span class="comment">%% get the channel index</span>
+0008 iSig = <a href="spk_findAnalog.html" class="code" title="function [i,sf] = spk_findAnalog(s,ChanName,PatternFlag)">spk_findAnalog</a>(s,SigChan);
+0009 iRef = <a href="spk_findAnalog.html" class="code" title="function [i,sf] = spk_findAnalog(s,ChanName,PatternFlag)">spk_findAnalog</a>(s,RefChan);
+0010 
+0011 <span class="comment">%% check for consistency of sampling</span>
+0012 <span class="keyword">if</span> s.analogfreq(iSig)~=s.analogfreq(iRef)
+0013     <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'Sample Frequency of signal is inconsistent!'</span>);
+0014 <span class="keyword">end</span>
+0015 
+0016 <span class="comment">%% get current trials</span>
+0017 <span class="keyword">if</span> isempty(s.currenttrials)
+0018     s.currenttrials = 1:nTr;
+0019 <span class="keyword">end</span>
+0020 nTr = length(s.currenttrials);
+0021 
+0022 tSig = <a href="spk_AnalogTimeVec.html" class="code" title="function t = spk_AnalogTimeVec(s,Chan)">spk_AnalogTimeVec</a>(s,SigChan);
+0023 bSig = find(tSig&gt;=TW(1)&amp;tSig&lt;=TW(2));
+0024 tRef = <a href="spk_AnalogTimeVec.html" class="code" title="function t = spk_AnalogTimeVec(s,Chan)">spk_AnalogTimeVec</a>(s,RefChan);
+0025 bRef = find(tRef&gt;=TW(1)&amp;tRef&lt;=TW(2));
+0026 
+0027 <span class="comment">%% xcorr</span>
+0028 <span class="keyword">for</span> iTr = 1:nTr
+0029     cTrNr = s.currenttrials(iTr);
+0030     [c(iTr,:),lags(iTr,:)] = xcorr(s.analog{iSig}(cTrNr,bSig),s.analog{iRef}(cTrNr,bRef),<span class="string">'coeff'</span>);
+0031 <span class="keyword">end</span>
+0032 lags = lags.*(1000/s.analogfreq(iSig));</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

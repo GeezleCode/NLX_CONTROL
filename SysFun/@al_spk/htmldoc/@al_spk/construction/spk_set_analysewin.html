@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_set_analysewin</title>
+  <meta name="keywords" content="spk_set_analysewin">
+  <meta name="description" content="sets the analyse window field">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">@al_spk</a> &gt; <a href="index.html">construction</a> &gt; spk_set_analysewin.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk\construction&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>spk_set_analysewin
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>sets the analyse window field</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function s = set_analysewin(s,winmode,winvalue) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> sets the analyse window field
+ function s = set_analysewin(s,winmode,winvalue)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function s = set_analysewin(s,winmode,winvalue)</a>
+0002 
+0003 <span class="comment">% sets the analyse window field</span>
+0004 <span class="comment">% function s = set_analysewin(s,winmode,winvalue)</span>
+0005 
+0006 numtrials = length(s.spk);
+0007 
+0008 s.analysewin = zeros(numtrials,2).*NaN;
+0009 
+0010 <span class="keyword">switch</span> lower(winmode)
+0011 <span class="keyword">case</span> <span class="string">'maxmeandensity'</span>
+0012      <span class="comment">% winvalue(1) is offset after stimon</span>
+0013      <span class="comment">% winvalue(2) is half of the analyse window</span>
+0014      [cndi,cnd] = findtrialgroup(s,<span class="string">'condition'</span>);
+0015      cnd = unique(cnd);
+0016      <span class="keyword">for</span> i = 1:length(cnd)
+0017           ctrials = findtrial(s,<span class="string">'condition'</span>,cnd(i));
+0018           s = set(s,<span class="string">'trialselection'</span>,ctrials);
+0019           [Drate,Dbins] = density(s,s.binwidth,[]);
+0020           win = find(Dbins &gt;= s.events{findevent(s,<span class="string">'stimon'</span>),1}+winvalue(1) &amp; Dbins&lt;=s.events{findevent(s,<span class="string">'tarmove_off'</span>),1}-winvalue(2));
+0021           [Dmax,Dmaxt] = max(Drate(win));
+0022           Dmaxt = Dbins(win(Dmaxt));
+0023           s.analysewin(ctrials,1) = Dmaxt-winvalue(2);
+0024           s.analysewin(ctrials,2) = Dmaxt+winvalue(2);
+0025      <span class="keyword">end</span>
+0026 <span class="keyword">case</span> <span class="string">'fixedwindow'</span>
+0027           s.analysewin(:,1) = winvalue(1);
+0028           s.analysewin(:,2) = winvalue(2);
+0029 <span class="keyword">case</span> <span class="string">'eventwindow'</span>
+0030      <span class="comment">% winvalue(1) is offset to first event</span>
+0031      <span class="comment">% winvalue(2) is offset to second event</span>
+0032      <span class="keyword">for</span> i = 1:numtrials
+0033           s.analysewin(i,1) = s.events{findevent(s,winvalue{1,1}),i}+winvalue{2,1};
+0034           s.analysewin(i,2) = s.events{findevent(s,winvalue{1,2}),i}+winvalue{2,2};
+0035      <span class="keyword">end</span>
+0036 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 25-Apr-2006 16:24:52 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

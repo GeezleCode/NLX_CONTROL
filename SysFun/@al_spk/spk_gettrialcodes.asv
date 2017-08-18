@@ -1,0 +1,28 @@
+function [TrialCodes,TrialCodeLabelIndex] = spk_gettrialcodes(s,TrialCodeLabel)
+
+% returns the trial codes trials trials given in s.currenttrials ; set by >>spk_set(s,'currentrials',[ ... ])
+% [TrialCodes,TrialCodeLabelIndex] = spk_gettrialcodes(s,TrialCodeLabel)
+
+TrialCodeLabelIndex = spk_findtrialcodelabel(s,TrialCodeLabel);
+
+if size(s.trialcode,1)<TrialCodeLabelIndex
+    TrialCodes = [];
+elseif isempty(s.currenttrials)
+    TrialCodes = s.trialcode(TrialCodeLabelIndex,:);
+else
+    TrialCodes = s.trialcode(TrialCodeLabelIndex,s.currenttrials);
+end
+if strcmp(TrialCodeLabel,'StimulusCode')==1
+
+
+end
+
+%%CndNum=s.trialcode(TrialCodeLabelIndex,:);
+%%BlkNm = s.trialcode(TrialCodeLabelIndex,2);
+
+%%TrialCodes = [36*[s.trialcode(TrialCodeLabelIndex,2)-1]]+s.trialcode(TrialCodeLabelIndex,:);
+
+
+
+
+

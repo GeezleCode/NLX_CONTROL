@@ -1,37 +1,32 @@
-function [x,y] = spk_getTrialData(s,Field,TrialIndex,ChanIndex)
+function out = spk_getTrialData(s,TrNr,field)
 
-% retrieve trial data
-% [x,y] = spk_getTrialData(s,Field,TrialIndex,ChanIndex)
-% Field: 'spk' 'analog' 'trialcode' 'events'
+% returns data of a given category
+% TrNr ...
+% field
 
-if nargin<4
-    ChanIndex = [];
-end
-
-switch Field
-    case 'spk'
-        y = s.channel;
-        if isempty(ChanIndex), x = s.spk(:,TrialIndex);
-        else x = s.spk(ChanIndex,TrialIndex);end
-    case 'analog'
-        y = s.analogname;
-        if isempty(ChanIndex),
-            for i=1:length(s.analog)
-                x{1,i} = s.analog{i}(TrialIndex,:);
-            end
-        else x = s.analog{ChanIndex}(TrialIndex,:);
-        end
-    case 'trialcode'
-        y = s.trialcodelabel;
-        if isempty(ChanIndex), x = s.trialcode(:,TrialIndex);
-        else x = s.trialcode(ChanIndex,TrialIndex);end
-    case 'align'
-        y = [];
-        x = s.align(1,TrialIndex);
+switch field
     case 'events'
-        y = s.eventlabel;
-        if isempty(ChanIndex), x = s.events(:,TrialIndex);
-        else x = s.events(ChanIndex,TrialIndex);end
-    otherwise
-        error('Don''t know name of data-field!!');
-end
+        out = s.events(:,TrNr);
+    case 'align'
+        out = s.align(TrNr);
+    case 'trialcode'
+        out = s.trialcode(:,TrNr);
+    case 'stimulus'
+        out = s.stimulus(TrNr);
+    case 'spk'
+        if isempty(s.currentchan);
+            s.currentchan = 1:size(s.spk,1);
+        end
+        out = s.spk(s.currentchan,TrNr);
+    case 'analog'
+        if isempty(s.currentanalog);
+            s.currentanalog = 1:length(s.analog);
+        end
+        for i=1:length(s.currentanalog)
+            out{i} = s.analog{s.currentanalog(i)}(TrNr,:);
+        end
+    case 'analogtime'
+        out = s.analogtime(TrNr);
+    case 'analogalignbin'
+        out = s.analogalignbin(TrNr);
+end        

@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_findAnalogBins</title>
+  <meta name="keywords" content="spk_findAnalogBins">
+  <meta name="description" content="returns analog time bins for given windows">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_findAnalogBins.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_findAnalogBins
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>returns analog time bins for given windows</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [i,t] = spk_findAnalogBins(s,ChanName,Win) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> returns analog time bins for given windows
+ [i,t] = spk_findAnalogBins(s,ChanName,Win)
+
+ i ... mat [nWin x 2 x nChan] start and stop bin indices
+ t ... cell [nChan] time stamps of bins</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_AnalogTimeVec.html" class="code" title="function t = spk_AnalogTimeVec(s,Chan)">spk_AnalogTimeVec</a>	retrieves times of analog data bins</li><li><a href="spk_findAnalog.html" class="code" title="function [i,sf] = spk_findAnalog(s,ChanName,PatternFlag)">spk_findAnalog</a>	finds an analog channel, or channels featuring a pattern</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [i,t] = spk_findAnalogBins(s,ChanName,Win)</a>
+0002 
+0003 <span class="comment">% returns analog time bins for given windows</span>
+0004 <span class="comment">% [i,t] = spk_findAnalogBins(s,ChanName,Win)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% i ... mat [nWin x 2 x nChan] start and stop bin indices</span>
+0007 <span class="comment">% t ... cell [nChan] time stamps of bins</span>
+0008 
+0009 nWin = size(Win,1);
+0010 
+0011 <span class="comment">%% get the channel index</span>
+0012 <span class="keyword">if</span> nargin&lt;2 || isempty(ChanName)
+0013     <span class="keyword">if</span> isempty(s.currentanalog);
+0014         iChan = 1:size(s.analog,2);
+0015     <span class="keyword">else</span>
+0016         iChan = s.currentanalog;
+0017     <span class="keyword">end</span>
+0018 <span class="keyword">else</span>
+0019     iChan = <a href="spk_findAnalog.html" class="code" title="function [i,sf] = spk_findAnalog(s,ChanName,PatternFlag)">spk_findAnalog</a>(s,ChanName);
+0020 <span class="keyword">end</span>
+0021 nChan = length(iChan);
+0022 
+0023 
+0024 <span class="comment">%% get time vector for this channel</span>
+0025 i = ones(nWin,2,nChan).*NaN;
+0026 <span class="keyword">for</span> iCh = 1:nChan
+0027     s.currentanalog = iChan(iCh);
+0028     t{iCh} = <a href="spk_AnalogTimeVec.html" class="code" title="function t = spk_AnalogTimeVec(s,Chan)">spk_AnalogTimeVec</a>(s);
+0029     <span class="keyword">for</span> iWin = 1:nWin
+0030         iBins = t{iCh}&gt;=Win(iWin,1) &amp; t{iCh}&lt;=Win(iWin,2);
+0031         i(iWin,1,iCh) = find(iBins,1,<span class="string">'first'</span>);
+0032         i(iWin,2,iCh) = find(iBins,1,<span class="string">'last'</span>);
+0033     <span class="keyword">end</span>
+0034 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

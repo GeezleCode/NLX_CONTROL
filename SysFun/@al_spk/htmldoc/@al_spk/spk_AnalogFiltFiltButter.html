@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_AnalogFiltFiltButter</title>
+  <meta name="keywords" content="spk_AnalogFiltFiltButter">
+  <meta name="description" content="Applies a butterworth filter via filtfilt function.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_AnalogFiltFiltButter.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_AnalogFiltFiltButter
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Applies a butterworth filter via filtfilt function.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function s = spk_AnalogFiltFiltButter(s,n,cutoff,ftype,ChanName) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Applies a butterworth filter via filtfilt function.
+ s = spk_AnalogFiltFiltButter(s,n,cutoff,ftype,ChanName)
+
+ n ......... filter order
+ cutoff .... scaler for high/low pass, 2 element vecto for stop- and
+             passband
+ ftype ..... 'high','low','stop','bandpass'</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>	returns and check for number of trials in @al_spk object</li><li><a href="spk_findAnalog.html" class="code" title="function [i,sf] = spk_findAnalog(s,ChanName,PatternFlag)">spk_findAnalog</a>	finds an analog channel, or channels featuring a pattern</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function s = spk_AnalogFiltFiltButter(s,n,cutoff,ftype,ChanName)</a>
+0002 
+0003 <span class="comment">% Applies a butterworth filter via filtfilt function.</span>
+0004 <span class="comment">% s = spk_AnalogFiltFiltButter(s,n,cutoff,ftype,ChanName)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% n ......... filter order</span>
+0007 <span class="comment">% cutoff .... scaler for high/low pass, 2 element vecto for stop- and</span>
+0008 <span class="comment">%             passband</span>
+0009 <span class="comment">% ftype ..... 'high','low','stop','bandpass'</span>
+0010 
+0011 <span class="comment">%% get the channel index</span>
+0012 <span class="keyword">if</span> nargin&lt;5 || isempty(ChanName)
+0013     <span class="keyword">if</span> isempty(s.currentanalog);
+0014         s.currentanalog = 1:size(s.analog,2);
+0015     <span class="keyword">end</span>
+0016 <span class="keyword">else</span>
+0017     s.currentanalog = <a href="spk_findAnalog.html" class="code" title="function [i,sf] = spk_findAnalog(s,ChanName,PatternFlag)">spk_findAnalog</a>(s,ChanName);
+0018 <span class="keyword">end</span>
+0019 numAna = length(s.currentanalog);
+0020 
+0021 <span class="comment">%% get trials</span>
+0022 numTrials = <a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>(s);
+0023 <span class="keyword">if</span> isempty(s.currenttrials)
+0024     s.currenttrials = 1:numTrials;
+0025 <span class="keyword">end</span>
+0026 numCurrenttrials = length(s.currenttrials);
+0027 
+0028 
+0029 <span class="comment">%% loop channels</span>
+0030 <span class="keyword">for</span> iA = 1:numAna
+0031     iANr = s.currentanalog(iA);
+0032     
+0033     <span class="comment">% filter parameter</span>
+0034     cutoff = cutoff ./ (s.analogfreq(iANr)/2);
+0035     [b,a] = butter(n,cutoff,ftype);
+0036     
+0037     <span class="keyword">for</span> iT = 1:numCurrenttrials
+0038         currNaNs = find(~isnan(s.analog{iANr}(s.currenttrials(iT),:)));
+0039         
+0040         <span class="keyword">if</span> isempty(currNaNs)
+0041             warning(<span class="string">'spk_analogFiltFilt: no data in trial?'</span>);
+0042         <span class="keyword">elseif</span> length(currNaNs)&lt;= max(length(b)-1,length(a)-1)
+0043             warning(<span class="string">'spk_analogFiltFilt: to few samples in trial?'</span>);
+0044         <span class="keyword">elseif</span> any(diff(currNaNs)&gt;1)
+0045             warning(<span class="string">'spk_analogFiltFilt: missing data in trial?'</span>);
+0046         <span class="keyword">else</span>
+0047             
+0048             <span class="comment">% Data must have length more than 3 times filter order</span>
+0049             <span class="keyword">if</span> length([currNaNs(1):currNaNs(end)])&lt;=3*n
+0050                 s.analog{iANr}(s.currenttrials(iT),[currNaNs(1):currNaNs(end)] ) = NaN;
+0051             <span class="keyword">else</span>
+0052                 s.analog{iANr}(s.currenttrials(iT),[currNaNs(1):currNaNs(end)] ) = filtfilt(b,a,s.analog{iANr}(s.currenttrials(iT),[currNaNs(1):currNaNs(end)] ));
+0053             <span class="keyword">end</span>
+0054             
+0055         <span class="keyword">end</span>
+0056     <span class="keyword">end</span>
+0057 <span class="keyword">end</span>
+0058</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

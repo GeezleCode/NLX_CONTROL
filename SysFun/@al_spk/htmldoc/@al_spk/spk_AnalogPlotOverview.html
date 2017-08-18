@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_AnalogPlotOverview</title>
+  <meta name="keywords" content="spk_AnalogPlotOverview">
+  <meta name="description" content="plots all the trials of an analog channel grouped by trialcode labels">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_AnalogPlotOverview.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_AnalogPlotOverview
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>plots all the trials of an analog channel grouped by trialcode labels</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function spk_AnalogPlotOverview(s,TrialCodeLabel,Chan) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> plots all the trials of an analog channel grouped by trialcode labels</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function spk_AnalogPlotOverview(s,TrialCodeLabel,Chan)</a>
+0002 
+0003 <span class="comment">% plots all the trials of an analog channel grouped by trialcode labels</span>
+0004 
+0005 <span class="comment">% check conditions</span>
+0006 CodeIdx = ismember(s.trialcodelabel,TrialCodeLabel);
+0007 [Cnds,dummy,TrialCnd] = unique(s.trialcode(CodeIdx,:)',<span class="string">'rows'</span>);
+0008 NumCnd = size(Cnds,1);
+0009 NumCycles = zeros(size(Cnds));
+0010 <span class="keyword">for</span> i=1:NumCnd
+0011     NumCycles(i) = sum(TrialCnd==i);
+0012 <span class="keyword">end</span>
+0013 maxNumCycles = max(NumCycles);
+0014 
+0015 
+0016 <span class="keyword">if</span> nargin&gt;=3;s.currentanalog = Chan;<span class="keyword">end</span>
+0017 t = spk_analogtimematrix(s);
+0018 ylim = max(abs([max(s.analog{s.currentanalog}(:)) min(s.analog{s.currentanalog}(:))]));
+0019 
+0020 <span class="comment">% prepare figure</span>
+0021 <span class="keyword">for</span> iCnd = 1:NumCnd
+0022     hf(iCnd) = figure(<span class="string">'numbertitle'</span>,<span class="string">'off'</span>,<span class="string">'name'</span>,sprintf(<span class="string">'%1.0f '</span>,Cnds(iCnd,:)),<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'paperorientation'</span>,<span class="string">'landscape'</span>);
+0023     cCndTr = find(TrialCnd == iCnd);
+0024     <span class="keyword">for</span> iCyc=1:length(cCndTr)
+0025         ha(iCyc) = subaxes(hf(iCnd),[maxNumCycles 1],[iCyc 1],[0.01 0],[0.1 0.1 0.1 0.1]);
+0026         h = line(t',s.analog{s.currentanalog}(cCndTr(iCyc),:)', <span class="keyword">...</span>
+0027             <span class="string">'color'</span>,<span class="string">'k'</span>,<span class="string">'linewidth'</span>,0.75,<span class="string">'clipping'</span>,<span class="string">'off'</span>);
+0028         set(gca,<span class="string">'xlim'</span>,[t(1) t(end)],<span class="string">'ylim'</span>,[-ylim ylim],<span class="string">'visible'</span>,<span class="string">'on'</span>);
+0029         text(t(1),ylim,sprintf(<span class="string">'%1.0f '</span>,cCndTr(iCyc)),<span class="string">'horizontalalignment'</span>,<span class="string">'left'</span>,<span class="string">'verticalalignment'</span>,<span class="string">'top'</span>,<span class="string">'fontsize'</span>,10);
+0030     <span class="keyword">end</span>
+0031 <span class="keyword">end</span>
+0032</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

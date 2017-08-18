@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_get</title>
+  <meta name="keywords" content="spk_get">
+  <meta name="description" content="Get the value of @al_spk fields.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_get.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_get
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Get the value of @al_spk fields.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function values = spk_get(s,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Get the value of @al_spk fields.
+ values = spk_get(s,field1,field2, ...,fieldn)
+
+ values is a cell array if you enter more than 1 field</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function values = spk_get(s,varargin)</a>
+0002 
+0003 <span class="comment">% Get the value of @al_spk fields.</span>
+0004 <span class="comment">% values = spk_get(s,field1,field2, ...,fieldn)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% values is a cell array if you enter more than 1 field</span>
+0007 
+0008 values = [];
+0009 
+0010 n = length(varargin);
+0011 
+0012 fn = fieldnames(s);
+0013 
+0014 <span class="keyword">for</span> i = 1:n
+0015     <span class="keyword">if</span> ~ismember(varargin{i},fn)
+0016         cVal = NaN;
+0017     <span class="keyword">else</span>
+0018         strField = varargin{i};
+0019         cVal = s.(deblank(strField));
+0020 <span class="comment">%         cVal = getfield(s,varargin{i});</span>
+0021     <span class="keyword">end</span>
+0022     <span class="keyword">if</span> n==1
+0023         values = cVal;
+0024     <span class="keyword">else</span>
+0025         values{i} = cVal;
+0026     <span class="keyword">end</span>
+0027 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

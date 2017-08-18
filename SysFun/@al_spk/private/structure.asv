@@ -1,0 +1,29 @@
+% this script provides the default structure for the neurons Object
+
+s.name = '';
+s.tag  = '';
+s.unittype = '';% e.g. 'MUA' 'SUA'
+s.file = '';
+s.channel = '';
+s.date = '';
+s.subject = '';
+
+s.spiketimes = [];% data
+s.binwidth = [];
+
+s.eventwindows = [];% regions of interest, single windows for each trial in rows
+s.events = []; % 3D-Array for event bins rows:trials cols:eventspertrial planes:eventtype
+s.eventnames = '';% one string for every eventtype
+s.eventmode = '';% mode of event detection
+
+s.alignedto = [];
+s.align = [];% alignbin for every cell
+
+s.trialgroup = [];% numerical codes for different groups in columns
+s.trialgroupname = '';% character array
+s.trialgroupmode = 0;% group flag to consider grouping of trials
+
+s.trialselection = [];
+s.binwindow = [];
+
+s.histobinwidth = [];

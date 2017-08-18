@@ -1,0 +1,627 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_nlxget_old3</title>
+  <meta name="keywords" content="spk_nlxget_old3">
+  <meta name="description" content="connects to a cheetah data acquisition software and writes data into a">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">@al_spk</a> &gt; <a href="index.html">construction</a> &gt; spk_nlxget_old3.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk\construction&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>spk_nlxget_old3
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>connects to a cheetah data acquisition software and writes data into a</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function s = spk_nlxget(s,p,dofun) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> connects to a cheetah data acquisition software and writes data into a
+ @al_spk object
+ object is continously assigned the base workspace as variable SPK or is
+ written into the figures ('tag','nlx_control') userdata.
+
+ s ....... @al_spk object
+ p ....... cheetah acquisition settings (struct)
+ dofun ... cell array with functions to evaluate after every trial
+           first cell of a row is the function, every other cell of the
+           are the input arguments of the function</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../@al_spk/error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li><li><a href="../../@al_spk/spk_findtrialcodelabel.html" class="code" title="function i = spk_findtrialcodelabel(s,trialcodelabel)">spk_findtrialcodelabel</a>	returns the index of a trialcodelabel</li><li><a href="../../@al_spk/spk_gettrialcodes.html" class="code" title="function [TrialCodes,TrialCodeLabelIndex] = spk_gettrialcodes(s,TrialCodeLabel)">spk_gettrialcodes</a>	returns the trial codes trials trials given in s.currenttrials ; set by >>spk_set(s,'currentrials',[ ... ])</li><li><a href="../../@al_spk/spk_numtrials.html" class="code" title="function total = spk_numtrials(s)">spk_numtrials</a>	returns and check for number of trials in @al_spk object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [eventdata,evTime,evID,evTTL,evBINhi,evBINlo,evcnt] = registerevent(eventdata,evTime,evID,evTTL,evBINhi,evBINlo,evcnt)</a></li><li><a href="#_sub2" class="code">function printeventmessage(logfid,evTime,evID,evTTL,evBINhi,evBINlo,evType,p,evcnt)</a></li><li><a href="#_sub3" class="code">function [spikedata,flushnum] = flushspikes(cheetah,cheetahobjname,flushwin)</a></li><li><a href="#_sub4" class="code">function [eventdata,flushnum] = flushevents(cheetah,cheetahobjname,flushwin)</a></li></ul>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function s = spk_nlxget(s,p,dofun)</a>
+0002 
+0003 <span class="comment">% connects to a cheetah data acquisition software and writes data into a</span>
+0004 <span class="comment">% @al_spk object</span>
+0005 <span class="comment">% object is continously assigned the base workspace as variable SPK or is</span>
+0006 <span class="comment">% written into the figures ('tag','nlx_control') userdata.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% s ....... @al_spk object</span>
+0009 <span class="comment">% p ....... cheetah acquisition settings (struct)</span>
+0010 <span class="comment">% dofun ... cell array with functions to evaluate after every trial</span>
+0011 <span class="comment">%           first cell of a row is the function, every other cell of the</span>
+0012 <span class="comment">%           are the input arguments of the function</span>
+0013 
+0014 <span class="comment">% 18/5/05 changed channel naming from '1'=unclassified to '0'=unclassified</span>
+0015 
+0016 <span class="keyword">global</span> DO_GET_NLX_DATA
+0017 
+0018 
+0019 <span class="comment">%++++++++++++++++++++++ connect to cheetah +++++++++++++++++++++++++++++++++</span>
+0020 cheetah = actxserver(<span class="string">'Cheetah.ExperimentControl'</span>);
+0021 
+0022 h = msgbox(<span class="string">'Make sure to RECORD the CHEETAH DATA by starting the CheetahEventResponder executable or by pushing the RED record button manually !!!'</span>,<span class="string">'NEURALYNX control'</span>,<span class="string">'warn'</span>);
+0023 uiwait;
+0024 <span class="comment">%++++++++++++++++++++++ prepare logfile+++++++++++++++++++++++++++++++++++++</span>
+0025 logfiledir = <span class="string">'c:\NLX_control'</span>;
+0026 <span class="keyword">if</span> exist(logfiledir,<span class="string">'dir'</span>) ~= 7;
+0027     logfiledir = uigetdir(<span class="string">''</span>,<span class="string">'select a directory for the NLXLOG file ...'</span>);
+0028 <span class="keyword">end</span>
+0029 currtime = now;
+0030 currdate = datestr(now,30);
+0031 logfilename = [<span class="string">'NLXLOG_'</span> currdate(1:8) <span class="string">'.txt'</span>];
+0032 logfilepath = fullfile(logfiledir,logfilename);
+0033 <span class="keyword">if</span> exist(logfilepath,<span class="string">'file'</span>);
+0034     fpermission = <span class="string">'a'</span>;
+0035 <span class="keyword">else</span> 
+0036     fpermission = <span class="string">'w'</span>;
+0037 <span class="keyword">end</span>
+0038 logfid = fopen(logfilepath,fpermission);
+0039 fprintf(1,[<span class="string">'\n'</span>]);
+0040 fprintf(1,[<span class="string">'-------------------------------------------------------------------------------\n'</span>]);
+0041 fprintf(1,(strrep([<span class="string">'write to '</span> fullfile(cd,logfilepath) <span class="string">' !'</span>],<span class="string">'\'</span>,<span class="string">'/'</span>)));
+0042 fprintf(1,[<span class="string">'\n'</span>]);
+0043 fprintf(1,[<span class="string">'-------------------------------------------------------------------------------\n'</span>]);
+0044 fprintf(logfid,[<span class="string">'\n'</span>]);
+0045 fprintf(logfid,[<span class="string">'-------------------------------------------------------------------------------\n'</span>]);
+0046 fprintf(logfid,[<span class="string">'log file opened: '</span> datestr(currtime,0) <span class="string">' NLX time: %12.0f\n'</span>],invoke(cheetah,<span class="string">'GetTimeStampAsDouble'</span>));
+0047 fprintf(logfid,[<span class="string">'-------------------------------------------------------------------------------\n'</span>]);
+0048 
+0049 
+0050 <span class="comment">%++++++++++++++++++++++ flush spike buffer from useless spike data</span>
+0051 flushwin = [0 invoke(cheetah,<span class="string">'GetTimeStampAsDouble'</span>)];
+0052 
+0053 [spikedata,flushnum] = <a href="#_sub3" class="code" title="subfunction [spikedata,flushnum] = flushspikes(cheetah,cheetahobjname,flushwin)">flushspikes</a>(cheetah,p.SpikeObjName{1},flushwin);
+0054 fprintf(1,[<span class="string">'\nSPIKES: %5u flushed \t%12.0f %12.0f'</span>],flushnum,flushwin(1),flushwin(2));
+0055 fprintf(logfid,[<span class="string">'\nSPIKES: %5u flushed \t%12.0f %12.0f'</span>],flushnum,flushwin(1),flushwin(2));
+0056 
+0057 [eventdata,flushnum] = <a href="#_sub4" class="code" title="subfunction [eventdata,flushnum] = flushevents(cheetah,cheetahobjname,flushwin)">flushevents</a>(cheetah,p.EventObjName,flushwin);
+0058 fprintf(1,[<span class="string">'\nEVENTS: %5u flushed \t%12.0f %12.0f\n'</span>],flushnum,flushwin(1),flushwin(2));
+0059 fprintf(logfid,[<span class="string">'\nEVENTS: %5u flushed \t%12.0f %12.0f\n'</span>],flushnum,flushwin(1),flushwin(2));
+0060 
+0061 <span class="comment">%++++++++++++++++++++++ check object +++++++++++++++++++++++++++++++++</span>
+0062 spk_BlockInd = <a href="../../@al_spk/spk_findtrialcodelabel.html" class="code" title="function i = spk_findtrialcodelabel(s,trialcodelabel)">spk_findtrialcodelabel</a>(s,<span class="string">'block'</span>);
+0063 <span class="keyword">if</span> isempty(spk_BlockInd)
+0064     s.trialcodelabel = cat(2,s.trialcodelabel,{<span class="string">'block'</span>});
+0065     spk_BlockInd = length(s.trialcodelabel);
+0066 <span class="keyword">end</span>
+0067 <span class="comment">%--------------------------------------------------------------------</span>
+0068 spk_CndInd = <a href="../../@al_spk/spk_findtrialcodelabel.html" class="code" title="function i = spk_findtrialcodelabel(s,trialcodelabel)">spk_findtrialcodelabel</a>(s,<span class="string">'condition'</span>);
+0069 <span class="keyword">if</span> isempty(spk_CndInd)
+0070     s.trialcodelabel = cat(2,s.trialcodelabel,{<span class="string">'condition'</span>});
+0071     spk_CndInd = length(s.trialcodelabel);
+0072 <span class="keyword">end</span>
+0073 <span class="comment">%--------------------------------------------------------------------</span>
+0074 spk_PresentNrInd = <a href="../../@al_spk/spk_findtrialcodelabel.html" class="code" title="function i = spk_findtrialcodelabel(s,trialcodelabel)">spk_findtrialcodelabel</a>(s,<span class="string">'presentationnr'</span>);
+0075 <span class="keyword">if</span> isempty(spk_PresentNrInd)
+0076     s.trialcodelabel = cat(2,s.trialcodelabel,{<span class="string">'presentationnr'</span>});
+0077     spk_PresentNrInd = length(s.trialcodelabel);
+0078 <span class="keyword">end</span>
+0079 <span class="comment">%--------------------------------------------------------------------</span>
+0080 spk_trialcountInd = <a href="../../@al_spk/spk_findtrialcodelabel.html" class="code" title="function i = spk_findtrialcodelabel(s,trialcodelabel)">spk_findtrialcodelabel</a>(s,<span class="string">'trialcount'</span>);
+0081 <span class="keyword">if</span> isempty(spk_trialcountInd)
+0082     s.trialcodelabel = cat(2,s.trialcodelabel,{<span class="string">'trialcount'</span>});
+0083     spk_trialcountInd = length(s.trialcodelabel);
+0084 <span class="keyword">end</span>
+0085 <span class="comment">%--------------------------------------------------------------------</span>
+0086 spk_timeInd = <a href="../../@al_spk/spk_findtrialcodelabel.html" class="code" title="function i = spk_findtrialcodelabel(s,trialcodelabel)">spk_findtrialcodelabel</a>(s,<span class="string">'time'</span>);
+0087 <span class="keyword">if</span> isempty(spk_timeInd)
+0088     s.trialcodelabel = cat(2,s.trialcodelabel,{<span class="string">'time'</span>});
+0089     spk_timeInd = length(s.trialcodelabel);
+0090 <span class="keyword">end</span>
+0091 <span class="comment">%--------------------------------------------------------------------</span>
+0092 spk_TrialInd = <a href="../../@al_spk/spk_findtrialcodelabel.html" class="code" title="function i = spk_findtrialcodelabel(s,trialcodelabel)">spk_findtrialcodelabel</a>(s,<span class="string">'trialnr'</span>);
+0093 <span class="keyword">if</span> isempty(spk_TrialInd)
+0094     s.trialcodelabel = cat(2,s.trialcodelabel,{<span class="string">'trialnr'</span>});
+0095     spk_TrialInd = length(s.trialcodelabel);
+0096 <span class="keyword">end</span>
+0097 TRIALCNTinObj2 = <a href="../../@al_spk/spk_gettrialcodes.html" class="code" title="function [TrialCodes,TrialCodeLabelIndex] = spk_gettrialcodes(s,TrialCodeLabel)">spk_gettrialcodes</a>(s,<span class="string">'trialnr'</span>,[]);
+0098 <span class="keyword">if</span> isempty(TRIALCNTinObj2)
+0099     TRIALCNTinObj2 = 0;
+0100 <span class="keyword">else</span>
+0101     TRIALCNTinObj2 = max(<a href="../../@al_spk/spk_gettrialcodes.html" class="code" title="function [TrialCodes,TrialCodeLabelIndex] = spk_gettrialcodes(s,TrialCodeLabel)">spk_gettrialcodes</a>(s,<span class="string">'trialnr'</span>,[]));
+0102 <span class="keyword">end</span>
+0103 <span class="comment">%--------------------------------------------------------------------</span>
+0104 <span class="keyword">if</span> isempty(s.channel)
+0105     s.channel = cellstr(num2str([0:p.SpikeChanNum-1]'));
+0106     s.chancolor = p.SpikeChanColor;
+0107 <span class="keyword">end</span>
+0108 <span class="comment">%--------------------------------------------------------------------</span>
+0109 <span class="keyword">if</span> isempty(s.eventlabel)
+0110     s.eventlabel = p.EventName;
+0111 <span class="keyword">end</span>
+0112 <span class="comment">%--------------------------------------------------------------------</span>
+0113 <span class="keyword">if</span> isempty(s.date)
+0114     s.date = datestr(now,30);
+0115 <span class="keyword">end</span>
+0116 <span class="comment">%--------------------------------------------------------------------</span>
+0117 <span class="comment">% timestmaps in milliseconds</span>
+0118 s.timeorder = -3;
+0119 
+0120 <span class="comment">%+++++++++++++++++++++ initialise ++++++++++++++++++++++++++++++++</span>
+0121 spkTime     = zeros(1,3000);
+0122 spkChannel  = zeros(1,3000);
+0123 spkCell     = zeros(1,3000);
+0124 <span class="comment">%--------------------------------------------------------------------</span>
+0125 <span class="comment">% event codes encoding process flow of trial</span>
+0126 evcnt = 0;<span class="comment">% event counter for the current trial</span>
+0127 evTime      = zeros(1,500);<span class="comment">% vector of event times</span>
+0128 evID        = zeros(1,500);
+0129 evTTL       = zeros(1,500);
+0130 evBINhi       = char(500,8);<span class="comment">% event code as binary</span>
+0131 evBINlo       = char(500,8);
+0132 evType = zeros(1,500).*NaN;
+0133 
+0134 <span class="comment">%--------------------------------------------------------------------</span>
+0135 currBlock = NaN;
+0136 currCnd = NaN;
+0137 <span class="comment">%--------------------------------------------------------------------</span>
+0138 TRIALCNTinObj = <a href="../../@al_spk/spk_numtrials.html" class="code" title="function total = spk_numtrials(s)">spk_numtrials</a>(s);<span class="comment">% trial counter of READ trials for the current loop</span>
+0139 <span class="comment">% dont uncomment !! TRIALCNTinObj2 is trial counter for data object</span>
+0140 TRIALCNTstarted = 0;<span class="comment">% counts trial starts in this session</span>
+0141 currTRIALinObj = zeros(1,p.PresentationNum).*NaN;<span class="comment">% current presented array of READ trials in Object</span>
+0142 <span class="comment">%--------------------------------------------------------------------</span>
+0143 TRIAL_HANDBRAKE = 1;<span class="comment">% is set by the trial start and stop events</span>
+0144 <span class="comment">%--------------------------------------------------------------------</span>
+0145 spkcnt = 0;
+0146 paramcnt = 0;
+0147 do_READ_flag = 1;
+0148 is_READ_flag = 0;
+0149 FH = findobj(<span class="string">'type'</span>,<span class="string">'figure'</span>,<span class="string">'tag'</span>,<span class="string">'nlx_control'</span>);
+0150 
+0151 <span class="comment">%++++++++++++++ prepare plots and analyses ++++++++++++++++++++++++++++++++++++</span>
+0152 <span class="keyword">for</span> f = 1:size(dofun,1)
+0153     feval(dofun{f,:},s,[],p);
+0154 <span class="keyword">end</span>
+0155 
+0156 
+0157 <span class="comment">%+++++++++++++++++++++ collect data ++++++++++++++++++++++++++++++++</span>
+0158 
+0159 <span class="keyword">while</span> DO_GET_NLX_DATA
+0160     
+0161     <span class="comment">%______________________________________________________________________</span>
+0162     <span class="comment">% wait for event</span>
+0163     <span class="keyword">while</span> (eventdata(1) &lt; 0) | (eventdata(3) == 0) 
+0164         pause(.01);
+0165         eventdata = invoke(cheetah,<span class="string">'GetEventDataAsDouble'</span>,p.EventObjName);
+0166         <span class="keyword">if</span> ~DO_GET_NLX_DATA;<span class="keyword">break</span>;<span class="keyword">end</span>
+0167     <span class="keyword">end</span>
+0168     <span class="keyword">if</span> ~DO_GET_NLX_DATA;<span class="keyword">break</span>;<span class="keyword">end</span>
+0169 
+0170     
+0171     <span class="comment">%++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span>
+0172     <span class="comment">% trial start event</span>
+0173     <span class="comment">% only reset variables !!!</span>
+0174     <span class="keyword">if</span> eventdata(3)==p.TrialStartEvent
+0175         TRIAL_HANDBRAKE = 0;
+0176         
+0177         <span class="comment">% reset runnning variables</span>
+0178         TRIALCNTstarted = TRIALCNTstarted + 1;
+0179         currTRIALinObj = zeros(1,p.PresentationNum).*NaN;
+0180         currTrialTime = now;
+0181         do_READ_flag = 1;
+0182         is_READ_flag = 0;
+0183         currCnd = NaN;
+0184         currBlock = NaN;
+0185         
+0186         evcnt = 0;
+0187         evTime(:) = 0;evID(:) = 0;evTTL(:) = 0;evBINhi(:) = <span class="string">'0'</span>;evBINlo(:) = <span class="string">'0'</span>;evType(:) = 0;
+0188 <span class="comment">%         cndTime(:) = 0;cndID(:) = 0;cndTTL(:) = 0;cndBINhi(:) = '0';cndBINlo(:) = '0';</span>
+0189         paramcnt = 0;
+0190 <span class="comment">%         paramTime(:) = 0;paramID(:) = 0;paramTTL(:) = 0;paramBINhi(:) = '0';paramBINlo(:) = '0';</span>
+0191         paramArray = [];
+0192         
+0193         spkTime(:)      = 0;
+0194         spkChannel(:)   = 0;
+0195         spkCell(:)      = 0;
+0196         
+0197         
+0198         fprintf(1,<span class="string">'\n\nNEW TRIAL %u %u %u (trial read, trials started, trials in SPK)'</span>,TRIALCNTinObj,TRIALCNTstarted,TRIALCNTinObj2);
+0199         fprintf(logfid,<span class="string">'\n\nNEW TRIAL %u %u %u (trial read, trials started, trials in SPK)'</span>,TRIALCNTinObj,TRIALCNTstarted,TRIALCNTinObj2);
+0200         
+0201 <span class="comment">%         %==================================================================</span>
+0202 <span class="comment">%         % empty spike buffer from useless spike data</span>
+0203 <span class="comment">%         flushwin = [0 eventdata(1)];</span>
+0204 <span class="comment">%         % check current &quot;spikedata&quot; before reading new &quot;spikedata&quot; by the</span>
+0205 <span class="comment">%         % &quot;flushspikes&quot;</span>
+0206 <span class="comment">%         if spikedata(1)&lt;flushwin(2)</span>
+0207 <span class="comment">%             [spikedata,flushnum] = flushspikes(cheetah,p.SpikeObjName{1},flushwin);</span>
+0208 <span class="comment">%             fprintf(logfid,['\nSPIKES: %5u flushed \t%u %u'],flushnum,flushwin(1),flushwin(2));</span>
+0209 <span class="comment">%         end</span>
+0210 <span class="comment">%         flushwin = [0 0]; % reset flushwin after use</span>
+0211 <span class="comment">%         %==================================================================</span>
+0212 
+0213     <span class="keyword">end</span>
+0214     <span class="comment">%++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span>
+0215 
+0216     
+0217     
+0218     
+0219     <span class="comment">%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</span>
+0220     <span class="comment">% register event</span>
+0221     [eventdata,evTime,evID,evTTL,evBINhi,evBINlo,evcnt] = <a href="#_sub1" class="code" title="subfunction [eventdata,evTime,evID,evTTL,evBINhi,evBINlo,evcnt] = registerevent(eventdata,evTime,evID,evTTL,evBINhi,evBINlo,evcnt)">registerevent</a>(eventdata,evTime,evID,evTTL,evBINhi,evBINlo,evcnt);
+0222     evType(evcnt) = 0;
+0223     <a href="#_sub2" class="code" title="subfunction printeventmessage(logfid,evTime,evID,evTTL,evBINhi,evBINlo,evType,p,evcnt)">printeventmessage</a>(logfid,evTime,evID,evTTL,evBINhi,evBINlo,evType,p,evcnt);
+0224     <span class="comment">%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</span>
+0225     
+0226     
+0227     
+0228     
+0229     <span class="comment">%______________________________________________________________________</span>
+0230     <span class="comment">% reaction</span>
+0231     <span class="keyword">if</span>  eventdata(3)==p.SendConditionStart<span class="comment">%-------------------------------------------------------------------------------------------------</span>
+0232         
+0233         paramcnt = 0;
+0234         eventdata(1:3) = -1001;
+0235         
+0236         <span class="comment">% read upcoming events as parameter values</span>
+0237         <span class="keyword">while</span> (eventdata(1) &lt; 0) | (eventdata(3) ~= p.SendConditionEnd)
+0238             eventdata = invoke(cheetah,<span class="string">'GetEventDataAsDouble'</span>,p.EventObjName);
+0239             <span class="keyword">if</span> (eventdata(1) &lt; 0);
+0240                 pause(.01);
+0241             <span class="keyword">elseif</span> (eventdata(1) &gt; 0 &amp; eventdata(3) ~= 0);
+0242                 [eventdata,evTime,evID,evTTL,evBINhi,evBINlo,evcnt] = <a href="#_sub1" class="code" title="subfunction [eventdata,evTime,evID,evTTL,evBINhi,evBINlo,evcnt] = registerevent(eventdata,evTime,evID,evTTL,evBINhi,evBINlo,evcnt)">registerevent</a>(eventdata,evTime,evID,evTTL,evBINhi,evBINlo,evcnt);
+0243                 <span class="keyword">if</span> (eventdata(3)~= p.SendConditionEnd)
+0244                     evType(evcnt) = 2;
+0245                     <a href="#_sub2" class="code" title="subfunction printeventmessage(logfid,evTime,evID,evTTL,evBINhi,evBINlo,evType,p,evcnt)">printeventmessage</a>(logfid,evTime,evID,evTTL,evBINhi,evBINlo,evType,p,evcnt);
+0246                 <span class="keyword">elseif</span> (eventdata(3)== p.SendConditionEnd)
+0247                     evType(evcnt) = 1;
+0248                     <a href="#_sub2" class="code" title="subfunction printeventmessage(logfid,evTime,evID,evTTL,evBINhi,evBINlo,evType,p,evcnt)">printeventmessage</a>(logfid,evTime,evID,evTTL,evBINhi,evBINlo,evType,p,evcnt);
+0249                     <span class="keyword">break</span>;
+0250                 <span class="keyword">end</span>
+0251             <span class="keyword">end</span>
+0252         <span class="keyword">end</span>
+0253         
+0254         <span class="comment">% reset condition and block array</span>
+0255         currCnd = NaN;
+0256         currBlock = NaN;
+0257         
+0258         currCnd = evTTL(evType==2);
+0259         currBlock = currCnd(1);<span class="comment">% first number is the current block</span>
+0260         currCnd = currCnd(2:end);<span class="comment">% third to n number are conditions</span>
+0261         currCndNum = length(currCnd);
+0262         fprintf(1,<span class="string">'\nBLOCK '</span>);fprintf(1,<span class="string">'%u '</span>,currBlock);
+0263         fprintf(1,<span class="string">'\nCONDITION '</span>);fprintf(1,<span class="string">'%u '</span>,currCnd);
+0264         fprintf(logfid,<span class="string">'\nBLOCK '</span>);fprintf(logfid,<span class="string">'%u '</span>,currBlock);
+0265         fprintf(logfid,<span class="string">'\nCONDITION '</span>);fprintf(logfid,<span class="string">'%u '</span>,currCnd);
+0266         
+0267     <span class="keyword">elseif</span> eventdata(3)== p.SendParamStart<span class="comment">%-------------------------------------------------------------------------------------------------</span>
+0268         paramcnt = 0;
+0269         eventdata(1:3) = -1001;
+0270         paramsendflag = 0;
+0271         pausetime = 0;
+0272         <span class="keyword">while</span> ~paramsendflag
+0273             eventdata = invoke(cheetah,<span class="string">'GetEventDataAsDouble'</span>,p.EventObjName);
+0274             <span class="comment">% read upcoming events as parameter values</span>
+0275            <span class="keyword">if</span> (eventdata(1) &lt; 0);
+0276                 pause(.01);
+0277                 pausetime = pausetime + .01;
+0278                 <span class="keyword">if</span> pausetime&gt;1;disp(<span class="string">'break pausetime!'</span>);<span class="keyword">break</span>;<span class="keyword">end</span>
+0279             <span class="keyword">elseif</span> (eventdata(1) &gt; 0 &amp; eventdata(3) ~= 0)
+0280                 pausetime = 0;
+0281                 [eventdata,evTime,evID,evTTL,evBINhi,evBINlo,evcnt] = <a href="#_sub1" class="code" title="subfunction [eventdata,evTime,evID,evTTL,evBINhi,evBINlo,evcnt] = registerevent(eventdata,evTime,evID,evTTL,evBINhi,evBINlo,evcnt)">registerevent</a>(eventdata,evTime,evID,evTTL,evBINhi,evBINlo,evcnt);
+0282                 <span class="comment">% detect end of stimparameter (pattern: p.SendParamEnd 0 p.SendParamEnd)</span>
+0283                 <span class="keyword">if</span> (evcnt&gt;=2) &amp; (evTTL(evcnt-1)==p.SendParamEnd &amp; evTTL(evcnt)==p.SendParamEnd)
+0284                     evType(evcnt) = 1;
+0285                     <a href="#_sub2" class="code" title="subfunction printeventmessage(logfid,evTime,evID,evTTL,evBINhi,evBINlo,evType,p,evcnt)">printeventmessage</a>(logfid,evTime,evID,evTTL,evBINhi,evBINlo,evType,p,evcnt);
+0286                     paramsendflag = 1;
+0287                     <span class="keyword">break</span>;
+0288                 <span class="keyword">else</span>
+0289                     evType(evcnt) = 3;
+0290                     <a href="#_sub2" class="code" title="subfunction printeventmessage(logfid,evTime,evID,evTTL,evBINhi,evBINlo,evType,p,evcnt)">printeventmessage</a>(logfid,evTime,evID,evTTL,evBINhi,evBINlo,evType,p,evcnt);
+0291                 <span class="keyword">end</span>
+0292                 
+0293             <span class="keyword">end</span>
+0294         <span class="keyword">end</span>
+0295         
+0296         paramArray = NaN;
+0297         paramArray = [evTime(evType==3)' evTTL(evType==3)'];
+0298         <span class="comment">% neglect last entries (stop event)</span>
+0299         paramArray = paramArray(1:end-1,:);
+0300         paramcnt = size(paramArray,1);
+0301         
+0302         fprintf(1,<span class="string">'\n==&gt; '</span>);fprintf(1,<span class="string">'(%u values): '</span>,paramcnt);fprintf(1,<span class="string">'%u '</span>,paramArray(:,2)');
+0303         fprintf(logfid,<span class="string">'\n==&gt; '</span>);fprintf(logfid,<span class="string">'(%u values): '</span>,paramcnt);fprintf(logfid,<span class="string">'%u '</span>,paramArray(:,2)');
+0304         
+0305         <span class="comment">% first parameter should give numbers of parameter</span>
+0306         <span class="keyword">if</span> paramcnt~=paramArray(1,2)
+0307             fprintf(1,<span class="string">'\nWARNING: unexpected number of parameter -&gt; do_READ_flag = 0!'</span>);
+0308             fprintf(logfid,<span class="string">'\nWARNING: unexpected number of parameter -&gt; do_READ_flag = 0!'</span>);
+0309             do_READ_flag = 0; <span class="comment">% dont read data if there are any</span>
+0310             <span class="comment">%irregularities in the number of parameters</span>
+0311         <span class="keyword">end</span>
+0312         
+0313     <span class="keyword">elseif</span> eventdata(3)== p.TrialEndEvent<span class="comment">%-------------------------------------------------------------------------------------------------</span>
+0314         <span class="comment">% add trial end event to @al_spk object</span>
+0315         <span class="keyword">if</span> is_READ_flag
+0316             <span class="keyword">for</span> i=currTRIALinObj
+0317                 s.events{p.EventCode == p.TrialEndEvent,i} = evTime(evTTL==p.TrialEndEvent &amp; (evType==0|evType==1)) - s.align(i).*1000;
+0318             <span class="keyword">end</span>
+0319         <span class="keyword">end</span>
+0320         
+0321         currCnd = NaN;
+0322         currTRIALinObj = zeros(1,p.PresentationNum).*NaN; 
+0323         evcnt = 0;
+0324         fprintf(logfid,<span class="string">'\nEND OF TRIAL'</span>);
+0325         fprintf(1,<span class="string">'\nEND OF TRIAL'</span>);
+0326         
+0327 <span class="comment">%         %==================================================================</span>
+0328 <span class="comment">%         % empty spike buffer from useless spike data</span>
+0329 <span class="comment">%         flushwin = [0 eventdata(1)];</span>
+0330 <span class="comment">%         [spikedata,flushnum] = flushspikes(cheetah,p.SpikeObjName{1},flushwin);</span>
+0331 <span class="comment">%         fprintf(logfid,['\nSPIKES: %5u flushed \t%u %u'],flushnum,flushwin(1),flushwin(2));</span>
+0332 <span class="comment">%         flushwin = [0 0]; % reset flushwin after use</span>
+0333 <span class="comment">%         %==================================================================</span>
+0334         
+0335         TRIAL_HANDBRAKE = 1;
+0336         
+0337     <span class="keyword">elseif</span> eventdata(3)== p.ReadDataEvent<span class="comment">%-------------------------------------------------------------------------------------------------</span>
+0338         
+0339         <span class="comment">% check for save reading of trial data</span>
+0340         <span class="keyword">if</span> any(~ismember(p.MandatoryEvents,evTTL(evType==0|evType==1))) 
+0341             fprintf(1,[<span class="string">'\nWARNING: OMIT trial due to MISSING EVENTS '</span> num2str(p.MandatoryEvents(~ismember(p.MandatoryEvents,evTTL(evType==0|evType==1)))) <span class="string">' !'</span>]);
+0342             fprintf(logfid,[<span class="string">'\nWARNING: OMIT trial due to MISSING EVENTS '</span> num2str(p.MandatoryEvents(~ismember(p.MandatoryEvents,evTTL(evType==0|evType==1)))) <span class="string">' !'</span>]);
+0343         <span class="keyword">elseif</span> currCndNum ~=p.PresentationNum
+0344             fprintf(1,[<span class="string">'\nWARNING: OMIT trial due to NON EXPECTED NUMBER OF PRESENTATIONS !'</span>]);
+0345             fprintf(logfid,[<span class="string">'\nWARNING: OMIT trial due to NON EXPECTED NUMBER OF PRESENTATIONS !'</span>]);
+0346         <span class="keyword">elseif</span> ~do_READ_flag    
+0347             fprintf(1,[<span class="string">'\nWARNING: OMIT trial due to do_READ_flag=0 !'</span>]);
+0348             fprintf(logfid,[<span class="string">'\nWARNING: OMIT trial due to do_READ_flag=0 !'</span>]);
+0349         <span class="keyword">elseif</span> any(~ismember(currCnd,[1:p.Cndnum]))    
+0350             fprintf(1,[<span class="string">'\nWARNING: OMIT trial due to wrong condition information !'</span>]);
+0351             fprintf(logfid,[<span class="string">'\nWARNING: OMIT trial due to wrong condition information!'</span>]);
+0352         <span class="keyword">else</span>
+0353             
+0354             <span class="comment">%</span>
+0355             is_READ_flag = 1;
+0356             
+0357             <span class="comment">%*********************************************************************************************************</span>
+0358             <span class="comment">% get all the spikes in the p.AcqEvents window</span>
+0359             spkcnt = 0;
+0360             spkacqwin = [evTime(evTTL==p.AcqEvents(1) &amp; (evType==0|evType==1)) + p.AcqOffset(1).*1000 , <span class="keyword">...</span>
+0361                     evTime(evTTL==p.AcqEvents(2) &amp; (evType==0|evType==1)) + p.AcqOffset(2).*1000];
+0362             
+0363             <span class="comment">% empty spike buffer from useless spike data</span>
+0364             flushwin = [0 spkacqwin(1) - 1];
+0365             <span class="comment">% check current &quot;spikedata&quot; before reading new &quot;spikedata&quot; by the</span>
+0366             <span class="comment">% &quot;flushspikes&quot;</span>
+0367             <span class="keyword">if</span> spikedata(1)&lt;flushwin(2) 
+0368                 [spikedata,flushnum] = <a href="#_sub3" class="code" title="subfunction [spikedata,flushnum] = flushspikes(cheetah,cheetahobjname,flushwin)">flushspikes</a>(cheetah,p.SpikeObjName{1},flushwin);
+0369                 fprintf(logfid,[<span class="string">'\nSPIKES: %5u flushed \t%12.0f %12.0f'</span>],flushnum,flushwin(1),flushwin(2));
+0370             <span class="keyword">end</span>
+0371             flushwin = [0 0]; <span class="comment">% reset flushwin after use</span>
+0372             
+0373             <span class="keyword">while</span>   (spikedata(1) &gt;= 0) &amp; <span class="keyword">...</span>
+0374                     (spikedata(1) &gt;= spkacqwin(1)) &amp; <span class="keyword">...</span>
+0375                     (spikedata(1) &lt;= spkacqwin(2))
+0376                 
+0377                 <span class="comment">% add current spike to array</span>
+0378                 spkcnt = spkcnt + 1;
+0379                 spkTime(spkcnt) = spikedata(1);
+0380                 spkChannel(spkcnt) = spikedata(2);
+0381                 spkCell(spkcnt) = spikedata(3);
+0382                 
+0383                 <span class="comment">% get next spike</span>
+0384                 spikedata = invoke(cheetah,<span class="string">'GetSpikeDataAsDouble'</span>,p.SpikeObjName{1});
+0385                 
+0386                 <span class="comment">% there can be an error (spikedata(1)=-1001) reading spikes from the cheetah</span>
+0387                 <span class="comment">% object, therefore wait up to a second</span>
+0388                 pausetime = 0;
+0389                 <span class="keyword">while</span> (spikedata(1)&lt;0) &amp; (pausetime&lt;1)
+0390                     pause(.01);
+0391                     pausetime = pausetime + .01;
+0392                     spikedata = invoke(cheetah,<span class="string">'GetSpikeDataAsDouble'</span>,p.SpikeObjName{1});
+0393                 <span class="keyword">end</span>
+0394             <span class="keyword">end</span>
+0395             
+0396             <span class="comment">% message</span>
+0397             fprintf(1,<span class="string">'\nSPIKES: %5u read \t%12.0f %12.0f '</span>,spkcnt,spkacqwin(1),spkacqwin(2));
+0398             fprintf(logfid,<span class="string">'\nSPIKES: %5u read \t%12.0f %12.0f '</span>,spkcnt,spkacqwin(1),spkacqwin(2));
+0399             
+0400             spkacqwin = [0 0]; <span class="comment">% reset spike acq window</span>
+0401             <span class="comment">%*********************************************************************************************************</span>
+0402                         
+0403             
+0404             <span class="comment">%++++++++++++++ read data into structure ++++++++++++++++++++++++++++++++++++</span>
+0405             <span class="comment">%#####################################</span>
+0406             <span class="comment">%##### convert times to MILLISECONDS #</span>
+0407             <span class="comment">%#####################################</span>
+0408             evTime = evTime.*0.001;
+0409             spkTime = spkTime.*0.001;
+0410             
+0411             <span class="comment">%----------------------------------------------------------</span>
+0412             <span class="comment">% specific windows for each single condition/presentation</span>
+0413             <span class="comment">% get condition specific acquisition times</span>
+0414             LoWin = evTime(ismember(evTTL,p.CndAcqEventsLo) &amp; (evType==0|evType==1)) + p.CndAcqOffset(1);<span class="comment">% use 'ismember' here in case of more than one event defining an acquisition window</span>
+0415             HiWin = evTime(ismember(evTTL,p.CndAcqEventsHi) &amp; (evType==0|evType==1)) + p.CndAcqOffset(2);
+0416             AlignTime = evTime(evTTL==p.CndAlignEvent &amp; (evType==0|evType==1)) + p.CndAlignOffset;
+0417             <span class="comment">% make sure you get as many windows as pesented conditions</span>
+0418             LoWin = LoWin(1:p.PresentationNum);
+0419             HiWin = HiWin(1:p.PresentationNum);
+0420             AlignTime = AlignTime(1:p.PresentationNum);
+0421             <span class="comment">% set spike acquisition limits for conditions of first and last stimulus</span>
+0422             <span class="comment">% presentation, to make sure to get ALL spikes in p.AcqEvents</span>
+0423             LoWin(1) = evTime(evTTL==p.AcqEvents(1) &amp; (evType==0|evType==1))+p.AcqOffset(1).*0.001;
+0424             HiWin(end) = evTime(evTTL==p.AcqEvents(2) &amp; (evType==0|evType==1))+p.AcqOffset(2).*0.001;
+0425             <span class="comment">%----------------------------------------------------------</span>
+0426             
+0427             <span class="comment">% read data into @al_spk object</span>
+0428             <span class="keyword">for</span> i = 1:p.PresentationNum
+0429                 TRIALCNTinObj = TRIALCNTinObj+1;
+0430                 TRIALCNTinObj2 = TRIALCNTinObj2 + 1;
+0431                 currTRIALinObj(i) = TRIALCNTinObj2;
+0432                 s.trialcode(spk_BlockInd,TRIALCNTinObj) = currBlock;
+0433                 s.trialcode(spk_CndInd,TRIALCNTinObj) = currCnd(i);
+0434                 s.trialcode(spk_TrialInd,TRIALCNTinObj) = TRIALCNTinObj2;
+0435                 s.trialcode(spk_PresentNrInd,TRIALCNTinObj) = i;
+0436                 s.trialcode(spk_trialcountInd) = TRIALCNTstarted;
+0437                 s.trialcode(spk_timeInd) = currTrialTime;
+0438                 s.align(TRIALCNTinObj) = AlignTime(i);
+0439                 <span class="comment">% every trial in data structure has ALL the events of a</span>
+0440                 <span class="comment">% cortex trial</span>
+0441                 <span class="keyword">for</span> j=1:length(p.EventCode)
+0442                     s.events{j,TRIALCNTinObj} = evTime(evTTL==p.EventCode(j) &amp; (evType==0|evType==1)) - s.align(TRIALCNTinObj);
+0443                 <span class="keyword">end</span>
+0444                 <span class="keyword">for</span> k = 1:p.SpikeChanNum
+0445                     <span class="comment">% get the spikes within the current condition/presentation window</span>
+0446                     s.spk{k,TRIALCNTinObj} = spkTime(spkCell==(k-1) &amp; spkTime&gt;=LoWin(i) &amp; spkTime&lt;=HiWin(i)) - s.align(TRIALCNTinObj);
+0447                     <span class="comment">% get all the spikes within the data acquisition window</span>
+0448 <span class="comment">%                                             s.spk{k,TRIALCNTinObj} = spkTime(spkCell==(k-1)) - s.align(TRIALCNTinObj);</span>
+0449                 <span class="keyword">end</span>
+0450                 s.stimulus{TRIALCNTinObj} = paramArray;
+0451             <span class="keyword">end</span>
+0452             
+0453             <span class="comment">%#####################################</span>
+0454             <span class="comment">%##### convert times to MICROSECONDS #</span>
+0455             <span class="comment">%#####################################</span>
+0456             evTime = evTime.*1000;
+0457             spkTime = spkTime.*1000;
+0458             
+0459             <span class="comment">%++++++++++++++ analyse data ++++++++++++++++++++++++++++++++++++</span>
+0460             <span class="keyword">for</span> f = 1:size(dofun,1)
+0461                 feval(dofun{f,:},s,[TRIALCNTinObj-(currCndNum-1):TRIALCNTinObj],p);
+0462             <span class="keyword">end</span>
+0463         <span class="keyword">end</span><span class="comment">%read end</span>
+0464         
+0465         
+0466     <span class="keyword">else</span>
+0467     <span class="keyword">end</span><span class="comment">% end switch</span>
+0468     
+0469     eventdata(1) = -1001;
+0470     
+0471     <span class="keyword">if</span> isempty(FH)
+0472         assignin(<span class="string">'base'</span>,<span class="string">'SPK'</span>,s);
+0473     <span class="keyword">else</span>
+0474         set(FH,<span class="string">'userdata'</span>,s);
+0475     <span class="keyword">end</span>
+0476 <span class="keyword">end</span>
+0477 currtime = now;
+0478 fprintf(logfid,<span class="string">'\n'</span>);
+0479 fprintf(logfid,[<span class="string">'-------------------------------------------------------------------------------\n'</span>]);
+0480 fprintf(logfid,[<span class="string">'log file closed: '</span> datestr(currtime,0) <span class="string">' NLX time: %12.0f\n'</span>],invoke(cheetah,<span class="string">'GetTimeStampAsDouble'</span>));
+0481 fprintf(logfid,[<span class="string">'-------------------------------------------------------------------------------\n'</span>]);
+0482 fprintf(logfid,<span class="string">'\n'</span>);
+0483 fprintf(logfid,<span class="string">'\n'</span>);
+0484 fclose(logfid);
+0485 <span class="keyword">return</span>
+0486            
+0487 <span class="comment">%==========================================================================</span>
+0488 <a name="_sub1" href="#_subfunctions" class="code">function [eventdata,evTime,evID,evTTL,evBINhi,evBINlo,evcnt] = registerevent(eventdata,evTime,evID,evTTL,evBINhi,evBINlo,evcnt)</a>
+0489 <span class="keyword">if</span> eventdata(1)&lt;0
+0490     <span class="keyword">return</span>;
+0491 <span class="keyword">elseif</span> eventdata(3)&lt;0
+0492     eventdata(3) = 2*2^(16-1) + eventdata(3);<span class="comment">% convert negative evTTL, interpreting negative integers as 2's complement</span>
+0493 <span class="keyword">end</span>
+0494 <span class="keyword">if</span> eventdata(3)&gt;0
+0495     evcnt = evcnt + 1;
+0496     evTime(evcnt)   = eventdata(1);
+0497     evID(evcnt)     = eventdata(2);
+0498     evTTL(evcnt)    = eventdata(3);
+0499     currBinary       = fliplr(dec2bin(eventdata(3),16));
+0500     evBINhi(evcnt,1:8)       =  fliplr(currBinary(9:16));
+0501     evBINlo(evcnt,1:8)       =  fliplr(currBinary(1:8));
+0502 <span class="keyword">end</span>
+0503 
+0504 <span class="comment">%==========================================================================</span>
+0505 <a name="_sub2" href="#_subfunctions" class="code">function printeventmessage(logfid,evTime,evID,evTTL,evBINhi,evBINlo,evType,p,evcnt)</a>
+0506     <span class="comment">%______________________________________________________________________</span>
+0507     <span class="comment">% print event message</span>
+0508     <span class="keyword">if</span> ~isempty(p) &amp; (p.PrintEventEcho==0)
+0509         <span class="keyword">return</span>;
+0510     <span class="keyword">end</span>
+0511     fprintf(logfid,<span class="string">'\n'</span>);
+0512     fprintf(logfid,<span class="string">'%5u '</span>,evcnt);
+0513     fprintf(logfid,<span class="string">'%12.0f '</span>,evTime(evcnt));
+0514     fprintf(logfid,<span class="string">'%4u '</span>,evID(evcnt));
+0515     fprintf(logfid,<span class="string">'%4u '</span>,evType(evcnt));
+0516     fprintf(logfid,<span class="string">'%5u '</span>,evTTL(evcnt));
+0517     fprintf(logfid,[evBINhi(evcnt,:) <span class="string">' '</span>]);
+0518     fprintf(logfid,[evBINlo(evcnt,:) <span class="string">' '</span>]);
+0519     fprintf(logfid,<span class="string">'# '</span>);
+0520 
+0521     lastEvent = find(evTime&lt;evTime(evcnt) &amp; evTTL~=0);
+0522     <span class="keyword">if</span> evcnt&gt;1 &amp; ~isempty(lastEvent)
+0523         fprintf(logfid,<span class="string">'+ %12.3f ms '</span>,(evTime(evcnt)-evTime(lastEvent(end))).*0.001);
+0524     <span class="keyword">else</span>
+0525         fprintf(logfid,<span class="string">'  %12.3f ms '</span>,evTime(evcnt).*0.001);
+0526     <span class="keyword">end</span>
+0527     <span class="keyword">if</span> (~isempty(p)) &amp; (evType(evcnt)==0|evType(evcnt)==1)
+0528         fprintf(logfid,[<span class="string">'    '</span> p.EventName{p.EventCode==evTTL(evcnt)}]);
+0529     <span class="keyword">end</span>
+0530 
+0531 <span class="comment">%==========================================================================</span>
+0532 <a name="_sub3" href="#_subfunctions" class="code">function [spikedata,flushnum] = flushspikes(cheetah,cheetahobjname,flushwin)</a>
+0533 flushnum = 0;
+0534 pausetime = 0;
+0535 spikedata = -1001;
+0536 
+0537 spikedata = invoke(cheetah,<span class="string">'GetSpikeDataAsDouble'</span>,cheetahobjname);
+0538 <span class="keyword">if</span> spikedata(1)==-101;<a href="../../@al_spk/error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'no cheetah object available ...'</span>);<span class="keyword">end</span>
+0539 
+0540 <span class="keyword">while</span> (spikedata(1) == -1001) | (spikedata(1)&gt;=flushwin(1) &amp; spikedata(1)&lt;=flushwin(2))
+0541     <span class="keyword">if</span> spikedata(1) == -1001            <span class="comment">% no spikes in object</span>
+0542         pause(0.01);                    <span class="comment">% wait a bit</span>
+0543         pausetime = pausetime + .01;    <span class="comment">% increment pause time</span>
+0544         <span class="keyword">if</span> pausetime&gt;1;<span class="keyword">break</span>;<span class="keyword">end</span>        <span class="comment">% check for pause limit</span>
+0545     <span class="keyword">else</span>
+0546         flushnum = flushnum +1;         <span class="comment">% add current spike to flush number</span>
+0547         pausetime = 0;                  <span class="comment">% reset pause time</span>
+0548     <span class="keyword">end</span>
+0549     spikedata = invoke(cheetah,<span class="string">'GetSpikeDataAsDouble'</span>,cheetahobjname);
+0550 <span class="keyword">end</span>
+0551 
+0552 <span class="comment">%==========================================================================</span>
+0553 <a name="_sub4" href="#_subfunctions" class="code">function [eventdata,flushnum] = flushevents(cheetah,cheetahobjname,flushwin)</a>
+0554 flushnum = 0;
+0555 pausenum = 0;
+0556 eventdata = -1001;
+0557 eventdata = invoke(cheetah,<span class="string">'GetEventDataAsDouble'</span>,cheetahobjname);
+0558 <span class="keyword">if</span> eventdata(1)==-101
+0559     <a href="../../@al_spk/error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'no cheetah object available ...'</span>);
+0560 <span class="keyword">end</span>
+0561 <span class="keyword">while</span> (eventdata(1) == -1001) | (eventdata(1)&gt;=flushwin(1) &amp; eventdata(1)&lt;=flushwin(2))
+0562     <span class="keyword">if</span> eventdata(1) == -1001
+0563         pause(0.01);
+0564         pausenum = pausenum +1;
+0565         <span class="keyword">if</span> pausenum&gt;2;<span class="keyword">break</span>;<span class="keyword">end</span>
+0566     <span class="keyword">else</span>
+0567         flushnum = flushnum +1;
+0568     <span class="keyword">end</span>
+0569     eventdata = invoke(cheetah,<span class="string">'GetEventDataAsDouble'</span>,cheetahobjname);
+0570 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 25-Apr-2006 16:24:52 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

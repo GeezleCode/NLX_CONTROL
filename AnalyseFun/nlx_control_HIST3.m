@@ -100,7 +100,7 @@ for iCh = 1:ChanIndexNum
         end
         delete(CndAx);
         set(HistFigHandle(iCh),'userdata',H);
-        clear H;;
+        clear H;
     else
         HistFigHandle(iCh) = cFig;
         
@@ -122,13 +122,12 @@ if isempty(t);t=1:total;end % set t to all the trials if it's empty
 TrialBLKs = spk_gettrialcodes(SPK,'CortexBlock');
 TrialCNDs = spk_gettrialcodes(SPK,'CortexCondition');
 TrialSTIMCODEs = spk_gettrialcodes(SPK,'StimulusCode');
+ToHigh=(find(TrialSTIMCODEs >144));
+TrialSTIMCODEs(ToHigh)=1;
 if all(isnan(TrialSTIMCODEs))
     TrialSTIMCODEs = (TrialBLKs-1).*p.Cndnum+TrialCNDs;
 end
 
-% if ~all(ismember(TrialCNDs(t),p.Hist2Grid)) | TrialCNDs(t)<1
-%     error('Simulus code is not found in StimCodeGrid in settings!');
-% end
 
 %% align timestamps to p.RasterAlignEvent
 SPK = spk_set(SPK,'currenttrials',[]);
@@ -149,6 +148,9 @@ SPK = spk_align(SPK,AlignTime,0);
 %% loop trials
 for i = 1:length(t)
     cSC = TrialSTIMCODEs(t(i));
+    if (cSC>numel(PlotGroupNr))
+        disp(['Trial ',num2str(t(i)),' currupted, skipping trial']);
+    else    
 	cSCgrp = p.Hist2Grid{PlotRowNr(cSC),PlotColNr(cSC)}(:,PlotGroupNr(cSC));
 	
 	cTrials = find(ismember(TrialSTIMCODEs,cSCgrp));
@@ -164,8 +166,8 @@ for i = 1:length(t)
 	
     % set data of rasterlines
     SPK = spk_set(SPK,'currenttrials',t(i));
-    Spikes = spk_gettrialdata(SPK,'spk');
-    Events = spk_gettrialdata(SPK,'events');
+    Spikes = spk_gettrialdatas(SPK,'spk');
+    Events = spk_gettrialdatas(SPK,'events');
     NumEvents = sum(cellfun('length',Events)==1);
     for j = 1:ChanIndexNum
         NumSpikes = length(Spikes{ChanIndex(j)});
@@ -196,7 +198,7 @@ for i = 1:length(t)
                 'xdata',Spikes{ChanIndex(j)}, ...
                 'ydata',repmat(((PlotGroupNr(cSC)-1)*(p.RasterTrialNum+1)+currTrialRasterTrialNr),NumSpikes,1));
         end
-        cEvXData = zeros(1,NumEvents).*NaN;
+        %cEvXData = zeros(1,NumEvents).*NaN;
         cEvXData = cat(2,Events{cellfun('length',Events)==1});
         set(H(j).EventRasterLine(PlotRowNr(cSC),PlotColNr(cSC),PlotGroupNr(cSC),currTrialRasterTrialNr), ...
             'xdata',cEvXData, ...
@@ -219,48 +221,13 @@ for i = 1:length(t)
         nlx_control_HIST2_ylim(cSC,j) = max(values);
         cYlim = max(nlx_control_HIST2_ylim(:,j));
         set(gca,'ylim',[0 cYlim]);
-%         fprintf(1,'maxRate:');
-%         fprintf(1,'%5.0f',nlx_control_HIST2_ylim);
-%         fprintf(1,'\n');
+
         
         % set condition title
         set(findobj('tag',sprintf('histtitle %1.0f %1.0f',PlotRowNr(cSC),PlotColNr(cSC))),'string', ...
             sprintf(['%1.0fHz ' num2str(p.Hist2Grid{PlotRowNr(cSC),PlotColNr(cSC)}(:)') ' B%1.0f C%1.0f #%1.0f'],cYlim,TrialBLKs(t(i)),TrialCNDs(t(i)),nTrials));
 			
     end
-    
+    end
 end
 
-% set YLim of histograms
-
-% for j = 1:ChanIndexNum
-%     NN = prod(size(p.Hist2Grid));
-%     cAx = unique(H(j).HistAx(:));
-%     NN = length(cAx);
-%     if p.HistYLimMode==1
-%         totMAX = repmat(p.HistYLim(2),NN);
-%     elseif p.HistYLimMode==2 | p.HistYLimMode==3
-%         totMAX = zeros(1,NN);
-%         for i = 1:NN
-%             currLine = findobj('type','line','parent',cAx(i));
-%             cndMAX = [];
-%             for k = currLine'
-%                 cndMAX = cat(2,cndMAX,max(get(k,'ydata')));
-%             end
-%             cndMAX = max(cndMAX);
-%             if ~isempty(cndMAX) & cndMAX>0
-%                 totMAX(i) = cndMAX;
-%             end
-%         end
-%     end
-%     for i = 1:NN
-%         axes(cAx(i));
-%         if p.HistYLimMode==1 & totMAX(i)~=0
-%             set(gca,'ylim',[0 totMAX(i)],'ytick',totMAX(i),'yticklabel',sprintf('%5.1f',totMAX(i)),'fontsize',8);
-%         elseif p.HistYLimMode==2 & totMAX(i)~=0
-%             set(gca,'ylim',[0 totMAX(i)],'ytick',totMAX(i),'yticklabel',sprintf('%5.1f',totMAX(i)),'fontsize',8);
-%         elseif p.HistYLimMode==3 & max(totMAX)~=0
-%             set(gca,'ylim',[0 max(totMAX)],'ytick',max(totMAX),'yticklabel',sprintf('%5.1f',max(totMAX)),'fontsize',8);
-%         end
-%     end
-% end

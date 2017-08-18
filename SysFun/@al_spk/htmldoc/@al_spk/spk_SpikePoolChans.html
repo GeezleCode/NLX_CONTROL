@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_SpikePoolChans</title>
+  <meta name="keywords" content="spk_SpikePoolChans">
+  <meta name="description" content="pool the spikes of different channels">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_SpikePoolChans.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_SpikePoolChans
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>pool the spikes of different channels</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function o = spk_SpikePoolChans(s,poolChan,poolLabel) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> pool the spikes of different channels
+ spike times in s.spk cells must be horizontal vectors
+ o = spk_SpikePoolChans(s,poolChan,poolLabel)
+
+ poolChan .... cell array, can be numeric (index to s.spk) or characters (strmatch to s.channels 
+               in different rows); channels not contained in poolChan will
+               be deleted !
+ poolLabel ... new channel names in s.channel</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_SpikePoolElChans.html" class="code" title="function [s,iChPool] = spk_SpikePoolElChans(s,El,Elsuffix,UnitTypes,ClusterNr)">spk_SpikePoolElChans</a>	pools all the channels recorded from a given electrode</li></ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function o = spk_SpikePoolChans(s,poolChan,poolLabel)</a>
+0002 
+0003 <span class="comment">% pool the spikes of different channels</span>
+0004 <span class="comment">% spike times in s.spk cells must be horizontal vectors</span>
+0005 <span class="comment">% o = spk_SpikePoolChans(s,poolChan,poolLabel)</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% poolChan .... cell array, can be numeric (index to s.spk) or characters (strmatch to s.channels</span>
+0008 <span class="comment">%               in different rows); channels not contained in poolChan will</span>
+0009 <span class="comment">%               be deleted !</span>
+0010 <span class="comment">% poolLabel ... new channel names in s.channel</span>
+0011 
+0012 [numChan,numTrials] = size(s.spk);
+0013 NumNewChan = length(poolChan);
+0014 
+0015 <span class="comment">%% prepare output</span>
+0016 o = s;
+0017 o.spk = cell(NumNewChan,numTrials);
+0018 o.channel = {<span class="string">''</span>};
+0019 o.unittype = {};
+0020 o.unittype(1:NumNewChan) = {<span class="string">'MUA'</span>};
+0021 
+0022 <span class="comment">%% transform channel names into indices</span>
+0023 <span class="keyword">for</span> i = 1:NumNewChan
+0024     
+0025     <span class="comment">% get the channel index from input</span>
+0026     ChanIndex = [];
+0027     <span class="keyword">if</span> iscell(poolChan{i})
+0028         <span class="keyword">for</span> k = 1:length(poolChan{i})
+0029             ci = strmatch(poolChan{i}{k},s.channel);
+0030             <span class="keyword">if</span> ~isempty(ci)
+0031                 ChanIndex = cat(2,ChanIndex,ci);
+0032             <span class="keyword">end</span>
+0033         <span class="keyword">end</span>
+0034     <span class="keyword">elseif</span> isnumeric(poolChan{i})
+0035         ChanIndex = poolChan{i};
+0036     <span class="keyword">end</span>
+0037     
+0038     <span class="comment">% concatenate channels</span>
+0039     <span class="keyword">for</span> k = 1:numTrials
+0040         o.spk{i,k} = sort(cat(2,s.spk{ChanIndex,k}));
+0041     <span class="keyword">end</span>
+0042     
+0043     <span class="comment">% rename channels</span>
+0044     <span class="keyword">if</span> nargin&lt;3 | isempty(poolLabel)
+0045         o.channel{i,1} = strvcat(s.channel{ChanIndex});
+0046         o.channel{i,1} = [<span class="string">'M'</span> num2str(i)];
+0047     <span class="keyword">else</span>
+0048         o.channel{i,1} =  poolLabel{i};
+0049     <span class="keyword">end</span>
+0050 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

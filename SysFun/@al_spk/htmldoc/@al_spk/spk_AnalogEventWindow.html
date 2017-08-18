@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_AnalogEventWindow</title>
+  <meta name="keywords" content="spk_AnalogEventWindow">
+  <meta name="description" content="returns start and end bins of a window defined by an event(s)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_AnalogEventWindow.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_AnalogEventWindow
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>returns start and end bins of a window defined by an event(s)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [b,t,tVec] = spk_AnalogEventWindow(s,Ev,EvOffset) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> returns start and end bins of a window defined by an event(s)
+ [b,t] = spk_AnalogEventWindow(s,Ev,EvOffset)
+
+ Ev ......... eventlabel
+ EvOffset ... eventlabel or a [nx2] matrix defining an offset to Ev
+
+ b ...... window as bin nr
+ t ...... window as time
+ tVec ... sample times of each analog channel</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_AnalogTimeVec.html" class="code" title="function t = spk_AnalogTimeVec(s,Chan)">spk_AnalogTimeVec</a>	retrieves times of analog data bins</li><li><a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>	returns and check for number of trials in @al_spk object</li><li><a href="spk_getEventWindow.html" class="code" title="function [Win,EvTimes] = spk_getEventWindow(s,Ev,EvOffset)">spk_getEventWindow</a>	returns start and end time of a window defined by an event(s)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_AnalogIsSaturated.html" class="code" title="function [SatTrials,isSat] = spk_AnalogIsSaturated(s,DataThresh,SatBinNum,Ev1,Ev2,DoPlot)">spk_AnalogIsSaturated</a>	detects trials exceeding a range of analog values</li><li><a href="spk_AnalogRemoveLine.html" class="code" title="function s = spk_AnalogRemoveLine(s,Fl,x1,x2,doPlot)">spk_AnalogRemoveLine</a>	fits a sine wave of frequency f to each trial and substract the mean</li><li><a href="spk_getAnalog.html" class="code" title="function [x,T,bwidth,bwin] = spk_getAnalog(s,TimeWin,ChanName,Event)">spk_getAnalog</a>	extracts analog data from the object.</li></ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [b,t,tVec] = spk_AnalogEventWindow(s,Ev,EvOffset)</a>
+0002 
+0003 <span class="comment">% returns start and end bins of a window defined by an event(s)</span>
+0004 <span class="comment">% [b,t] = spk_AnalogEventWindow(s,Ev,EvOffset)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Ev ......... eventlabel</span>
+0007 <span class="comment">% EvOffset ... eventlabel or a [nx2] matrix defining an offset to Ev</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% b ...... window as bin nr</span>
+0010 <span class="comment">% t ...... window as time</span>
+0011 <span class="comment">% tVec ... sample times of each analog channel</span>
+0012 
+0013 <span class="comment">%% get trial numbers</span>
+0014 nTrTotal = <a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>(s);
+0015 <span class="keyword">if</span> isempty(s.currenttrials)
+0016     s.currenttrials = 1:nTrTotal;
+0017 <span class="keyword">end</span>
+0018 nTr = length(s.currenttrials);
+0019 
+0020 <span class="comment">%% get the event window</span>
+0021 <span class="keyword">if</span> ischar(Ev)
+0022     t = <a href="spk_getEventWindow.html" class="code" title="function [Win,EvTimes] = spk_getEventWindow(s,Ev,EvOffset)">spk_getEventWindow</a>(s,Ev,EvOffset);
+0023 <span class="keyword">elseif</span> isnumeric(Ev)
+0024     <span class="keyword">if</span> length(Ev)&gt;1
+0025         Ev = repmat(Ev,[1,2]);
+0026     <span class="keyword">elseif</span> length(Ev)==1
+0027         Ev = repmat(Ev,[nTr,2]);
+0028     <span class="keyword">end</span>
+0029     t = Ev+repmat(EvOffset,[nTr,1]);
+0030 <span class="keyword">end</span>
+0031 
+0032 <span class="comment">%% loop thru channels and get bin window</span>
+0033 nChan = length(s.currentanalog);
+0034 <span class="keyword">for</span> iCh = 1:nChan
+0035     ChNr = s.currentanalog(iCh);
+0036     tVec{iCh} = <a href="spk_AnalogTimeVec.html" class="code" title="function t = spk_AnalogTimeVec(s,Chan)">spk_AnalogTimeVec</a>(s,ChNr);
+0037     
+0038     <span class="keyword">for</span> iTr = 1:nTr
+0039         b(iTr,1,iCh) = find(tVec{iCh}&gt;=t(iTr,1),1,<span class="string">'first'</span>);
+0040         b(iTr,2,iCh) = find(tVec{iCh}&lt;=t(iTr,2),1,<span class="string">'last'</span>);
+0041     <span class="keyword">end</span>
+0042 
+0043 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_PDcirc</title>
+  <meta name="keywords" content="spk_PDcirc">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">@al_spk</a> &gt; <a href="index.html">construction</a> &gt; spk_PDcirc.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk\construction&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>spk_PDcirc
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [PHI,R,P] = PDcirc(s,calcmode,plotmode) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../@al_spk/error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function makefigure</a></li><li><a href="#_sub2" class="code">function polarplot(DIR,mR,baseline,phi,maxR)</a></li></ul>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [PHI,R,P] = PDcirc(s,calcmode,plotmode)</a>
+0002 
+0003 <span class="keyword">if</span> nargin&lt;3
+0004      plotmode = <span class="string">'NONE'</span>;
+0005 <span class="keyword">end</span>
+0006 phi = [];
+0007 R = [];
+0008 P = [];
+0009 mR = [];
+0010 
+0011 <span class="comment">%__________________________________________________________________________</span>
+0012 <span class="comment">% check object</span>
+0013 <span class="keyword">if</span> isempty(s.analysewin);<a href="../../@al_spk/error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'Please set the analysewin property !'</span>);<span class="keyword">end</span>
+0014 
+0015 <span class="comment">%__________________________________________________________________________</span>
+0016 <span class="comment">% baseline activity</span>
+0017 s.trialselection = [];
+0018 BLrate = baseline(s);
+0019 
+0020 <span class="comment">%__________________________________________________________________________</span>
+0021 <span class="comment">% condition definition matrix</span>
+0022 [CWI,CW] = findtrialgroup(s,<span class="string">'cw'</span>);
+0023 [CCWI,CCW] = findtrialgroup(s,<span class="string">'ccw'</span>);
+0024 [CNDI,CND] = findtrialgroup(s,<span class="string">'condition'</span>);
+0025 [SPEEDI,SPEED] = findtrialgroup(s,<span class="string">'circfreq'</span>);
+0026 [STARTI,START] = findtrialgroup(s,<span class="string">'dirstart'</span>);
+0027 
+0028 CND = unique([CND CW CCW SPEED START],<span class="string">'rows'</span>)';
+0029 START = CND(5,:);
+0030 SPEED = CND(4,:);<span class="comment">%rad/ms</span>
+0031 CCW = CND(3,:);
+0032 CW = CND(2,:);
+0033 CND = CND(1,:);
+0034 CNDnum = length(CND);
+0035 DIR(find(CW)) = {<span class="string">'cw'</span>};
+0036 DIR(find(CCW)) = {<span class="string">'ccw'</span>};
+0037 rotsign = CW.*(-1)+CCW;
+0038 
+0039 <span class="comment">%__________________________________________________________________________</span>
+0040 <span class="comment">% binning of the circle</span>
+0041 dirbinwidth = 15.*(pi/180);
+0042 dirbins = [0:dirbinwidth:2*pi];
+0043 
+0044 <span class="comment">%__________________________________________________________________________</span>
+0045 <span class="comment">% loop conditions</span>
+0046 <span class="keyword">for</span> i = 1:CNDnum
+0047      ctrials = findtrial(s,<span class="string">'condition'</span>,CND(i));
+0048      s.trialselection = ctrials';
+0049      numtrials = length(ctrials);
+0050      
+0051      cAnalyseWin(i,:) = [round(mean(s.analysewin(ctrials,1))) round(mean(s.analysewin(ctrials,2)))];
+0052      
+0053      <span class="comment">% make time and corresponding direction vector 1ms bins</span>
+0054      timescale{i} = [cAnalyseWin(i,1):cAnalyseWin(i,2)];
+0055      dirscale{i} = START(i)+ rotsign(i).*timescale{i}.*SPEED(i);
+0056      dirscale{i} = mod(dirscale{i},2*pi);
+0057      
+0058      <span class="comment">% set marker in time and dir scale for plotting</span>
+0059      direvents{i} = START(i) + rotsign(i).*[0:45:360].*(pi/180);
+0060      direvents{i} = rem(rem(direvents{i},2*pi)+2*pi,2*pi);
+0061      timeevents{i} = [0:45:360].*(pi/180)./SPEED(i);
+0062      
+0063      <span class="comment">%START(i)+SPEED(i)</span>
+0064      <span class="comment">% check for total circle</span>
+0065      <span class="comment">%(dirscale{i}(end)-dirscale{i}(1))./(2*pi)</span>
+0066      
+0067      dspk{i} = [];
+0068      trialrates = [];
+0069      <span class="keyword">for</span> j = 1:numtrials
+0070           
+0071          <span class="comment">% convert spiketimes to values of corresponding direction, in rad to interval [0 2pi]</span>
+0072           cspk = s.spk{ctrials(j)}(s.spk{ctrials(j)}&gt;=s.analysewin(ctrials(j),1) &amp; s.spk{ctrials(j)}&lt;=s.analysewin(ctrials(j),2));
+0073           cdspk = START(i)+ rotsign(i).*cspk.*SPEED(i);
+0074           cdspk = rem(rem(cdspk+2*pi,2*pi)+2*pi,2*pi);<span class="comment">%wrap to [0 2pi];</span>
+0075           dspk{i} = cat(1,dspk{i},cdspk);
+0076           
+0077           <span class="comment">% histogram per trial</span>
+0078           <span class="keyword">if</span> isempty(cdspk)
+0079                trialrates(j,:) = zeros(1,length(dirbins));
+0080           <span class="keyword">else</span>
+0081                trialrates(j,:) = [histc(cdspk',dirbins)./(dirbinwidth/SPEED(i))].*1000;
+0082           <span class="keyword">end</span>
+0083          
+0084      <span class="keyword">end</span>
+0085      
+0086      <span class="comment">% do it barts way, first:PD for every trial(set)</span>
+0087      c = circular(repmat(dirbins',[1 numtrials]),trialrates');
+0088      c.groups = size(trialrates,1);
+0089      [d1,d2,mC] = mstd(c); <span class="comment">%Determine centroid</span>
+0090      mC = normalise(mC); <span class="comment">% Unit vectors per trial</span>
+0091      <span class="comment">% mean vector over all trials</span>
+0092      [phi(i),R(i),phiC,phiConf,phiS,P(i)] = mstd(mC);
+0093      
+0094      <span class="comment">%</span>
+0095      [histrates{i},bincenter{i}] = polarhisto(dspk{i}',dirbinwidth);
+0096      histrates{i} = histrates{i}./numtrials./(dirbinwidth/SPEED(i))*1000;
+0097 
+0098 <span class="keyword">end</span>
+0099 maxrate = max(cat(2,histrates{:}));
+0100 phi = cat(2,phi,mstd(circular(phi)));
+0101 PHI = phi(end);
+0102 
+0103 <span class="comment">%________________________________________________________________________</span>
+0104 <span class="comment">% PLOT</span>
+0105 <span class="keyword">switch</span> upper(plotmode)
+0106      <span class="keyword">case</span> <span class="string">'FULL'</span>
+0107           <a href="#_sub1" class="code" title="subfunction makefigure">makefigure</a>
+0108           axes(findobj(<span class="string">'tag'</span>,<span class="string">'text'</span>));
+0109           text(1,1,[s.file <span class="string">' - ch. '</span> s.channel <span class="string">' '</span> s.date],<span class="string">'horizontalalignment'</span>,<span class="string">'right'</span>,<span class="string">'verticalalignment'</span>,<span class="string">'top'</span>,<span class="string">'fontsize'</span>,12,<span class="string">'fontweight'</span>,<span class="string">'bold'</span>);
+0110           axes(findobj(<span class="string">'tag'</span>,<span class="string">'polar'</span>));
+0111           polargrid(maxrate,[0:0.5*pi:2*pi],<span class="string">'color'</span>,<span class="string">'k'</span>);
+0112 
+0113           <span class="keyword">for</span> i = 1:CNDnum
+0114                <span class="keyword">switch</span> upper(DIR{i})
+0115                     <span class="keyword">case</span> <span class="string">'CW'</span>;ccolor = [.6 .6 .6];
+0116                     <span class="keyword">case</span> <span class="string">'CCW'</span>;ccolor = [.8 .8 .8];
+0117                <span class="keyword">end</span>
+0118                ctrials = findtrial(s,<span class="string">'condition'</span>,CND(i));
+0119                s.trialselection = ctrials';
+0120                numtrials = length(ctrials);
+0121      
+0122                <span class="comment">% rasterplot</span>
+0123                axes(findobj(<span class="string">'tag'</span>,[<span class="string">'raster'</span> DIR{i}]));
+0124                <span class="comment">%line(repmat(timeevents{i},2,1),[zeros(1,length(timeevents{i}));ones(1,length(timeevents{i})).*15],'color','b');</span>
+0125                <span class="comment">%text(</span>
+0126                [dummy,stimon] = findevent(s,<span class="string">'stimon'</span>);
+0127                stimon = mode(cat(2,stimon{:}));
+0128                line([stimon stimon],[0 15],<span class="string">'color'</span>,<span class="string">'r'</span>,<span class="string">'linewidth'</span>,1.5);
+0129                [dummy,stimoff] = findevent(s,<span class="string">'stimoff'</span>);
+0130                stimoff = mode(cat(2,stimoff{:}));
+0131                line([stimoff stimoff],[0 15],<span class="string">'color'</span>,<span class="string">'r'</span>,<span class="string">'linewidth'</span>,1.5);
+0132                
+0133                rasterplot(s,<span class="string">'line'</span>);
+0134                
+0135                text(s.plotwin(1),15,[<span class="string">'CND '</span> num2str(CND(i)) <span class="string">' '</span> DIR{i} <span class="string">' '</span> num2str(START(i)/pi) <span class="string">'pi'</span>],<span class="string">'horizontalalignment'</span>,<span class="string">'left'</span>,<span class="string">'verticalalignment'</span>,<span class="string">'bottom'</span>);
+0136                set(gca,<span class="string">'xlim'</span>,s.plotwin, <span class="keyword">...</span>
+0137                     <span class="string">'xtick'</span>,timeevents{i},<span class="string">'xticklabel'</span>,round(direvents{i}.*(180/pi)),<span class="string">'xgrid'</span>,<span class="string">'off'</span>,<span class="string">'xcolor'</span>,[.6 .6 .6], <span class="keyword">...</span>
+0138                     <span class="string">'ylim'</span>,[0 15],<span class="string">'yticklabel'</span>,[],<span class="string">'ycolor'</span>,[.6 .6 .6], <span class="keyword">...</span>
+0139                     <span class="string">'visible'</span>,<span class="string">'on'</span>,<span class="string">'gridlinestyle'</span>,<span class="string">'-'</span>,<span class="string">'box'</span>,<span class="string">'on'</span>);
+0140                
+0141                <span class="comment">% polar</span>
+0142                axes(findobj(<span class="string">'tag'</span>,[<span class="string">'polar'</span> DIR{i}]));
+0143                polargrid(maxrate,[0:0.5*pi:2*pi],<span class="string">'color'</span>,<span class="string">'k'</span>);
+0144                h = polarbar(bincenter{i},histrates{i},<span class="string">'BAR'</span>,<span class="string">'facecolor'</span>,ccolor);
+0145                polargrid(BLrate,[],<span class="string">'color'</span>,<span class="string">'b'</span>);
+0146                polarscatter(phi(i),maxrate,<span class="string">'color'</span>,ccolor,<span class="string">'linewidth'</span>,1);
+0147                set(gca, <span class="keyword">...</span>
+0148                     <span class="string">'xlim'</span>,[-maxrate maxrate], <span class="keyword">...</span>
+0149                     <span class="string">'ylim'</span>,[-maxrate maxrate], <span class="keyword">...</span>
+0150                     <span class="string">'dataaspectratio'</span>,[1 1 1],<span class="string">'visible'</span>,<span class="string">'off'</span>);
+0151                
+0152                <span class="comment">% polar total</span>
+0153                axes(findobj(<span class="string">'tag'</span>,<span class="string">'polar'</span>));
+0154                polarbar(bincenter{i},histrates{i},<span class="string">'bar'</span>,<span class="string">'edgecolor'</span>,ccolor,<span class="string">'facecolor'</span>,ccolor);
+0155                <span class="comment">%polarscatter(phi(i),maxrate,'color',ccolor,'linewidth',1);</span>
+0156                
+0157                datatext(i,:) = {<span class="string">''</span> CND(i) DIR{i} phi(i)*180/pi P(i)};
+0158          <span class="keyword">end</span>
+0159          <span class="comment">% polar</span>
+0160          axes(findobj(<span class="string">'tag'</span>,<span class="string">'polar'</span>));
+0161          polarscatter(phi(end),maxrate,<span class="string">'color'</span>,<span class="string">'r'</span>,<span class="string">'linewidth'</span>,1.5);
+0162          polargrid(BLrate,[],<span class="string">'color'</span>,<span class="string">'b'</span>);
+0163          set(gca, <span class="keyword">...</span>
+0164                <span class="string">'xlim'</span>,[-maxrate maxrate], <span class="keyword">...</span>
+0165                <span class="string">'ylim'</span>,[-maxrate maxrate], <span class="keyword">...</span>
+0166                <span class="string">'dataaspectratio'</span>,[1 1 1],<span class="string">'visible'</span>,<span class="string">'off'</span>);
+0167          <span class="comment">% table</span>
+0168          resultstext(1,:) = {<span class="string">''</span>,<span class="string">'CND'</span>,<span class="string">'rot'</span>,<span class="string">'phi'</span>,<span class="string">'p'</span>};
+0169          resultstext = cat(1,resultstext,datatext);
+0170          resultstext(end+1,[1 2]) = {<span class="string">'baseline rate'</span> round(BLrate)};
+0171          resultstext(end+1,[1 2]) = {<span class="string">'max. rate'</span> round(maxrate)};
+0172          resultstext(end+1,[1 2]) = {<span class="string">'PD'</span> phi(end)*180/pi};
+0173          axes(findobj(<span class="string">'tag'</span>,<span class="string">'table'</span>));
+0174          [th,hh,sh,ch] = celltable(gca,resultstext,<span class="string">'IN'</span>);
+0175           set(sh,<span class="string">'horizontalalignment'</span>,<span class="string">'right'</span>,<span class="string">'fontweight'</span>,<span class="string">'bold'</span>);
+0176           set(hh,<span class="string">'verticalalignment'</span>,<span class="string">'bottom'</span>,<span class="string">'fontweight'</span>,<span class="string">'bold'</span>);
+0177      <span class="keyword">case</span> <span class="string">'POLAR'</span>
+0178           polargrid(maxrate,[0:0.5*pi:2*pi],<span class="string">'color'</span>,<span class="string">'k'</span>);
+0179           polarbar(bincenter{1},histrates{1},<span class="string">'Bar'</span>,<span class="string">'facecolor'</span>,[.6 .6 .6],<span class="string">'edgecolor'</span>,[.6 .6 .6]);
+0180           polarbar(bincenter{2},histrates{2},<span class="string">'Bar'</span>,<span class="string">'facecolor'</span>,[.8 .8 .8],<span class="string">'edgecolor'</span>,[.8 .8 .8]);
+0181           polargrid(BLrate,[],<span class="string">'color'</span>,<span class="string">'b'</span>);
+0182           polarscatter(phi(end),maxrate,<span class="string">'color'</span>,<span class="string">'r'</span>,<span class="string">'linewidth'</span>,1.5);
+0183           set(gca, <span class="keyword">...</span>
+0184                <span class="string">'xlim'</span>,[-maxrate maxrate], <span class="keyword">...</span>
+0185                <span class="string">'ylim'</span>,[-maxrate maxrate], <span class="keyword">...</span>
+0186                <span class="string">'dataaspectratio'</span>,[1 1 1],<span class="string">'visible'</span>,<span class="string">'off'</span>);
+0187           text(maxrate,-maxrate,[num2str(round(maxrate*10)/10) <span class="string">'hz'</span>],<span class="string">'horizontalalignment'</span>,<span class="string">'right'</span>,<span class="string">'verticalalignment'</span>,<span class="string">'top'</span>);
+0188           text(-maxrate,-maxrate,[num2str(round(BLrate*10)/10) <span class="string">'hz'</span>],<span class="string">'horizontalalignment'</span>,<span class="string">'left'</span>,<span class="string">'verticalalignment'</span>,<span class="string">'top'</span>,<span class="string">'color'</span>,<span class="string">'b'</span>);
+0189           text(maxrate,maxrate,DIR(1),<span class="string">'horizontalalignment'</span>,<span class="string">'right'</span>,<span class="string">'verticalalignment'</span>,<span class="string">'bottom'</span>,<span class="string">'color'</span>,[.6 .6 .6]);
+0190           text(-maxrate,maxrate,DIR(2),<span class="string">'horizontalalignment'</span>,<span class="string">'left'</span>,<span class="string">'verticalalignment'</span>,<span class="string">'bottom'</span>,<span class="string">'color'</span>,[.8 .8 .8]);
+0191 <span class="keyword">end</span>
+0192           
+0193           
+0194 <span class="comment">%--------------------------------------------------------------------------</span>
+0195 <a name="_sub1" href="#_subfunctions" class="code">function makefigure</a>
+0196 figure(<span class="string">'color'</span>,<span class="string">'w'</span>, <span class="keyword">...</span>
+0197      <span class="string">'paperorientation'</span>,<span class="string">'landscape'</span>, <span class="keyword">...</span>
+0198      <span class="string">'paperunits'</span>,<span class="string">'normalized'</span>, <span class="keyword">...</span>
+0199      <span class="string">'paperposition'</span>,[0.025 0.025 0.95 0.85]);
+0200 
+0201 h = subplot(3,4,[1 2 3]);set(h,<span class="string">'tag'</span>,<span class="string">'rastercw'</span>);
+0202 h = subplot(3,4,[5 6 7]);set(h,<span class="string">'tag'</span>,<span class="string">'rasterccw'</span>);
+0203 h = subplot(3,4,4);set(h,<span class="string">'tag'</span>,<span class="string">'polarcw'</span>);
+0204 h = subplot(3,4,8);set(h,<span class="string">'tag'</span>,<span class="string">'polarccw'</span>);
+0205 h = subplot(3,4,[9 10 11]);set(h,<span class="string">'tag'</span>,<span class="string">'table'</span>);
+0206 h = subplot(3,4,12);set(h,<span class="string">'tag'</span>,<span class="string">'polar'</span>);
+0207 axes(<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'position'</span>,[0 0 1 1],<span class="string">'xlim'</span>,[0 1],<span class="string">'ylim'</span>,[0 1],<span class="string">'visible'</span>,<span class="string">'off'</span>,<span class="string">'tag'</span>,<span class="string">'text'</span>)
+0208 
+0209 <a name="_sub2" href="#_subfunctions" class="code">function polarplot(DIR,mR,baseline,phi,maxR)</a>
+0210 polarpatch(DIR.*(pi/180),mR,<span class="string">'clipping'</span>,<span class="string">'off'</span>,<span class="string">'facecolor'</span>,[.7 .7 .7],<span class="string">'edgecolor'</span>,<span class="string">'k'</span>);
+0211 set(gca,<span class="string">'dataaspectratio'</span>,[1 1 1],<span class="string">'xlim'</span>,[-maxR maxR],<span class="string">'ylim'</span>,[-maxR maxR],<span class="string">'visible'</span>,<span class="string">'off'</span>);
+0212 polargrid([baseline maxR],[0.5*pi:0.5*pi:2*pi],<span class="string">'color'</span>,<span class="string">'k'</span>);
+0213 polarscatter(phi*pi/180,maxR,<span class="string">'color'</span>,<span class="string">'r'</span>,<span class="string">'linewidth'</span>,2);</pre></div>
+<hr><address>Generated on Tue 25-Apr-2006 16:24:52 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_getSpikes</title>
+  <meta name="keywords" content="spk_getSpikes">
+  <meta name="description" content="get the spikes within a time window">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_getSpikes.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_getSpikes
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>get the spikes within a time window</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [spks,tWin] = spk_getSpikes(s,tWin,Ev) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> get the spikes within a time window
+ spks = spk_getSpikes(s,tWin,Ev)
+
+ tWin ........... relative event window
+ Ev ............. char/numeric; if set tWin works as an offset to the event</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_SpikeChanNum.html" class="code" title="function [NumChan,ChanLabel,EmptyChan,NumSpk] = spk_SpikeChanNum(s);">spk_SpikeChanNum</a>	returns channel data</li><li><a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>	returns and check for number of trials in @al_spk object</li><li><a href="spk_getEventWindow.html" class="code" title="function [Win,EvTimes] = spk_getEventWindow(s,Ev,EvOffset)">spk_getEventWindow</a>	returns start and end time of a window defined by an event(s)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_ChronuxGetSpike.html" class="code" title="function x = spk_ChronuxGetSpike(s,tWin,Ev,TimeWinAlignFlag,ChNr,TrNr)">spk_ChronuxGetSpike</a>	extract spike data to chronux format: struct(chan/trials).times; in SEC.!</li></ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [spks,tWin] = spk_getSpikes(s,tWin,Ev)</a>
+0002 
+0003 <span class="comment">% get the spikes within a time window</span>
+0004 <span class="comment">% spks = spk_getSpikes(s,tWin,Ev)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% tWin ........... relative event window</span>
+0007 <span class="comment">% Ev ............. char/numeric; if set tWin works as an offset to the event</span>
+0008 
+0009 <span class="comment">%% check trial number</span>
+0010 nTrTotal = <a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>(s);
+0011 <span class="keyword">if</span> isempty(s.currenttrials)
+0012     s.currenttrials = 1:nTrTotal;
+0013 <span class="keyword">end</span>
+0014 nTr = length(s.currenttrials);
+0015 
+0016 <span class="comment">%% check channel number</span>
+0017 nChanTotal = <a href="spk_SpikeChanNum.html" class="code" title="function [NumChan,ChanLabel,EmptyChan,NumSpk] = spk_SpikeChanNum(s);">spk_SpikeChanNum</a>(s);
+0018 <span class="keyword">if</span> isempty(s.currentchan)
+0019     s.currentchan = 1:nChanTotal;
+0020 <span class="keyword">end</span>
+0021 nChan = length(s.currentchan);
+0022 
+0023 <span class="comment">%% make time windows</span>
+0024 <span class="keyword">if</span> nargin&lt;3 || isempty(Ev)
+0025     tWin = repmat(tWin,[nTr,1]);
+0026 <span class="keyword">elseif</span> ischar(Ev)
+0027     tWin = <a href="spk_getEventWindow.html" class="code" title="function [Win,EvTimes] = spk_getEventWindow(s,Ev,EvOffset)">spk_getEventWindow</a>(s,Ev,tWin);
+0028 <span class="keyword">elseif</span> isnumeric(Ev)
+0029     <span class="keyword">if</span> length(Ev)&gt;1
+0030         Ev = repmat(Ev,[1,2]);
+0031     <span class="keyword">elseif</span> length(Ev)==1
+0032         Ev = repmat(Ev,[nTr,2]);
+0033     <span class="keyword">end</span>
+0034     tWin = Ev+repmat(tWin,[nTr,1]);
+0035 <span class="keyword">end</span>
+0036 
+0037 <span class="comment">%% get spikes</span>
+0038 spks = s.spk(s.currentchan,s.currenttrials);
+0039 <span class="keyword">for</span> iCh = 1:nChan
+0040     <span class="keyword">for</span> iTr = 1:nTr
+0041         spks{iCh,iTr}(spks{iCh,iTr}&lt;tWin(iTr,1)| spks{iCh,iTr}&gt;tWin(iTr,2)) = [];
+0042     <span class="keyword">end</span>
+0043 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

@@ -5,15 +5,12 @@ function ChannelMenu = nlx_control_gui_ChannelMenu
 MainDir = nlx_control_getMainDir;
 MainWin = nlx_control_getMainWindowHandle;
 
-ChannelNrs = [1 2];
-ClusterNrs = [0 1];
-
 ChannelMenu = uimenu('parent',MainWin,'label','Channel','tag','ChannelMenu');
-for iEl = ChannelNrs
+for iEl = 1:32
     
     % default functions
     SepFlag = 'on';
-    for iCl = ClusterNrs
+    for iCl = 0:0
         uimenu('parent',ChannelMenu,'separator',SepFlag, ...
             'label',sprintf('SE%1.0f.%1.0f',iEl,iCl), ...
             'tag',sprintf('SE%1.0f.%1.0f',iEl,iCl), ...

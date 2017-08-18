@@ -1,0 +1,178 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_SpikeLatency</title>
+  <meta name="keywords" content="spk_SpikeLatency">
+  <meta name="description" content="Calculates latencies of spiketrains">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_SpikeLatency.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_SpikeLatency
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Calculates latencies of spiketrains</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [Time,Value] = spk_SpikeLatency(s,Mode,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Calculates latencies of spiketrains
+ Mode .... 'DEFAULT'
+             Sigma 
+             Win
+             Thresh
+             ThreshDur</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_CheckCurrentChannels.html" class="code" title="function out = spk_CheckCurrentChannels(s,SetAllIfEmpty)">spk_CheckCurrentChannels</a>	</li><li><a href="spk_CheckCurrentTrials.html" class="code" title="function [out,s] = spk_CheckCurrentTrials(s,SetAllIfEmpty)">spk_CheckCurrentTrials</a>	</li><li><a href="spk_set.html" class="code" title="function s = spk_set(s,varargin)">spk_set</a>	set the fields of an @al_spk object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Time,Value] = spk_SpikeLatency(s,Mode,varargin)</a>
+0002 
+0003 <span class="comment">% Calculates latencies of spiketrains</span>
+0004 <span class="comment">% Mode .... 'DEFAULT'</span>
+0005 <span class="comment">%             Sigma</span>
+0006 <span class="comment">%             Win</span>
+0007 <span class="comment">%             Thresh</span>
+0008 <span class="comment">%             ThreshDur</span>
+0009 
+0010 Mode = <span class="string">'DEFAULT'</span>;
+0011 NumCurrChan = length(<a href="spk_CheckCurrentChannels.html" class="code" title="function out = spk_CheckCurrentChannels(s,SetAllIfEmpty)">spk_CheckCurrentChannels</a>(s,0));
+0012 numCurrTr = length(<a href="spk_CheckCurrentTrials.html" class="code" title="function [out,s] = spk_CheckCurrentTrials(s,SetAllIfEmpty)">spk_CheckCurrentTrials</a>(s,0));
+0013 
+0014 <span class="keyword">for</span> iC = 1:NumCurrChan
+0015     currChan = s.currentchan(iC);
+0016     
+0017     <span class="keyword">switch</span> Mode
+0018         <span class="keyword">case</span> <span class="string">'DEFAULT'</span>
+0019             Sigma = varargin{1};
+0020             Win = varargin{2};
+0021             AboveThresh = varargin{3}(1);
+0022             BelowThresh = varargin{3}(2);
+0023             ThreshDur = varargin{4};
+0024             SpkNuminBinCriterion = 0.5;
+0025             SpkNumBinWin = 10;
+0026             
+0027             
+0028             [M,BinTimes] = spk_density(<a href="spk_set.html" class="code" title="function s = spk_set(s,varargin)">spk_set</a>(s,<span class="string">'currentchan'</span>,currChan),Sigma,Win);
+0029             CurrSpikeTrain = [s.spk{currChan,s.currenttrials}];
+0030             CurrSpikeTrain(CurrSpikeTrain&lt;(Win(1))&amp;CurrSpikeTrain&gt;(Win(2))) = [];
+0031             
+0032             <span class="keyword">if</span> AboveThresh&lt;5;AboveThresh=5;<span class="keyword">end</span>
+0033             
+0034             
+0035             
+0036             <span class="comment">% find first deflection in density curve</span>
+0037             isAbove = 0;
+0038             isBelow = 0;
+0039             currAboveThreshDur = 0;
+0040             currBelowThreshDur = 0;
+0041             cb = 0;
+0042             latbin = 0;
+0043             NumBin = length(M);
+0044             <span class="keyword">while</span> currBelowThreshDur&lt;=ThreshDur &amp; currAboveThreshDur&lt;=ThreshDur
+0045                 cb = cb+1;
+0046                 <span class="keyword">if</span> NumBin==cb;<span class="keyword">break</span>;<span class="keyword">end</span>
+0047                 
+0048                 <span class="comment">% above or below</span>
+0049                 <span class="keyword">if</span> M(cb)&gt;AboveThresh;
+0050                     currAboveThreshDur = currAboveThreshDur+1;
+0051                     <span class="keyword">if</span> currBelowThreshDur&gt;0;currBelowThreshDur=0;<span class="keyword">end</span>
+0052                 <span class="keyword">elseif</span> M(cb)&lt;BelowThresh
+0053                     currBelowThreshDur = currBelowThreshDur+1;
+0054                     <span class="keyword">if</span> currAboveThreshDur&gt;0;currAboveThreshDur=0;<span class="keyword">end</span>
+0055                 <span class="keyword">end</span>
+0056             <span class="keyword">end</span>
+0057             <span class="keyword">if</span> NumBin==cb;latbin = NaN;
+0058             <span class="keyword">else</span> latbin = cb-ThreshDur;<span class="keyword">end</span>
+0059             
+0060             <span class="keyword">if</span> currBelowThreshDur == 0 &amp; currAboveThreshDur&gt;0;isAbove = 1;<span class="keyword">end</span>
+0061             <span class="keyword">if</span> currBelowThreshDur &gt; 0 &amp; currAboveThreshDur==0;isBelow = 1;<span class="keyword">end</span>
+0062             
+0063             
+0064             <span class="comment">% compensate for smoothing</span>
+0065             <span class="keyword">if</span> ~isnan(latbin) &amp; isAbove==1 &amp; isBelow==0
+0066                 SpkNuminLatBin = sum(CurrSpikeTrain&gt;=(Win(1)+BinTimes(latbin)-SpkNumBinWin/2) &amp; <span class="keyword">...</span>
+0067                     CurrSpikeTrain&lt;=(Win(1)+BinTimes(latbin)+SpkNumBinWin/2));
+0068                 
+0069                 <span class="comment">% find first maximum in density</span>
+0070                 cb = latbin;
+0071                 <span class="keyword">while</span> (~isnan(cb) &amp; cb&lt;NumBin &amp; M(cb+1)&gt;M(cb))
+0072                     cb = cb+1;
+0073                     <span class="keyword">if</span> cb == NumBin; cb=NaN;<span class="keyword">end</span>
+0074                 <span class="keyword">end</span>
+0075                 maxBin = cb;
+0076                 SpkNuminMaxBin = sum(CurrSpikeTrain&gt;=(Win(1)+BinTimes(maxBin)-SpkNumBinWin/2) &amp; <span class="keyword">...</span>
+0077                     CurrSpikeTrain&lt;=(Win(1)+BinTimes(maxBin)+SpkNumBinWin/2));
+0078                 
+0079                 <span class="keyword">if</span> SpkNuminMaxBin&gt;=1/SpkNuminBinCriterion
+0080                     <span class="comment">% sliding window backward down the hill</span>
+0081                     cb = maxBin;
+0082                     SpkNuminCurrBin = SpkNuminMaxBin;
+0083                     <span class="keyword">while</span> (~isnan(cb) &amp; cb&gt;1 &amp; SpkNuminCurrBin&gt;SpkNuminLatBin+(SpkNuminMaxBin-SpkNuminLatBin).*SpkNuminBinCriterion)
+0084                         cb = cb-1;
+0085                         SpkNuminCurrBin =  sum(CurrSpikeTrain&gt;=(Win(1)+BinTimes(cb)-SpkNumBinWin/2) &amp; <span class="keyword">...</span>
+0086                             CurrSpikeTrain&lt;=(Win(1)+BinTimes(cb)+SpkNumBinWin/2));
+0087                         <span class="keyword">if</span> cb == SpkNumBinWin/2; cb=NaN;<span class="keyword">end</span>
+0088                     <span class="keyword">end</span>
+0089                     latbin = cb;
+0090                 <span class="keyword">end</span>
+0091                 
+0092             <span class="keyword">elseif</span> ~isnan(latbin) &amp; isAbove==0 &amp; isBelow==1
+0093                 SpkNuminLatBin = sum(CurrSpikeTrain&gt;=(Win(1)+BinTimes(latbin)-SpkNumBinWin/2) &amp; <span class="keyword">...</span>
+0094                     CurrSpikeTrain&lt;=(Win(1)+BinTimes(latbin)+SpkNumBinWin/2));
+0095                 
+0096                 <span class="comment">% find first minimum in density</span>
+0097                 cb = latbin;
+0098                 <span class="keyword">while</span> (~isnan(cb) &amp; cb&lt;NumBin &amp; M(cb+1)&lt;M(cb))
+0099                     cb = cb+1;
+0100                     <span class="keyword">if</span> cb == NumBin; cb=NaN;<span class="keyword">end</span>
+0101                 <span class="keyword">end</span>
+0102                 maxBin = cb;
+0103                 
+0104                 <span class="keyword">if</span> ~isnan(maxBin);
+0105                     SpkNuminMaxBin = sum(CurrSpikeTrain&gt;=(Win(1)+BinTimes(maxBin)-SpkNumBinWin/2) &amp; <span class="keyword">...</span>
+0106                         CurrSpikeTrain&lt;=(Win(1)+BinTimes(maxBin)+SpkNumBinWin/2));
+0107                     
+0108                     <span class="keyword">if</span> SpkNuminMaxBin&gt;=1/SpkNuminBinCriterion
+0109                         <span class="comment">% sliding window backward down the hill</span>
+0110                         cb = maxBin;
+0111                         SpkNuminCurrBin = SpkNuminMaxBin;
+0112                         <span class="keyword">while</span> (~isnan(cb) &amp; cb&gt;1 &amp; SpkNuminCurrBin&lt;SpkNuminLatBin-(SpkNuminLatBin-SpkNuminMaxBin).*SpkNuminBinCriterion)
+0113                             cb = cb-1;
+0114                             SpkNuminCurrBin =  sum(CurrSpikeTrain&gt;=(Win(1)+BinTimes(cb)-SpkNumBinWin/2) &amp; <span class="keyword">...</span>
+0115                                 CurrSpikeTrain&lt;=(Win(1)+BinTimes(cb)+SpkNumBinWin/2));
+0116                             <span class="keyword">if</span> cb == 5; cb=NaN;<span class="keyword">end</span>
+0117                         <span class="keyword">end</span>
+0118                         latbin = cb;
+0119                     <span class="keyword">end</span>
+0120                 <span class="keyword">end</span>
+0121                 
+0122             <span class="keyword">end</span>
+0123             <span class="keyword">if</span> isnan(latbin);Time = NaN;Value = NaN;
+0124             <span class="keyword">else</span>;Time = BinTimes(latbin);Value = M(latbin);
+0125             <span class="keyword">end</span>
+0126         <span class="keyword">end</span>
+0127     <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

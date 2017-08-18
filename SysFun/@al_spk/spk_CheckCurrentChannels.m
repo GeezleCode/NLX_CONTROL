@@ -1,14 +1,8 @@
-function [currentchan,s] = spk_CheckCurrentChannels(s,SetAllIfEmpty)
-
-% returns current channel nr, if empty it sets all channels
-
-if nargin<2
-    SetAllIfEmpty = true;
-end
-
-if isempty(s.currentchan) && SetAllIfEmpty
-    NumChan = spk_SpikeChanNum(s);
+function out = spk_CheckCurrentChannels(s,SetAllIfEmpty)
+if isempty(s.currentchan) & SetAllIfEmpty~=0
+    warning('''currentchan'' field is not set. Process all channels!');
     s.currentchan = [1:size(s.spk,1)];
-    
+elseif isempty(s.currentchan) & SetAllIfEmpty==0
+    error('''currentchan'' field is not set!');
 end
-currentchan =  s.currentchan;   
+out =  s.currentchan;   

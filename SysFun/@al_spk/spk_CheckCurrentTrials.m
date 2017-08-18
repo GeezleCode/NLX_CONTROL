@@ -1,17 +1,9 @@
-function [currenttrials,s] = spk_CheckCurrentTrials(s,SetAllIfEmpty)
-
-% returns s.currenttrials, if empty it sets all trials
-% [currenttrials,s] = spk_CheckCurrentTrials(s,SetAllIfEmpty)
-% SetAllIfEmpty ... sets s.currenttrials to all trials, default is true if
-%                   omitted
-
-if nargin<2
-    SetAllIfEmpty = true;
-end
-
-if isempty(s.currenttrials) && SetAllIfEmpty
+function [out,s] = spk_CheckCurrentTrials(s,SetAllIfEmpty)
+if isempty(s.currenttrials) & SetAllIfEmpty~=0
+%     warning('''currentrials'' field is not set. Process all Trials!');
 	NumTrials = spk_TrialNum(s);
     s.currenttrials = [1:NumTrials];
+elseif isempty(s.currenttrials) & SetAllIfEmpty==0
+%     warning('''currentrials'' field is not set!');
 end
-
-currenttrials = s.currenttrials;
+out = s.currenttrials;   

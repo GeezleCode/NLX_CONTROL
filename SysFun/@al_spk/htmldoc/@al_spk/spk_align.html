@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_Align</title>
+  <meta name="keywords" content="spk_Align">
+  <meta name="description" content="align all time data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_Align.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_Align
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>align all time data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function s = spk_align(s,aligntimes,mode) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> align all time data
+
+ function s = spk_align(s,aligntimes,mode)
+
+ INPUT
+ aligntimes ... numerical or charcter array. see mode
+ mode [1] ..... aligntimes are absolut, substract from timedata, replace s.align
+ mode [2] ..... aligntimes are relative, all time data is already aligned,
+                substract from timedata and from s.align
+ mode [3] ..... aligntimes is an event name, else as mode 2
+ mode [4] ..... reverse alignment. recreate absolute time data using s.align</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li><li><a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>	returns and check for number of trials in @al_spk object</li><li><a href="spk_getEvents.html" class="code" title="function [evCells,i] = spk_getEvents(s,eventlabel)">spk_getEvents</a>	returns the events; omit input for info</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_TrialMerge.html" class="code" title="function y = spk_TrialMerge(s,MergeIndex,TrialCodeConversion)">spk_TrialMerge</a>	Merges trial data</li></ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function s = spk_align(s,aligntimes,mode)</a>
+0002 
+0003 <span class="comment">% align all time data</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% function s = spk_align(s,aligntimes,mode)</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% INPUT</span>
+0008 <span class="comment">% aligntimes ... numerical or charcter array. see mode</span>
+0009 <span class="comment">% mode [1] ..... aligntimes are absolut, substract from timedata, replace s.align</span>
+0010 <span class="comment">% mode [2] ..... aligntimes are relative, all time data is already aligned,</span>
+0011 <span class="comment">%                substract from timedata and from s.align</span>
+0012 <span class="comment">% mode [3] ..... aligntimes is an event name, else as mode 2</span>
+0013 <span class="comment">% mode [4] ..... reverse alignment. recreate absolute time data using s.align</span>
+0014 
+0015 numChan = size(s.spk,1);
+0016 numSPK = size(s.spk,2);
+0017 numEvents = size(s.events,1);
+0018 numAnalog = length(s.analog);
+0019 numTrials = <a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>(s);
+0020 
+0021 <span class="comment">%% switch align mode</span>
+0022 <span class="keyword">switch</span> mode
+0023     <span class="keyword">case</span> 1
+0024         s.align = aligntimes;
+0025     <span class="keyword">case</span> 2
+0026         s.align = s.align - aligntimes;
+0027     <span class="keyword">case</span> 3
+0028         aligntimes = <a href="spk_getEvents.html" class="code" title="function [evCells,i] = spk_getEvents(s,eventlabel)">spk_getEvents</a>(s,aligntimes);
+0029         <span class="keyword">if</span> any(cellfun(<span class="string">'prodofsize'</span>,aligntimes)&gt;1)
+0030             <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'Found more than one align event in a trial!!'</span>);
+0031         <span class="keyword">end</span>
+0032         <span class="keyword">if</span> any(cellfun(<span class="string">'isempty'</span>,aligntimes))
+0033             warning(<span class="string">'Align event is non existent!'</span>);
+0034             aligntimes(cellfun(<span class="string">'isempty'</span>,aligntimes)) = {NaN};
+0035         <span class="keyword">end</span>
+0036         aligntimes = cat(2,aligntimes{:});
+0037         <span class="keyword">if</span> ~isempty(s.align)
+0038             s.align = s.align - aligntimes;
+0039         <span class="keyword">else</span>
+0040             s.align = aligntimes;
+0041         <span class="keyword">end</span>
+0042     <span class="keyword">case</span> 4
+0043         aligntimes = (-1)*s.align;
+0044         s.align = [];
+0045 <span class="keyword">end</span>
+0046 
+0047 <span class="comment">%% EVENT data</span>
+0048 <span class="keyword">for</span> i = 1:numTrials
+0049     <span class="keyword">for</span> e = 1:numEvents
+0050         s.events{e,i} =  s.events{e,i} - aligntimes(i);
+0051     <span class="keyword">end</span>
+0052 <span class="keyword">end</span>
+0053 
+0054 <span class="comment">%% SPIKE data</span>
+0055 <span class="keyword">for</span> i = 1:numSPK
+0056     <span class="keyword">for</span> k = 1:numChan
+0057         s.spk{k,i} = s.spk{k,i} - aligntimes(i);
+0058     <span class="keyword">end</span>
+0059 <span class="keyword">end</span>
+0060     
+0061 <span class="comment">%% ANALOG data</span>
+0062 <span class="keyword">switch</span> mode
+0063     <span class="keyword">case</span> 1
+0064         warning(<span class="string">'This alignment mode is not implemented for ANALOG data yet!'</span>);
+0065     <span class="keyword">case</span> {2 3}
+0066         <span class="keyword">for</span> a = 1:numAnalog
+0067             binwidth = (1/s.analogfreq(a))/10^s.timeorder;
+0068             alignbins = s.analogalignbin(a) + round(aligntimes./binwidth);
+0069             [s.analog{a},s.analogalignbin(a)] = AlignMat(s.analog{a},alignbins,2,1);
+0070             nBins = size(s.analog{a},2);
+0071             s.analogtime{a} = (s.analogalignbin(a)-1)*(-binwidth) : binwidth : (nBins-s.analogalignbin(a))*binwidth;
+0072         <span class="keyword">end</span>
+0073     <span class="keyword">case</span> 4
+0074         <span class="comment">%             s.analogtime{a} = s.analogtime{a}</span>
+0075         warning(<span class="string">'This alignment mode is not implemented for ANALOG data yet!'</span>)
+0076 <span class="keyword">end</span>
+0077     
+0078</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

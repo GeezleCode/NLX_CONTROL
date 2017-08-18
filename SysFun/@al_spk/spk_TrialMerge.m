@@ -64,8 +64,6 @@ end
 %% merge SPIKE data
 y.channel = {};
 y.spk = {};
-y.spkwave = {};
-y.spkfreq = {};
 
 %% merge ANALOG data
 y.analog = {}; 

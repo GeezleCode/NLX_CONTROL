@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_AnalogPol2Cart</title>
+  <meta name="keywords" content="spk_AnalogPol2Cart">
+  <meta name="description" content="Applies cart2pol.m to analog data.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_AnalogPol2Cart.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_AnalogPol2Cart
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Applies cart2pol.m to analog data.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function s = spk_AnalogPol2Cart(s,ThetaChanName,RChanName,NewThetaName,NewRName) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Applies cart2pol.m to analog data.
+ s = spk_AnalogCart2Pol(s,XChanName,YChanName,NewXName,NewYName)
+ Input:
+ XChanName,YChanName ...... Name of an analog channel as in s.analog</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="spk_AnalogCopyChan.html" class="code" title="function [s,iNewChan] = spk_AnalogCopyChan(s,ChanName,NewChanName)">spk_AnalogCopyChan</a>	makes a copy of an analog channel within the same object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function s = spk_AnalogPol2Cart(s,ThetaChanName,RChanName,NewThetaName,NewRName)</a>
+0002 
+0003 <span class="comment">% Applies cart2pol.m to analog data.</span>
+0004 <span class="comment">% s = spk_AnalogCart2Pol(s,XChanName,YChanName,NewXName,NewYName)</span>
+0005 <span class="comment">% Input:</span>
+0006 <span class="comment">% XChanName,YChanName ...... Name of an analog channel as in s.analog</span>
+0007 
+0008 <span class="comment">%% get the channel index</span>
+0009 iChanX = spk_FindAnalog(s,ThetaChanName);
+0010 iChanY = spk_FindAnalog(s,RChanName);
+0011 
+0012 <span class="comment">%% copy channel</span>
+0013 <span class="keyword">if</span> nargin&gt;3
+0014     [s,iChanX] = <a href="spk_AnalogCopyChan.html" class="code" title="function [s,iNewChan] = spk_AnalogCopyChan(s,ChanName,NewChanName)">spk_AnalogCopyChan</a>(s,ThetaChanName,NewThetaName);
+0015     [s,iChanY] = <a href="spk_AnalogCopyChan.html" class="code" title="function [s,iNewChan] = spk_AnalogCopyChan(s,ChanName,NewChanName)">spk_AnalogCopyChan</a>(s,RChanName,NewRName);
+0016 <span class="keyword">end</span>
+0017 
+0018 <span class="comment">%% compute</span>
+0019 [s.analog{iChanX},s.analog{iChanY}] = pol2cart(s.analog{iChanX},s.analog{iChanY});
+0020 s.analogunits{iChanX} = s.analogunits{iChanY};<span class="comment">% take the units of R channel</span></pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

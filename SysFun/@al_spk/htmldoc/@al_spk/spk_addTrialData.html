@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_addTrialData</title>
+  <meta name="keywords" content="spk_addTrialData">
+  <meta name="description" content="Add trial data for svereal datatypes">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_addTrialData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_addTrialData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Add trial data for svereal datatypes</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [s,TrialNr] = spk_AddTrialData(s,TrialNr,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Add trial data for svereal datatypes
+ TrialNr ... if [] pads trial data to end of arrays
+ varargin ... property value pairs 
+              'spk','analog','events','align','trialcode','stimulus'</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [s,TrialNr] = spk_AddTrialData(s,TrialNr,varargin)</a>
+0002 
+0003 <span class="comment">% Add trial data for svereal datatypes</span>
+0004 <span class="comment">% TrialNr ... if [] pads trial data to end of arrays</span>
+0005 <span class="comment">% varargin ... property value pairs</span>
+0006 <span class="comment">%              'spk','analog','events','align','trialcode','stimulus'</span>
+0007 
+0008 <span class="comment">% check input</span>
+0009 <span class="keyword">if</span> rem(length(varargin),2)~= 0
+0010      <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'Arguments must be Property/Value pairs !'</span>);
+0011 <span class="keyword">end</span>
+0012 numProp = length(varargin)./2;
+0013 
+0014 <span class="keyword">if</span> isempty(TrialNr)
+0015     TrialNr = spk_numtrials(s);
+0016     TrialNr = TrialNr+1;
+0017 <span class="keyword">end</span>
+0018 
+0019 <span class="keyword">for</span> i = 1:numProp
+0020      
+0021      cprop = lower(varargin{i*2-1});
+0022      cval = varargin{i*2};
+0023      
+0024      <span class="keyword">switch</span> cprop
+0025          <span class="keyword">case</span> <span class="string">'spk'</span>
+0026              s.spk(:,TrialNr) = cval;
+0027          <span class="keyword">case</span> <span class="string">'analog'</span>
+0028              s.analog(:,TrialNr) = cval;
+0029          <span class="keyword">case</span> <span class="string">'events'</span>
+0030              s.events(:,TrialNr) = cval;
+0031          <span class="keyword">case</span> <span class="string">'align'</span>
+0032              s.align(:,TrialNr) = cval;
+0033          <span class="keyword">case</span> <span class="string">'trialcode'</span>
+0034              s.trialcode(:,TrialNr) = cval;
+0035          <span class="keyword">case</span> <span class="string">'stimulus'</span>
+0036              s.stimulus(:,TrialNr) = cval;
+0037      <span class="keyword">end</span>
+0038 <span class="keyword">end</span>
+0039 
+0040 TrialNr = spk_numtrials(s);</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

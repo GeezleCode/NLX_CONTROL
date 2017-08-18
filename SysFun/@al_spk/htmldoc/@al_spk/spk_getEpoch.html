@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_getEpoch</title>
+  <meta name="keywords" content="spk_getEpoch">
+  <meta name="description" content="---------------------------------------">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_getEpoch.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_getEpoch
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>---------------------------------------</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [EpWin,AlignTimes,s] = spk_getEpoch(s,Ev,EvNr) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">---------------------------------------
+ check input
+---------------------------------------</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [EpWin,AlignTimes,s] = spk_getEpoch(s,Ev,EvNr)</a>
+0002 
+0003 <span class="comment">%---------------------------------------</span>
+0004 <span class="comment">% check input</span>
+0005 <span class="comment">%---------------------------------------</span>
+0006 [EpNum,EpEdgeNum] = size(Ev);
+0007 
+0008 <span class="comment">%---------------------------------------</span>
+0009 <span class="comment">% trials</span>
+0010 <span class="comment">%---------------------------------------</span>
+0011 TrialNum = spk_numtrials(s);
+0012 <span class="keyword">if</span> isempty(s.currenttrials)
+0013     s.currenttrials = 1:TrialNum;
+0014 <span class="keyword">end</span>
+0015 CurrTrialNum = length(s.currenttrials);
+0016 
+0017 <span class="comment">%---------------------------------------</span>
+0018 <span class="comment">% allocate output</span>
+0019 <span class="comment">%---------------------------------------</span>
+0020 EpWin = ones(CurrTrialNum,2,EpNum).*NaN;
+0021 AlignTimes = ones(CurrTrialNum,1,EpNum).*NaN;
+0022 
+0023 <span class="comment">%---------------------------------------</span>
+0024 <span class="comment">%  lo</span>
+0025 <span class="comment">%---------------------------------------</span>
+0026 EvIndex = spk_findeventlabel(s,Ev(:,1));
+0027 <span class="keyword">for</span> i = 1:CurrTrialNum
+0028     cLowEvents = s.events(EvIndex,s.currenttrials(i));
+0029     <span class="keyword">if</span> any(cellfun(<span class="string">'prodofsize'</span>,cLowEvents)&gt;1);
+0030         <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'multiple events'</span>);
+0031     <span class="keyword">end</span>
+0032     cLowEvents(cellfun(<span class="string">'isempty'</span>,cLowEvents)) = {NaN};
+0033     EpWin(i,1,:) = permute(cat(1,cLowEvents{:}),[2 3 1]);
+0034 <span class="keyword">end</span>
+0035     
+0036 <span class="comment">%---------------------------------------</span>
+0037 <span class="comment">%  hi</span>
+0038 <span class="comment">%---------------------------------------</span>
+0039 <span class="keyword">for</span> iEp = 1:EpNum
+0040     <span class="keyword">if</span> isnumeric(Ev{iEp,2})
+0041         EpWin(:,[1 2],iEp) = [EpWin(:,1,iEp)+Ev{iEp,2}(1) EpWin(:,1,iEp)+Ev{iEp,2}(2)];
+0042     <span class="keyword">elseif</span> ischar(Ev{iEp,2})
+0043         cEvIndex = spk_findeventlabel(s,Ev{iEp,2});
+0044         <span class="keyword">for</span> i = 1:CurrTrialNum
+0045             cEv = s.events{cEvIndex,s.currenttrials(i)};
+0046             <span class="keyword">if</span> length(cEv)&gt;1 &amp; isempty(EvNr)
+0047                 warning([<span class="string">'Unexpected number of event '''</span> Ev{iEp,2} <span class="string">''' in trial '</span> sprintf(<span class="string">'%4.0f'</span>,i) <span class="string">'. Take earliest one.'</span>]);
+0048                 EpWin(i,2,iEp) = cEv(1);
+0049             <span class="keyword">else</span>
+0050                 EpWin(i,2,iEp) = cEv;
+0051             <span class="keyword">end</span>
+0052                 
+0053         <span class="keyword">end</span>
+0054     <span class="keyword">end</span>
+0055 <span class="keyword">end</span>
+0056 
+0057 <span class="comment">%---------------------------------------</span>
+0058 <span class="comment">%  aligntimes</span>
+0059 <span class="comment">%---------------------------------------</span>
+0060 AlignTimes(:,1) = s.align(s.currenttrials)';</pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

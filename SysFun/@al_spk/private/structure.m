@@ -13,9 +13,7 @@ s.channel = '';%changed to cell array of strings 3/02/05
 s.currentchan = [];
 s.chancolor = [];
 s.spk = [];% spike data [1,trial number]; changed to [numChan,trial number] 3/02/05
-s.timeorder = [];%power of ten of time values (e.g. msec. -3)
-s.spkwave = {};
-s.spkfreq = [];
+s.timeorder = [];%power of ten of time values (e.g. msec. -3) 
 
 s.analog = []; % analog data, different channels in rows
 s.analogunits = '';

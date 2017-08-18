@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of error</title>
+  <meta name="keywords" content="error">
+  <meta name="description" content="Report an error that occurred in a spike object">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; error.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>error
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Report an error that occurred in a spike object</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function msgOut = error(s,msgIn,caller) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Report an error that occurred in a spike object
+
+ function msgOut = error(s,msgIn)
+ INPUT
+ s            A @spikes object    
+ msgIn        Part of the message reported to the user.
+ caller        Function that threw the error.
+ OUTPUT
+  msg        The complete message.
+
+ BK  - 25.11.2000  - Last Change $Date: 2000/12/05 07:33:59 $
+ $Revision: 1.1 $</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="al_spk.html" class="code" title="function s = al_spk(x)">al_spk</a>	Constructor for the @al_spk class</li><li><a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li><li><a href="spk_Align.html" class="code" title="function s = spk_align(s,aligntimes,mode)">spk_Align</a>	align all time data</li><li><a href="spk_AnalogAngularDist.html" class="code" title="function s = spk_AnalogAngularDist(s,S1Chans,S2Chans,NewChanName)">spk_AnalogAngularDist</a>	calculates the angular distance between signal S1 to S2</li><li><a href="spk_AnalogCheckChan.html" class="code" title="function n = spk_AnalogCheckChan(s)">spk_AnalogCheckChan</a>	check for consistency of analog channel data, returns number of channels.</li><li><a href="spk_AnalogCircularDist.html" class="code" title="function s = spk_AnalogCircularDist(s,SigChans,RefChans,ThChanName,RChanName,AbsFlag)">spk_AnalogCircularDist</a>	calculates the circular distance between XY signal S1 and signal S2</li><li><a href="spk_AnalogEuclidDist.html" class="code" title="function s = spk_AnalogEuclidDist(s,SigChans,RefChans,ThChanName,RChanName)">spk_AnalogEuclidDist</a>	calculates the euclidean distance from signal SigChans to signal RefChans</li><li><a href="spk_AnalogFindNextBin.html" class="code" title="function [t,x,b,tStart,xStart,bStart] = spk_AnalogFindNextBin(s,tStart,SearchTerm,SearchPar,MoveDir)">spk_AnalogFindNextBin</a>	Go through analog bins until a bin is found.</li><li><a href="spk_AnalogMean.html" class="code" title="function [M,STD,SE,tx,DATA] = spk_AnalogMean(s,ChanName,TimeWin)">spk_AnalogMean</a>	Calculate mean value of analog channel</li><li><a href="spk_AnalogPrctile.html" class="code" title="function [P,DATA] = spk_AnalogPrctile(s,Prc,ChanName,TimeWin)">spk_AnalogPrctile</a>	Calculate percentiles of analog channel</li><li><a href="spk_AnalogXCorr.html" class="code" title="function [c,lags] = spk_AnalogXCorr(s,SigChan,RefChan,TW)">spk_AnalogXCorr</a>	cross correlation between two channels</li><li><a href="spk_CheckCurrentChannels.html" class="code" title="function out = spk_CheckCurrentChannels(s,SetAllIfEmpty)">spk_CheckCurrentChannels</a>	</li><li><a href="spk_EventTimePlot.html" class="code" title="function s = spk_EventTimePlot(s,Eventlabel,yLim,mode,varargin)">spk_EventTimePlot</a>	plots events on an x time axis</li><li><a href="spk_NLX_get.html" class="code" title="function s = spk_nlxget(s,p,dofun)">spk_NLX_get</a>	connects to a cheetah data acquisition software and writes data into a</li><li><a href="spk_NLX_readNCS.html" class="code" title="function s = spk_NLX_readNCS(s,NCS,NLXWin,analogname,WinMode,AddChannelFlag)">spk_NLX_readNCS</a>	reads spike data from a neuralynx *.nse file</li><li><a href="spk_NLX_readNSE.html" class="code" title="function s = spk_NLX_readNSE(s,NSE,NLXWin,ElName,WinMode,AddChannelFlag)">spk_NLX_readNSE</a>	reads spike data from a neuralynx *.nse file</li><li><a href="spk_SpikeDensity.html" class="code" title="function [M,bins,Err,trial_d,h] = spk_density(s,sigma,win,varargin)">spk_SpikeDensity</a>	Calculates the Spike Density Function over trials listed in s.currenttrials</li><li><a href="spk_SpikeRevCorr.html" class="code" title="function [r,c,n] = spk_SpikeRevCorr(s,OnsetEvent,Win,Tau,SeqIndex,SeqLength)">spk_SpikeRevCorr</a>	count spikes related to reverse correlation stimulus</li><li><a href="spk_SpikeTimePrecision.html" class="code" title="function s = spk_SpikeTimePrecision(s,Prec,RemoveDupFlag)">spk_SpikeTimePrecision</a>	set the temporal precision of timestamps</li><li><a href="spk_SpikeWinrate.html" class="code" title="function [r,n,dt] = spk_SpikeWinrate(s,win)">spk_SpikeWinrate</a>	calculate rate of the current trials</li><li><a href="spk_TrialEventWindow.html" class="code" title="function [TimeWin,AlignTimes,s] = spk_TrialEventWindow(s,LoEventLabel,HiEventLabel,EventNr)">spk_TrialEventWindow</a>	returns the time window between two specified events</li><li><a href="spk_TrialGroups.html" class="code" title="function [y,TrialCodes] = spk_TrialGroups(s,GroupTerm)">spk_TrialGroups</a>	group trials according to a trialcode label</li><li><a href="spk_TrialNum.html" class="code" title="function total = spk_TrialNum(s)">spk_TrialNum</a>	returns and check for number of trials in @al_spk object</li><li><a href="spk_addTrialData.html" class="code" title="function [s,TrialNr] = spk_AddTrialData(s,TrialNr,varargin)">spk_addTrialData</a>	Add trial data for svereal datatypes</li><li><a href="spk_cat.html" class="code" title="function s = spk_cat(s,varargin)">spk_cat</a>	concatenation of @al_spk objects</li><li><a href="spk_event2NLXts.html" class="code" title="function s = spk_event2NLXts(s)">spk_event2NLXts</a>	</li><li><a href="spk_eventdiff.html" class="code" title="function d = spk_eventdiff(s,ev1,ev2);">spk_eventdiff</a>	calculates time differences of two types of events in the trials given in</li><li><a href="spk_findtrials_AND.html" class="code" title="function [INDEX,s] = spk_findtrials_AND(s,varargin)">spk_findtrials_AND</a>	find trials with trialcodes given in varargin</li><li><a href="spk_findtrials_OR.html" class="code" title="function [INDEX,s] = spk_findtrials_OR(s,varargin)%trialcodelabel,val)">spk_findtrials_OR</a>	find trials with trialcodes given in varargin</li><li><a href="spk_getEpoch.html" class="code" title="function [EpWin,AlignTimes,s] = spk_getEpoch(s,Ev,EvNr)">spk_getEpoch</a>	---------------------------------------</li><li><a href="spk_histogram.html" class="code" title="function [values,binedges,h] = spk_histogram(s,timewin,binwidth,HistMode,PlotType,varargin)">spk_histogram</a>	calculates histograms for spikedata defined by s.currenttrials and s.currentchan</li><li><a href="spk_readcortex.html" class="code" title="function [s,unknownEv] = spk_readcortex(s,filepath,SpkCodes,response_errors,readEyeFlag)">spk_readcortex</a>	reads a cortex file in @al_spk object</li><li><a href="spk_revcorrtemp.html" class="code" title="function rcHist = spk_revcorrtemp(s,t,T)">spk_revcorrtemp</a>	calculates a reverse correlation to a temporal sequence of different stimuli</li><li><a href="spk_set.html" class="code" title="function s = spk_set(s,varargin)">spk_set</a>	set the fields of an @al_spk object</li><li><a href="subsasgn.html" class="code" title="function s = subsasgn(s,subscript,value)">subsasgn</a>	Subscript assignmemt for the @al_spk object.</li><li><a href="subsref.html" class="code" title="function value = subsref(s,subscript)">subsref</a>	Subsref for al_spk Objects</li></ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function msgOut = error(s,msgIn,caller)</a>
+0002 
+0003 <span class="comment">% Report an error that occurred in a spike object</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% function msgOut = error(s,msgIn)</span>
+0006 <span class="comment">% INPUT</span>
+0007 <span class="comment">% s            A @spikes object</span>
+0008 <span class="comment">% msgIn        Part of the message reported to the user.</span>
+0009 <span class="comment">% caller        Function that threw the error.</span>
+0010 <span class="comment">% OUTPUT</span>
+0011 <span class="comment">%  msg        The complete message.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% BK  - 25.11.2000  - Last Change $Date: 2000/12/05 07:33:59 $</span>
+0014 <span class="comment">% $Revision: 1.1 $</span>
+0015 
+0016 <span class="keyword">if</span> nargin ==3
+0017    msg = [<span class="string">'@MANE2 error in '</span> caller <span class="string">':'</span> msgIn]; 
+0018 <span class="keyword">else</span>
+0019    msg =[<span class="string">'@MANE2 error: '</span> msgIn]; 
+0020 <span class="keyword">end</span>
+0021 
+0022 disp(msg);
+0023 <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">' '</span>);
+0024 
+0025 <span class="keyword">if</span> nargout ==1
+0026    msgOut = msg;
+0027 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

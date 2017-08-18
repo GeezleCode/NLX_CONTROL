@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_SpikeRaster</title>
+  <meta name="keywords" content="spk_SpikeRaster">
+  <meta name="description" content="rasters of spikes or events in current axes">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_SpikeRaster.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_SpikeRaster
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>rasters of spikes or events in current axes</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function h = spk_raster(s,yRange,EvType,win,EvMarker,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> rasters of spikes or events in current axes
+ plots currenttrials
+ 
+ h = spk_raster(s,yRange,EvType,win,EvMarker,varargin)
+
+ INPUT
+ yRange ... plot the rasters in the given range of the y axis
+                if its empty it plots the first trial at 1 etc.
+ EvType ..... [] or 'SPK' -&gt; rasters of spikes
+              event index (numeric) or eventlabel (string) -&gt; rasters of
+              events.
+ EvMarker ... symbol, vertical 'line' or matlab marker of line object
+
+ OUTPUT
+ h ... handle to rasters</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function h = spk_raster(s,yRange,EvType,win,EvMarker,varargin)</a>
+0002 
+0003 <span class="comment">% rasters of spikes or events in current axes</span>
+0004 <span class="comment">% plots currenttrials</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% h = spk_raster(s,yRange,EvType,win,EvMarker,varargin)</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% INPUT</span>
+0009 <span class="comment">% yRange ... plot the rasters in the given range of the y axis</span>
+0010 <span class="comment">%                if its empty it plots the first trial at 1 etc.</span>
+0011 <span class="comment">% EvType ..... [] or 'SPK' -&gt; rasters of spikes</span>
+0012 <span class="comment">%              event index (numeric) or eventlabel (string) -&gt; rasters of</span>
+0013 <span class="comment">%              events.</span>
+0014 <span class="comment">% EvMarker ... symbol, vertical 'line' or matlab marker of line object</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% OUTPUT</span>
+0017 <span class="comment">% h ... handle to rasters</span>
+0018 
+0019 <span class="keyword">if</span> nargin&lt;2
+0020      EvMarker = <span class="string">'.'</span>;
+0021 <span class="keyword">end</span>
+0022 
+0023 <span class="keyword">if</span> isempty(s.currenttrials)
+0024     s.currenttrials = 1:size(s.spk,2);
+0025 <span class="keyword">end</span>
+0026 
+0027 <span class="keyword">if</span> isempty(s.currentchan) &amp; strcmp(upper(EvType),<span class="string">'SPK'</span>)
+0028     s.currentchan = 1;
+0029 <span class="keyword">elseif</span> length(s.currentchan)&gt;1 &amp; strcmp(upper(EvType),<span class="string">'SPK'</span>)
+0030     disp(<span class="string">'warning: just plot the first of selected channels'</span>);
+0031     s.currentchan = s.currentchan(1);
+0032 <span class="keyword">end</span>
+0033 
+0034 numTr = length(s.currenttrials);
+0035 
+0036 <span class="keyword">if</span> isempty(yRange)
+0037     yRange = [1-0.5 numTr+0.5];
+0038 <span class="keyword">end</span>
+0039 
+0040 <span class="comment">%_________________________________________________</span>
+0041 yTrd = (yRange(2)-yRange(1))/numTr;
+0042 yTr = [yRange(1)+(yTrd*0.5) :yTrd: yRange(2)-(yTrd*0.5)];
+0043 
+0044 <span class="keyword">for</span> i = 1:numTr
+0045     j = s.currenttrials(i);
+0046     
+0047     <span class="keyword">if</span> (ischar(EvType) &amp; strcmp(upper(EvType),<span class="string">'SPK'</span>)) | isempty(EvType)
+0048         x = s.spk{s.currentchan,j}';
+0049         LineLength = 0.8*yTrd;
+0050     <span class="keyword">elseif</span> ischar(EvType)
+0051         x = s.events{spk_findeventlabel(s,EvType),j}';
+0052         LineLength = yTrd;
+0053     <span class="keyword">elseif</span> isnumeric(EvType)
+0054         x = s.events{EvType,j}';LineLength = 1;
+0055     <span class="keyword">end</span>
+0056      
+0057     x=x(x&gt;=win(1)&amp;x&lt;=win(2));
+0058     
+0059      <span class="comment">%____________________</span>
+0060      <span class="comment">% spike dots</span>
+0061      <span class="comment">%____________________</span>
+0062      <span class="keyword">switch</span> EvMarker
+0063      <span class="keyword">case</span> <span class="string">'line'</span>
+0064           <span class="comment">% verticale lines</span>
+0065           [YDATA,XDATA] = ndgrid([yTr(i)-LineLength/2;yTr(i)+LineLength/2],x);<span class="comment">% TTL's dot as vertical lines</span>
+0066           h = line(XDATA,YDATA,<span class="string">'color'</span>,<span class="string">'k'</span>,<span class="string">'clipping'</span>,<span class="string">'on'</span>,varargin{:});
+0067      <span class="keyword">otherwise</span>
+0068           [YDATA,XDATA] = ndgrid(yTr(i),x);
+0069           h = line(XDATA,YDATA, <span class="keyword">...</span>
+0070                <span class="string">'linestyle'</span>,<span class="string">'none'</span>, <span class="keyword">...</span>
+0071                <span class="string">'marker'</span>,EvMarker,<span class="string">'markersize'</span>,4, <span class="keyword">...</span>
+0072                <span class="string">'markerfacecolor'</span>,<span class="string">'k'</span>, <span class="keyword">...</span>
+0073                <span class="string">'markeredgecolor'</span>,<span class="string">'none'</span>, <span class="keyword">...</span>
+0074                <span class="string">'clipping'</span>,<span class="string">'on'</span>,varargin{:});
+0075      <span class="keyword">end</span>
+0076 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>

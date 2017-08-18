@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spk_eventdiff</title>
+  <meta name="keywords" content="spk_eventdiff">
+  <meta name="description" content="calculates time differences of two types of events in the trials given in">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">@al_spk</a> &gt; spk_eventdiff.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for @al_spk&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>spk_eventdiff
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>calculates time differences of two types of events in the trials given in</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function d = spk_eventdiff(s,ev1,ev2); </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> calculates time differences of two types of events in the trials given in
+ s.currenttrials. 
+ d = spk_eventdiff(s,ev1,ev2)
+
+ ev1,ev2 ... eventlabels, char</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>	Report an error that occurred in a spike object</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function d = spk_eventdiff(s,ev1,ev2);</a>
+0002 
+0003 <span class="comment">% calculates time differences of two types of events in the trials given in</span>
+0004 <span class="comment">% s.currenttrials.</span>
+0005 <span class="comment">% d = spk_eventdiff(s,ev1,ev2)</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% ev1,ev2 ... eventlabels, char</span>
+0008 
+0009 numTrials = size(s.events,2);
+0010 
+0011 <span class="keyword">if</span> isempty(s.currenttrials)
+0012     s.currenttrials = 1:numTrials;
+0013 <span class="keyword">end</span>
+0014 numCurrTrials = length(s.currenttrials);
+0015 
+0016 ev1i = spk_findeventlabel(s,ev1);
+0017 ev2i = spk_findeventlabel(s,ev2);
+0018 
+0019 <span class="comment">% check number of events</span>
+0020 n1 = cellfun(<span class="string">'length'</span>,s.events(ev1i,s.currenttrials));
+0021 n2 = cellfun(<span class="string">'length'</span>,s.events(ev2i,s.currenttrials));
+0022 <span class="keyword">if</span> any( (n2-n1)~=0 )
+0023     <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'Can''t substract event times, different number of events !'</span>);
+0024 <span class="keyword">end</span>
+0025 ns = unique(n1);
+0026 <span class="keyword">if</span> length(ns)&gt;1
+0027     <a href="error.html" class="code" title="function msgOut = error(s,msgIn,caller)">error</a>(<span class="string">'Can''t substract event times, number of events different in trials!'</span>);
+0028 <span class="keyword">end</span>
+0029 d = zeros(ns,numCurrTrials).*NaN;
+0030 
+0031 <span class="keyword">for</span> i=1:numCurrTrials
+0032     <span class="keyword">if</span> isempty(s.events{ev1i,s.currenttrials(i)}) | isempty(s.events{ev2i,s.currenttrials(i)})
+0033         d(i) = NaN;
+0034     <span class="keyword">else</span>
+0035         d(:,i) = [ s.events{ev1i,s.currenttrials(i)}-s.events{ev2i,s.currenttrials(i)} ]';
+0036     <span class="keyword">end</span>
+0037 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 05-Nov-2009 11:31:16 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/">m2html</a></strong> &copy; 2003</address>
+</body>
+</html>
