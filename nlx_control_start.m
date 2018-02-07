@@ -28,9 +28,9 @@ nlx_control_gui;
 % set GUI menues
 H = nlx_control_gui_AnalyseMenu;
 
-ChannelNrs = [1:16];
+ChannelNrs    = [1:16];
 ChannelLabel  = {'e1SE' 'e2SE'};
-ClusterNrs = [0];
+ClusterNrs    = [0];
 
 % ChannelNrs = [1:16];
 % ChannelLabel  = {'e1SE' 'e2SE' 'e3SE'};
