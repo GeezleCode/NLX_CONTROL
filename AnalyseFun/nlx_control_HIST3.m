@@ -100,7 +100,7 @@ for iCh = 1:ChanIndexNum
         end
         delete(CndAx);
         set(HistFigHandle(iCh),'userdata',H);
-        clear H;;
+        clear H;
     else
         HistFigHandle(iCh) = cFig;
         
