@@ -149,10 +149,12 @@ while NLX_CONTROL_GET_CHEETAH
                 nParam = NLX_CONTROL_SETTINGS.SendConditionN;
                 [Ev,ParamArray,succeeded] = Ev_getParam(Ev,nParam,TermSeq,logfid);
                 
-                if length(NLX_CONTROL_SETTINGS.SendConditionTrialIDIndex)==2
-                    hiChar = ParamArray(NLX_CONTROL_SETTINGS.SendConditionTrialIDIndex(1)) - 1;% was encoded +1 to avoid ZERO events
-                    loChar = ParamArray(NLX_CONTROL_SETTINGS.SendConditionTrialIDIndex(2)) - 1;
-                    CTX.TrialID(CTX.Pointer,:) = bin2dec([dec2bin(hiChar,8) dec2bin(loChar,8)]) + 1;% trial ID was encoded zero based 0-255
+                if length(NLX_CONTROL_SETTINGS.SendConditionTrialIDIndex)==4
+                    word4 = ParamArray(NLX_CONTROL_SETTINGS.SendConditionTrialIDIndex(1)) - 1;% was encoded +1 to avoid ZERO events
+                    word3 = ParamArray(NLX_CONTROL_SETTINGS.SendConditionTrialIDIndex(2)) - 1;
+                    word2 = ParamArray(NLX_CONTROL_SETTINGS.SendConditionTrialIDIndex(3)) - 1;
+                    word1 = ParamArray(NLX_CONTROL_SETTINGS.SendConditionTrialIDIndex(4)) - 1;
+                    CTX.TrialID(CTX.Pointer,:) = bin2dec([dec2bin(word4,4) dec2bin(word3,4) dec2bin(word2,4) dec2bin(word1,4)]) + 1;% trial ID was encoded zero based 0-255
                 else
                     CTX.TrialID(CTX.Pointer,:) = ParamArray(NLX_CONTROL_SETTINGS.SendConditionTrialIDIndex);
                 end

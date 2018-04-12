@@ -206,12 +206,12 @@ AttNum = 2;
 % Attention : IN     OUT    IN    OUT
 % Focus     : narrow narrow wide  wide
 % stimcode  : 1:12   13:24  25:36 37:48
-s.Hist2Grid = cell(CondNum,FocNum);
+s.Hist2Grid = cell(FocNum,CondNum);
 s.Hist2Grid(:) = {[NaN NaN]};
 for iFoc = 1:FocNum
     for iAtt = 1:AttNum
         for iCnd = 1:CondNum
-            s.Hist2Grid{iCnd,iFoc}(1,iAtt) = (iFoc-1)*AttNum*CondNum+(iAtt-1)*CondNum+iCnd;
+            s.Hist2Grid{iFoc,iCnd}(1,iAtt) = (iFoc-1)*AttNum*CondNum+(iAtt-1)*CondNum+iCnd;
         end
     end
 end
