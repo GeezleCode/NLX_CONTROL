@@ -136,12 +136,12 @@ s.SendParamEnd = [ ...
     s.EventCode(strmatch('NLX_STIMPARAM_END',s.EventName))];
 s.SendParamN = []; %see below !!!!! this parameter is set after the s.RFStimSeq... fields
 
-% s.SendConditionParNum          = 3;
-% s.SendConditionParName         = {'TrialID' 'Block', 'Condition'};
-% s.SendConditionPresentParName  = {'StimulusCode'};
-s.SendConditionParNum          = 2;
-s.SendConditionParName         = {'Block', 'Condition'};
+s.SendConditionParNum          = 3;
+s.SendConditionParName         = {'TrialID' 'Block', 'Condition'};
 s.SendConditionPresentParName  = {'StimulusCode'};
+% s.SendConditionParNum          = 2;
+% s.SendConditionParName         = {'Block', 'Condition'};
+% s.SendConditionPresentParName  = {'StimulusCode'};
 s.SendConditionPresentParNum   = length(s.SendConditionPresentParName);
 s.SendConditionPresentParRange = [0 83];
 % s.SendConditionTrialIDIndex    = 1;
@@ -180,8 +180,8 @@ a.CndName       = strtrim(cellstr(num2str([1:s.Cndnum]')))';
 a.colormap   = usercolormap(rgb('blue'),rgb('cyan'),rgb('dark gray'),rgb('yellow'),rgb('red'));
 % a.colormap   = usercolormap(rgb('blue'),rgb('cyan'),rgb('yellow'),rgb('red'));
 a.trialInit  = 1000;
-a.respWin    = [200 400];
-a.spontWin   = [-200 0];
+a.respWin    = [30 180];
+a.spontWin   = [-150 0];
 s.analyse    = a;
 
 

@@ -143,11 +143,14 @@ while NLX_CONTROL_GET_CHEETAH
             case NLX_CONTROL_SETTINGS.SendConditionStart
                 TermSeq = NLX_CONTROL_SETTINGS.SendConditionEnd;
                 nParam = NLX_CONTROL_SETTINGS.SendConditionN;
+                
                 [Ev,ParamArray,succeeded] = Ev_getParam(Ev,nParam,TermSeq,logfid);
-                CTX.TrialID(CTX.Pointer,:) = CTX.Pointer;
-                CTX.Block(CTX.Pointer,:) = ParamArray(1);
-                CTX.Condition(CTX.Pointer,:) = ParamArray(2);
-                CTX.StimulusCodes(CTX.Pointer,:) = ParamArray(3:nParam)';
+                
+                CTX.TrialID(CTX.Pointer,:) = ParamArray(strcmp(NLX_CONTROL_SETTINGS.SendConditionParName,'TrialID'));
+                CTX.Block(CTX.Pointer,:) = ParamArray(strcmp(NLX_CONTROL_SETTINGS.SendConditionParName,'Block'));
+                CTX.Condition(CTX.Pointer,:) = ParamArray(strcmp(NLX_CONTROL_SETTINGS.SendConditionParName,'Condition'));
+                CTX.StimulusCodes(CTX.Pointer,:) = ParamArray(NLX_CONTROL_SETTINGS.SendConditionParNum+1:nParam)';
+                
                 disp(['TRIALID     ' num2str(CTX.TrialID(CTX.Pointer,:))]);
                 disp(['BLOCK     ' num2str(CTX.Block(CTX.Pointer,:))]);
                 disp(['CONDITION ' num2str(CTX.Condition(CTX.Pointer,:))]);
