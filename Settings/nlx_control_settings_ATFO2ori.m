@@ -181,39 +181,47 @@ s.HistMode     = 3;% 1 counts 2 mean counts 3 mean frequency
 s.HistYLim     = [0 25];
 s.HistYLimMode = 3;% 1 fixed YLim 2 MAX in cnd 3 MAX over all cond
 
-BlockNum = 4;
-CondNum = 2;
-StimCodeNum = 8;
-FocNum = 2;
-% Attention : IN     OUT    IN    OUT
-% Focus     : narrow narrow wide  wide
-% stimcode  : 1:2    3:4    5:6   7:8
-% Attention : IN     IN     OUT    OUT    IN    IN    OUT   OUT
-% Focus     : narrow narrow narrow narrow wide  wide  wide  wide
-% Stimulus  : large  small  large  small  large small large small
-% stimcode  : 1      2      3      4      5     6     7     8
-s.Hist2Grid = cell(CondNum,FocNum);
-s.Hist2Grid{1,1} = [1 3];
-s.Hist2Grid{2,1} = [2 4];
-s.Hist2Grid{1,2} = [5 7];
-s.Hist2Grid{2,2} = [6 8];
-
-BlockNum = 4;
-CondNum = 12;
-StimCodeNum = 48;
-FocNum = 2;
-AttNum = 2;
-% Attention : IN     OUT    IN    OUT
-% Focus     : narrow narrow wide  wide
-% stimcode  : 1:12   13:24  25:36 37:48
-s.Hist2Grid = cell(FocNum,CondNum);
-s.Hist2Grid(:) = {[NaN NaN]};
-for iFoc = 1:FocNum
-    for iAtt = 1:AttNum
-        for iCnd = 1:CondNum
-            s.Hist2Grid{iFoc,iCnd}(1,iAtt) = (iFoc-1)*AttNum*CondNum+(iAtt-1)*CondNum+iCnd;
+histDisplayMode = 'atfo2ori';
+switch histDisplayMode
+    case 'old'
+        BlockNum = 4;
+        CondNum = 2;
+        StimCodeNum = 8;
+        FocNum = 2;
+        AttNum = 2;
+        % Attention : IN     OUT    IN    OUT
+        % Focus     : narrow narrow wide  wide
+        % stimcode  : 1:2    3:4    5:6   7:8
+        % Attention : IN     IN     OUT    OUT    IN    IN    OUT   OUT
+        % Focus     : narrow narrow narrow narrow wide  wide  wide  wide
+        % Stimulus  : large  small  large  small  large small large small
+        % stimcode  : 1      2      3      4      5     6     7     8
+        s.Hist2Grid = cell(FocNum,CondNum);
+        s.Hist2Grid(:) = {[NaN NaN]};
+        s.Hist2Grid{1,1} = [1 3];
+        s.Hist2Grid{1,2} = [2 4];
+        s.Hist2Grid{2,1} = [5 7];
+        s.Hist2Grid{2,2} = [6 8];
+    
+    case 'atfo2ori'
+        CondNr  = [5,6];
+        CondNum = 12;
+        FocNum  = 2;
+        AttNum  = 2;
+        % Attention : IN     OUT    IN    OUT
+        % Focus     : narrow narrow wide  wide
+        % stimcode  : 1:12   13:24  25:36 37:48
+        s.Hist2Grid = cell(FocNum,length(CondNr));
+        s.Hist2Grid(:) = {[NaN NaN]};
+        for iFoc = 1:FocNum
+            for iAtt = 1:AttNum
+                for iCnd = 1:length(CondNr)
+                    stimIndex = (iFoc-1)*AttNum*CondNum+(iAtt-1)*CondNum+CondNr(iCnd);
+                    s.Hist2Grid{iFoc,iCnd}(1,iAtt) = stimIndex;
+                end
+            end
         end
-    end
+    
 end
 
 s.Hist2Color = [rgb('normal orange');rgb('pale orange')];
