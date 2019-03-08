@@ -174,7 +174,7 @@ s.HistYLimMode = 3;% 1 fixed YLim 2 MAX in cnd 3 MAX over all cond
 %**********************************************************************
 s.RFMapSize = [9 12];% rows cols of map
 s.RFDotSpacing = 0.25;
-s.RFMapRefPos = [-0.75 -3];
+s.RFMapRefPos = [3.5, -4.0];
 s.RVCOTau = [150];
 s.RVCOTauBase = 0;
 s.RVCOWin = [-100 0];

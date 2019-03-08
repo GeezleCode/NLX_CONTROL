@@ -155,6 +155,8 @@ while NLX_CONTROL_GET_CHEETAH
                     word2 = ParamArray(NLX_CONTROL_SETTINGS.SendConditionTrialIDIndex(3)) - 1;
                     word1 = ParamArray(NLX_CONTROL_SETTINGS.SendConditionTrialIDIndex(4)) - 1;
                     CTX.TrialID(CTX.Pointer,:) = bin2dec([dec2bin(word4,4) dec2bin(word3,4) dec2bin(word2,4) dec2bin(word1,4)]) + 1;% trial ID was encoded zero based 0-255
+                elseif isempty(NLX_CONTROL_SETTINGS.SendConditionTrialIDIndex)
+                    CTX.TrialID(CTX.Pointer,:) = NaN;
                 else
                     CTX.TrialID(CTX.Pointer,:) = ParamArray(NLX_CONTROL_SETTINGS.SendConditionTrialIDIndex);
                 end
