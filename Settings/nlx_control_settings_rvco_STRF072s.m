@@ -115,14 +115,25 @@ s.CndAlignOffset = 0;% in ms
 % events signalling sending of parameters
 s.SendConditionStart = s.EventCode(strmatch('NLX_TRIALPARAM_START',s.EventName));
 s.SendConditionEnd = s.EventCode(strmatch('NLX_TRIALPARAM_END',s.EventName));
-s.SendConditionN = 3;
 
-% 
+s.SendConditionParName         = {'Block', 'Condition'};
+s.SendConditionParNum          = length(s.SendConditionParName);
+s.SendConditionPresentParName  = {'RepeatCondition'};
+s.SendConditionPresentParRange = [1 256];
+%s.SendConditionPresentParLevelNum = [72, 1, 2]; % this is not really used yet, all coding done by StimulusCode
+s.SendConditionPresentParNum   = length(s.SendConditionPresentParName);
+s.SendConditionTrialIDIndex    = [];
+s.SendConditionBlockIndex      = 1;
+s.SendConditionConditionIndex  = 2;
+s.SendConditionN = s.SendConditionParNum + s.PresentationNum * s.SendConditionPresentParNum;
+
+% events signalling sending of parameters
 s.SendParamStart = s.EventCode(strmatch('NLX_STIMPARAM_START',s.EventName));
 s.SendParamEnd = [ ...
     s.EventCode(strmatch('NLX_STIMPARAM_END',s.EventName)), ...
     s.EventCode(strmatch('NLX_STIMPARAM_END',s.EventName))];
 s.SendParamN = [];
+
 
 %---------- parameters for plot and online analysis----------------------------------------
 s.CndPlotGrid = [2 2];
